@@ -21,6 +21,7 @@ namespace Orion_Desktop
         {
             // Fix negative latitude
             if (longitude < 0) longitude = 180 + Math.Abs(longitude);
+            else longitude = 180 - longitude;
             // Convert data to radians
             float latRad = latitude * Raylib.DEG2RAD;
             float longRad = longitude * Raylib.DEG2RAD;

@@ -39,8 +39,9 @@ namespace Orion_Desktop
 
                     return satellite;
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(e.Message);
                     return new Satellite();
                 }
             }

@@ -9,15 +9,16 @@ namespace Orion_Desktop
     {
         internal const int SKY_HEIGHT = 10;
 
-        internal static Ray MouseRay;
-        internal static RayCollision MouseRayCollision;
-
         internal static Camera3D Camera;
-        internal static Vector3 ISSPoint;
+        internal static Matrix4x4 globeCorrectionMat;
+        internal static Satellite ISS;
 
         /// <summary>Initializes the 3D conceptor.</summary>
         internal static void Init()
         {
+            // Start by sending information request to the API
+            UpdateISS();
+
             // Create camera object.
             Camera = new Camera3D()
             {
@@ -27,64 +28,44 @@ namespace Orion_Desktop
                 FovY = 45f,
                 Projection = CameraProjection.Perspective
             };
+            globeCorrectionMat = Raymath.MatrixRotateXYZ(new Vector3(90, 0, 0) / RAD2DEG);
 
-            ISSPoint = new Vector3(SKY_HEIGHT, 0, 0);
+            ISS = new Satellite();
 
-            MouseRay = new Ray();
-            MouseRayCollision = new RayCollision();
-
-            UpdateISS();
+            Shaders.Init();
+            Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
         internal static async void UpdateISS()
         {
-            Satellite iss = await OnlineRequests.GetCurrentISS();
+            ISS = await OnlineRequests.GetCurrentISS();
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
         internal static void Draw()
         {
+            Vector3 issPoint = Vector3.Normalize(CelestialMaths.ComputeECEF(ISS.Latitude, ISS.Longitude)) * (SKY_HEIGHT + 1f);
+            
             BeginMode3D(Camera);
 
             // Draw sky box
-            DrawSphereWires(Vector3.Zero, SKY_HEIGHT, 20, 20, Color.Gray);
+            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], globeCorrectionMat);
 
             // Draw line
-            DrawLine3D(Vector3.Zero, ISSPoint, Color.Red);
+            DrawLine3D(Vector3.Zero, issPoint, Color.Red);
 
             // Draw ISS point
-            DrawSphere(ISSPoint, 0.2f, Color.Yellow);
-
-            // Draw cardinal points
-            DrawReferentials();
+            DrawSphere(issPoint, 0.2f, Color.Yellow);
 
             EndMode3D();
-        }
-
-        internal static void DrawReferentials()
-        {
-            DrawSphere(Vector3.UnitZ * SKY_HEIGHT * 1.5f, 0.2f, Color.Blue); // North point
-            DrawSphere(Vector3.UnitX * SKY_HEIGHT * 1.5f, 0.2f, Color.Green); // West point
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
         internal static void Update()
         {
             // Update environment camera
-            //UpdateCamera(ref Camera, CameraMode.Orbital);
-
-            // Update point
-            UpdatePoint();
-        }
-
-        /// <summary>Updates the position of the ISS point on the sphere</summary>
-        private static void UpdatePoint()
-        {
-            MouseRay = GetScreenToWorldRay(GetMousePosition(), Camera);
-            MouseRayCollision = GetRayCollisionSphere(MouseRay, Vector3.Zero, SKY_HEIGHT);
-
-            ISSPoint = MouseRayCollision.Point;
+            UpdateCamera(ref Camera, CameraMode.Orbital);
         }
     }
 }

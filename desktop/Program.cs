@@ -37,6 +37,9 @@ namespace Orion
                 // Draw functions
                 Conceptor3D.Draw();
 
+                // Draw debug framerate
+                DrawFPS(10, 10);    
+
                 // Close drawing context
                 EndDrawing();
             }

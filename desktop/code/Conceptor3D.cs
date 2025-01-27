@@ -28,10 +28,18 @@ namespace Orion_Desktop
                 Projection = CameraProjection.Perspective
             };
 
-            ISSPoint = new Vector3(1 * SKY_HEIGHT, 0, 0);
+            ISSPoint = new Vector3(SKY_HEIGHT, 0, 0);
 
             MouseRay = new Ray();
             MouseRayCollision = new RayCollision();
+
+            UpdateISS();
+        }
+
+        /// <summary>Updates the ISS object by retrieving data from API.</summary>
+        internal static async void UpdateISS()
+        {
+            Satellite iss = await OnlineRequests.GetCurrentISS();
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -48,14 +56,23 @@ namespace Orion_Desktop
             // Draw ISS point
             DrawSphere(ISSPoint, 0.2f, Color.Yellow);
 
+            // Draw cardinal points
+            DrawReferentials();
+
             EndMode3D();
+        }
+
+        internal static void DrawReferentials()
+        {
+            DrawSphere(Vector3.UnitZ * SKY_HEIGHT * 1.5f, 0.2f, Color.Blue); // North point
+            DrawSphere(Vector3.UnitX * SKY_HEIGHT * 1.5f, 0.2f, Color.Green); // West point
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
         internal static void Update()
         {
             // Update environment camera
-            UpdateCamera(ref Camera, CameraMode.Orbital);
+            //UpdateCamera(ref Camera, CameraMode.Orbital);
 
             // Update point
             UpdatePoint();

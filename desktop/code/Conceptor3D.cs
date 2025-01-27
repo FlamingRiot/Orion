@@ -45,18 +45,16 @@ namespace Orion_Desktop
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
         internal static void Draw()
         {
-            Vector3 issPoint = Vector3.Normalize(CelestialMaths.ComputeECEF(ISS.Latitude, ISS.Longitude)) * (SKY_HEIGHT + 1f);
-            
             BeginMode3D(Camera);
 
             // Draw sky box
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], globeCorrectionMat);
 
             // Draw line
-            DrawLine3D(Vector3.Zero, issPoint, Color.Red);
+            DrawLine3D(Vector3.Zero, ISS.RelativePosition, Color.Red);
 
             // Draw ISS point
-            DrawSphere(issPoint, 0.2f, Color.Yellow);
+            DrawSphere(ISS.RelativePosition, 0.2f, Color.Yellow);
 
             EndMode3D();
         }
@@ -66,6 +64,9 @@ namespace Orion_Desktop
         {
             // Update environment camera
             UpdateCamera(ref Camera, CameraMode.Orbital);
+
+            // Update ISS position based on ECEF equations
+            ISS.RelativePosition = CelestialMaths.ComputeECEF(ISS.Latitude, ISS.Longitude) * (SKY_HEIGHT + 1f);
         }
     }
 }

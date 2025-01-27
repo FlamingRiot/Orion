@@ -7,6 +7,7 @@ namespace Orion_Desktop
     {
         public float Latitude;
         public float Longitude;
+        public Vector3 RelativePosition;
 
         public Satellite() { }
     }
@@ -18,18 +19,18 @@ namespace Orion_Desktop
 
         internal static Vector3 ComputeECEF(float latitude, float longitude)
         {
-            float radius = EARTH_RADIUS + ISS_ALTITUDE;
-
+            // Fix negative latitude
+            if (longitude < 0) longitude = 180 + Math.Abs(longitude);
             // Convert data to radians
             float latRad = latitude * Raylib.DEG2RAD;
             float longRad = longitude * Raylib.DEG2RAD;
 
             // Compute coordinates based on ECEF equations
-            float x = radius * MathF.Cos(latRad) * MathF.Cos(longRad);
-            float z = radius * MathF.Cos(latRad) * MathF.Sin(longRad);
-            float y = radius * MathF.Sin(latRad);
+            float x = MathF.Cos(latRad) * MathF.Cos(longRad);
+            float y = MathF.Cos(latRad) * MathF.Sin(longRad);
+            float z = MathF.Sin(latRad);
 
-            return new Vector3(x, y, z);
+            return new Vector3(x, z, y);
         }
     }
 }

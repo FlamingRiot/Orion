@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
 using System.Numerics;
+using Orion_Desktop;
 
 namespace Orion
 {
@@ -18,14 +19,23 @@ namespace Orion
             // Open base window
             InitWindow(800, 500, $"{APP_NAME} {APP_VERSION}");
 
+            // Open different services
+            Conceptor3D.Init();
+
             // Program loop
             while (!WindowShouldClose())
             {
+                // Update functions
+                Conceptor3D.Update();
+                
                 // Open drawing context
                 BeginDrawing();
-
+                
                 // Define default background color
                 ClearBackground(Color.Black);
+
+                // Draw functions
+                Conceptor3D.Draw();
 
                 // Close drawing context
                 EndDrawing();

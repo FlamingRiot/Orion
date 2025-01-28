@@ -32,6 +32,7 @@ namespace Orion_Desktop
         {
             BeginMode3D(Camera);
 
+            // Draw earth hologram
             EarthHologram.Draw();
 
             EndMode3D();

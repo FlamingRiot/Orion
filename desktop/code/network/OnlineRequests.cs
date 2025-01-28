@@ -8,9 +8,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Orion_Desktop
 {
+    /// <summary>The static class used for sendind HTTP requests.</summary>
     internal static class OnlineRequests
     {
-        public const int REQUEST_INTERVAL = 4;
+        public const int REQUEST_INTERVAL = 2;
 
         private static Stopwatch? timer;
         private static int _timeLastCheck = -1;
@@ -25,6 +26,8 @@ namespace Orion_Desktop
             }
         }
 
+        /// <summary>Retrieves satellite informations from the API.</summary>
+        /// <returns>Async Task</returns>
         internal static async Task GetCurrentSatellite()
         {
             using (HttpClient client = new HttpClient()) 

@@ -15,6 +15,10 @@ namespace Orion_Desktop
         public const float EARTH_RADIUS = 6371; // Km
         public const float ISS_ALTITUDE = 420; // Km
 
+        // temp
+        public const float POSITION_LATITUDE = 40 + 6.94f;
+        public const float POSITION_LONGITUDE = 46.99f - 40;
+
         internal static Vector3 ComputeECEF(float latitude, float longitude)
         {
             // Fix negative/positive latitude

@@ -22,7 +22,10 @@ namespace Orion_Desktop
                 Projection = CameraProjection.Perspective
             };
 
+            // Init center tables
             EarthHologram.Init(); // Connect to earth hologram
+            OrionSim.Init(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE); // Start Orion robot simulation
+
             Shaders.Init(); // Load program shaders
             Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
         }
@@ -34,6 +37,8 @@ namespace Orion_Desktop
 
             // Draw earth hologram
             EarthHologram.Draw();
+            // Draw Orion robot simulation
+            OrionSim.Draw();
 
             EndMode3D();
         }

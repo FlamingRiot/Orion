@@ -23,7 +23,7 @@ namespace Orion
             Conceptor3D.Init();
 
             // Program loop
-            SetTargetFPS(60);
+            //SetTargetFPS(60);
             DisableCursor();
             while (!WindowShouldClose())
             {

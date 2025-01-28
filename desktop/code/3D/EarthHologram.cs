@@ -47,6 +47,8 @@ namespace Orion_Desktop
 
             // Draw satellite point
             DrawSphere(Satellite.RelativePosition, 0.2f, Color.Yellow);
+
+            DrawSphere(CelestialMaths.ComputeECEF(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (HOLOGRAM_RADIUS + 1), 0.2f, Color.Green);
         }
     }
 }

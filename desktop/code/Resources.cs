@@ -28,7 +28,7 @@ namespace Orion_Desktop
         /// <summary>Loads the application's textures.</summary>
         private static void LoadMeshes()
         {
-            Meshes.Add("sphere", GenMeshSphere(Conceptor3D.SKY_HEIGHT, 20, 20));
+            Meshes.Add("sphere", GenMeshSphere(EarthHologram.HOLOGRAM_RADIUS, 20, 20));
         }
     }
 }

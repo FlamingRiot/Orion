@@ -1,4 +1,10 @@
-﻿using System.Numerics;
+﻿#pragma warning disable CS8600
+#pragma warning disable CS8602
+#pragma warning disable CS8604
+#pragma warning disable CS8601
+
+using System.Numerics;
+using Newtonsoft.Json.Linq;
 using Raylib_cs;
 
 namespace Orion_Desktop
@@ -31,10 +37,22 @@ namespace Orion_Desktop
         public long Timestamp;
         public SatelliteUnits Units;
 
-        // Program informations
-        public Vector3 RelativePosition;
+        public Satellite() { Name = ""; }
 
-        public Satellite() { }
+        /// <summary>Updates the values of the satellite based on a new json object.</summary>
+        /// <param name="json">Json object to use.</param>
+        public void UpdateSatellite(JObject json)
+        {
+            Name = (string)json["name"];
+            Latitude = (float)json["latitude"];
+            Longitude = (float)json["longitude"];
+            Altitude = (float)json["altitude"];
+            Velocity = (float)json["velocity"];
+            Visibility = (SatelliteVisibility)Enum.Parse(typeof(SatelliteVisibility), (string)json["visibility"]);
+            Units = (SatelliteUnits)Enum.Parse(typeof(SatelliteUnits), (string)json["units"]);
+            Footprint = (float)json["footprint"];
+            Timestamp = (long)json["timestamp"];
+        }
     }
 
     /// <summary>Represents the static class for celestial maths.</summary>

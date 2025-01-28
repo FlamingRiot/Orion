@@ -7,18 +7,11 @@ namespace Orion_Desktop
     /// <summary>Represents the 3D conceptor of the program.</summary>
     internal static class Conceptor3D
     {
-        internal const int SKY_HEIGHT = 10;
-
         internal static Camera3D Camera;
-        internal static Matrix4x4 globeCorrectionMat;
-        internal static Satellite ISS;
 
         /// <summary>Initializes the 3D conceptor.</summary>
         internal static void Init()
         {
-            // Start by sending information request to the API
-            UpdateISS();
-
             // Create camera object.
             Camera = new Camera3D()
             {
@@ -28,18 +21,10 @@ namespace Orion_Desktop
                 FovY = 45f,
                 Projection = CameraProjection.Perspective
             };
-            globeCorrectionMat = Raymath.MatrixRotateXYZ(new Vector3(90, 0, 0) / RAD2DEG);
 
-            ISS = new Satellite();
-
-            Shaders.Init();
+            EarthHologram.Init(); // Connect to earth hologram
+            Shaders.Init(); // Load program shaders
             Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
-        }
-
-        /// <summary>Updates the ISS object by retrieving data from API.</summary>
-        internal static async void UpdateISS()
-        {
-            ISS = await OnlineRequests.GetCurrentISS();
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -47,14 +32,7 @@ namespace Orion_Desktop
         {
             BeginMode3D(Camera);
 
-            // Draw sky box
-            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], globeCorrectionMat);
-
-            // Draw line
-            DrawLine3D(Vector3.Zero, ISS.RelativePosition, Color.Red);
-
-            // Draw ISS point
-            DrawSphere(ISS.RelativePosition, 0.2f, Color.Yellow);
+            EarthHologram.Draw();
 
             EndMode3D();
         }
@@ -64,9 +42,6 @@ namespace Orion_Desktop
         {
             // Update environment camera
             UpdateCamera(ref Camera, CameraMode.Orbital);
-
-            // Update ISS position based on ECEF equations
-            ISS.RelativePosition = CelestialMaths.ComputeECEF(ISS.Latitude, ISS.Longitude) * (SKY_HEIGHT + 1f);
         }
     }
 }

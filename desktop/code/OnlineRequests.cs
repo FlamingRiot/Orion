@@ -9,7 +9,7 @@ namespace Orion_Desktop
 {
     internal static class OnlineRequests
     {
-        internal static async Task<Satellite> GetCurrentISS()
+        internal static async Task GetCurrentISS()
         {
             using (HttpClient client = new HttpClient()) 
             {
@@ -41,28 +41,15 @@ namespace Orion_Desktop
                     //    "units": "kilometers"
                     //}
 
-                    // Extract data to satellite object
-                    Satellite satellite = new Satellite()
-                    {
-                        Name = (string)json["name"],
-                        Latitude = (float)json["latitude"],
-                        Longitude = (float)json["longitude"],
-                        Altitude = (float)json["altitude"],
-                        Velocity = (float)json["velocity"],
-                        Visibility = (SatelliteVisibility)Enum.Parse(typeof(SatelliteVisibility), (string)json["visibility"]),
-                        Units = (SatelliteUnits)Enum.Parse(typeof(SatelliteUnits), (string)json["units"]),
-                        Footprint = (float)json["footprint"],
-                        Timestamp = (long)json["timestamp"]
-                    };
+                    EarthHologram.Satellite.UpdateSatellite(json);
+                    EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEF(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude) * (EarthHologram.HOLOGRAM_RADIUS + 1)); // Compute XYZ coord.
 
-                    Console.WriteLine($"Latitude: {satellite.Latitude}, Longitude: {satellite.Longitude}, Altitude: {satellite.Altitude}");
 
-                    return satellite;
+                    Console.WriteLine($"ORION: Succesfully retrieved {(string)json["name"]} informations");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
-                    return new Satellite();
                 }
             }
         }

@@ -16,7 +16,7 @@ namespace Orion_Desktop
         /// <summary>Inits the Orion simulation robot.</summary>
         internal static void Init(float lat, float lon)
         {
-            _hemisphere = LoadModelFromMesh(GenMeshHemiSphere(10, 15, 15));
+            _hemisphere = LoadModelFromMesh(GenMeshHemiSphere(2, 15, 15));
             ViewerLatitude = lat;
             ViewerLongitude = lon;
             ViewerPosition = CelestialMaths.ComputeECEF(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (EarthHologram.HOLOGRAM_RADIUS + 1);
@@ -29,7 +29,7 @@ namespace Orion_Desktop
 
             // Draw arrow
             Vector3 target = Vector3.Normalize(Vector3.Subtract(EarthHologram.Satellite.RelativePosition, ViewerPosition));
-            DrawLine3D(Vector3.UnitY * 15, target * 2 + Vector3.UnitY * 15, Color.Red);
+            DrawLine3D(Vector3.UnitY * 12, target * 2 + Vector3.UnitY * 12, Color.Red);
         }
     }
 }

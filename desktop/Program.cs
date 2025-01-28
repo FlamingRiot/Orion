@@ -24,6 +24,7 @@ namespace Orion
 
             // Program loop
             SetTargetFPS(60);
+            DisableCursor();
             while (!WindowShouldClose())
             {
                 // Update functions

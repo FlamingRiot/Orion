@@ -9,7 +9,6 @@ namespace Orion_Desktop
     {
         internal const float HOLOGRAM_RADIUS = 10;
         private static Matrix4x4 _globeCorrectionMat;
-        private static int _posIndex = 0;
 
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite;
@@ -31,6 +30,7 @@ namespace Orion_Desktop
         internal static async void UpdateSatellite()
         {
             await OnlineRequests.UpdateCurrentSatellite();
+            Satellite.RelativePosition = Raymath.Vector3Lerp(Satellite.RelativePosition, SatellitePoints.Last(), (float)GetFrameTime());
         }
 
         /// <summary>Draws the earth hologam.</summary>
@@ -43,10 +43,10 @@ namespace Orion_Desktop
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], _globeCorrectionMat);
 
             // Draw line
-            DrawLine3D(Vector3.Zero, SatellitePoints.Last(), Color.Red);
+            DrawLine3D(Vector3.Zero, Satellite.RelativePosition, Color.Red);
 
             // Draw satellite point
-            DrawSphere(SatellitePoints.Last(), 0.2f, Color.Yellow);
+            DrawSphere(Satellite.RelativePosition, 0.2f, Color.Yellow);
         }
     }
 }

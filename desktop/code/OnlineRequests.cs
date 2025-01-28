@@ -10,11 +10,10 @@ namespace Orion_Desktop
 {
     internal static class OnlineRequests
     {
-        public const int REQUEST_INTERVAL = 5;
+        public const int REQUEST_INTERVAL = 4;
 
         private static Stopwatch? timer;
-        private static int _timeLastCheck;
-        private static int counter;
+        private static int _timeLastCheck = -1;
 
         /// <summary>Starts connexion timer.</summary>
         internal static void StartConnexion()
@@ -60,7 +59,6 @@ namespace Orion_Desktop
 
                     EarthHologram.Satellite.UpdateSatellite(json);
                     EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEF(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude) * (EarthHologram.HOLOGRAM_RADIUS + 1)); // Compute XYZ coord.
-
 
                     Console.WriteLine($"ORION: Succesfully retrieved {(string)json["name"]} informations");
                 }

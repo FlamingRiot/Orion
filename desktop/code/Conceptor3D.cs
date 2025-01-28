@@ -41,7 +41,7 @@ namespace Orion_Desktop
         internal static void Update()
         {
             // Update environment camera
-            UpdateCamera(ref Camera, CameraMode.Orbital);
+            UpdateCamera(ref Camera, CameraMode.Free);
         }
     }
 }

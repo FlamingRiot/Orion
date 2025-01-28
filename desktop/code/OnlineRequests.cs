@@ -3,13 +3,30 @@
 #pragma warning disable CS8604
 #pragma warning disable CS8601
 
+using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 
 namespace Orion_Desktop
 {
     internal static class OnlineRequests
     {
-        internal static async Task GetCurrentISS()
+        public const int REQUEST_INTERVAL = 5;
+
+        private static Stopwatch? timer;
+        private static int _timeLastCheck;
+        private static int counter;
+
+        /// <summary>Starts connexion timer.</summary>
+        internal static void StartConnexion()
+        {
+            if (timer is null)
+            {
+                timer = new Stopwatch();
+                timer.Start();
+            }
+        }
+
+        internal static async Task GetCurrentSatellite()
         {
             using (HttpClient client = new HttpClient()) 
             {
@@ -51,6 +68,18 @@ namespace Orion_Desktop
                 {
                     Console.WriteLine(e.Message);
                 }
+            }
+        }
+
+        /// <summary>Updates the current satellite based on API.</summary>
+        /// <returns>dunno.</returns>
+        internal async static Task UpdateCurrentSatellite()
+        {
+            int time = (int)timer.Elapsed.TotalSeconds;
+            if (_timeLastCheck < time) 
+            {
+                _timeLastCheck = time; 
+                if (time % REQUEST_INTERVAL == 0) await GetCurrentSatellite();
             }
         }
     }

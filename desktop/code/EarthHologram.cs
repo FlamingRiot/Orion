@@ -9,6 +9,7 @@ namespace Orion_Desktop
     {
         internal const float HOLOGRAM_RADIUS = 10;
         private static Matrix4x4 _globeCorrectionMat;
+        private static int _posIndex = 0;
 
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite;
@@ -20,20 +21,24 @@ namespace Orion_Desktop
             SatellitePoints.Add(Vector3.UnitX * (HOLOGRAM_RADIUS + 1));
             Satellite = new Satellite();
             // Start by sending information request to the API
-            UpdateISS();
+            OnlineRequests.StartConnexion();
+            UpdateSatellite();
             // Create globe correction matrix
             _globeCorrectionMat = Raymath.MatrixRotateXYZ(new Vector3(90, 0, 0) / RAD2DEG);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
-        internal static async void UpdateISS()
+        internal static async void UpdateSatellite()
         {
-            await OnlineRequests.GetCurrentISS();
+            await OnlineRequests.UpdateCurrentSatellite();
         }
 
         /// <summary>Draws the earth hologam.</summary>
         internal static void Draw()
         {
+            // Update satellite
+            UpdateSatellite();
+
             // Draw earth hologram box
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], _globeCorrectionMat);
 

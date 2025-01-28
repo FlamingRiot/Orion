@@ -13,7 +13,8 @@ namespace Orion_Desktop
     internal enum SatelliteVisibility
     {
         daylight,
-        nighttime
+        nighttime,
+        eclipsed
     }
 
     /// <summary>Defines the different units of satellite velocity measurement.</summary>
@@ -36,6 +37,7 @@ namespace Orion_Desktop
         public float Footprint;
         public long Timestamp;
         public SatelliteUnits Units;
+        public Vector3 RelativePosition;
 
         public Satellite() { Name = ""; }
 

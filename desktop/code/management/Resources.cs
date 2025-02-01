@@ -34,6 +34,8 @@ namespace Orion_Desktop
             // Load PBRs
             PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim")); 
             PBRMaterials.Add("terminal", new PBRMaterial("assets/pbr/terminal")); 
+            PBRMaterials.Add("bench", new PBRMaterial("assets/pbr/bench")); 
+            PBRMaterials.Add("ceiling", new PBRMaterial("assets/pbr/ceiling")); 
         }
 
         /// <summary>Loads the application's textures.</summary>

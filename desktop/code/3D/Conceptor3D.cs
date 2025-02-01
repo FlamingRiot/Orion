@@ -20,12 +20,13 @@ namespace Orion_Desktop
                 Position = new Vector3(5.0f, 5.0f, 5.0f),
                 Target = Vector3.Zero,
                 Up = Vector3.UnitY,
-                FovY = 45f,
+                FovY = 60f,
                 Projection = CameraProjection.Perspective
             };
 
             // Init center tables
             EarthHologram.Init(); // Connect to earth hologram
+            Camera.Target = EarthHologram.CENTER;
             OrionSim.Init(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE); // Start Orion robot simulation
 
             Shaders.Init(); // Load program shaders

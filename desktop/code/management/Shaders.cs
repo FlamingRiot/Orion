@@ -8,6 +8,38 @@ namespace Orion_Desktop
     internal struct PBRMaterial
     {
         internal Material Material;
+        internal Dictionary<MaterialMapIndex, Texture2D> Maps;
+
+        /// <summary>Sets one of the material's maps.</summary>
+        /// <param name="map">Map type to use.</param>
+        /// <param name="texture">Texture to use.</param>
+        internal void SetMap(MaterialMapIndex map, Texture2D texture)
+        {
+            SetMaterialTexture(ref Material, map, texture);
+            UnloadTexture(Maps[map]); // Unload unused map
+            Maps[map] = texture; // Set new texture
+        }
+
+        /// <summary>Creates an instance of PBR material.</summary>
+        /// <param name="mapFolder"></param>
+        internal PBRMaterial(string mapFolder)
+        {
+            Material = LoadMaterialDefault();
+            Maps = new Dictionary<MaterialMapIndex, Texture2D>();
+            string[] mapsPaths = Directory.GetFiles(mapFolder);
+            for (int i = 0; i < mapsPaths.Length; i++)
+            {
+                string mapType = mapsPaths[i].Split('_').Last().Split('.')[0];
+                if (Enum.IsDefined(typeof(MaterialMapIndex), mapType))
+                {
+                    Maps.Add((MaterialMapIndex)Enum.Parse(typeof(MaterialMapIndex), mapType), LoadTexture(mapsPaths[i]));
+                } 
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"ORION: PBR Material loaded successfully");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
     }
 
     /// <summary>Defines the type of a light source.</summary>

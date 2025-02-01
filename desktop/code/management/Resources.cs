@@ -14,6 +14,7 @@ namespace Orion_Desktop
 
         // External resources
         internal static Dictionary<string, Model> Models = new Dictionary<string, Model>();
+        internal static Dictionary<string, PBRMaterial> PBRMaterials = new Dictionary<string, PBRMaterial>();
 
         /// <summary>Loads the resources of the application.</summary>
         internal static void Init()
@@ -29,6 +30,10 @@ namespace Orion_Desktop
             SetMaterialTexture(ref earthMat, MaterialMapIndex.Diffuse, LoadTexture("assets/textures/earth.png"));
             earthMat.Shader = Shaders.HologramShader;
             Materials.Add("earth", earthMat);
+
+            // Load PBRs
+            PBRMaterials.Add("ground", new PBRMaterial("assets/pbr/rim")); 
+            PBRMaterials.Add("terminal", new PBRMaterial("assets/pbr/terminal")); 
         }
 
         /// <summary>Loads the application's textures.</summary>

@@ -56,6 +56,9 @@ namespace Orion_Desktop
         {
             // Update environment camera
             UpdateCamera(ref Camera, CameraMode.Free);
+
+            // Update PBR lighting
+            Shaders.UpdatePBRLighting(Camera.Position);
         }
     }
 }

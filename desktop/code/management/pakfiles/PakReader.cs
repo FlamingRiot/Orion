@@ -107,6 +107,7 @@ namespace Orion_Desktop
                 // Write data to temporary m3d file
                 File.WriteAllBytes(DEFAULT_TMP_FILE + ".m3d", data);
                 // Load model from tmp created file and fix material issue
+                Console.WriteLine($"ORION: Preparing to extract {fileName} from PAK archive");
                 Model model = Raylib.LoadModel(DEFAULT_TMP_FILE + ".m3d");
                 // Delete tmp file
                 File.Delete(DEFAULT_TMP_FILE + ".m3d");

@@ -38,6 +38,8 @@ namespace Orion_Desktop
                 } 
             }
 
+            Material.Shader = Shaders.PBRLightingShader;
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"ORION: PBR Material loaded successfully");
             Console.ForegroundColor = ConsoleColor.White;
@@ -73,6 +75,8 @@ namespace Orion_Desktop
     /// <summary>Represents an instance of the static lights management class.</summary>
     internal static class Rlights
     {
+        internal const int MAX_LIGHTS = 4;
+
         /// <summary>Creates a light source and links its shader attributes.</summary>
         /// <param name="lightsIndex">Index within total lights.</param>
         /// <param name="type">Light type.</param>
@@ -103,12 +107,14 @@ namespace Orion_Desktop
             string posName = "lights[" + lightsIndex + "].position";
             string targetName = "lights[" + lightsIndex + "].target";
             string colorName = "lights[" + lightsIndex + "].color";
+            string intensity = "lights[" + lightsIndex + "].intensity";
 
             light.EnabledLoc = GetShaderLocation(shader, enabledName);
             light.TypeLoc = GetShaderLocation(shader, typeName);
             light.PositionLoc = GetShaderLocation(shader, posName);
             light.TargetLoc = GetShaderLocation(shader, targetName);
             light.ColorLoc = GetShaderLocation(shader, colorName);
+            light.IntensityLoc = GetShaderLocation(shader, intensity);
 
             UpdateLightValues(shader, light);
 
@@ -144,6 +150,7 @@ namespace Orion_Desktop
                 light.Color.A / (float)255
             };
             SetShaderValue(shader, light.ColorLoc, color, ShaderUniformDataType.Vec4);
+            SetShaderValue(shader, light.IntensityLoc, light.Intensity, ShaderUniformDataType.Float);
         }
     }
 
@@ -151,6 +158,13 @@ namespace Orion_Desktop
     internal static class Shaders
     {
         internal static Shader HologramShader;
+        internal static Shader PBRLightingShader;
+
+        internal static Light GlobalLight;
+
+        internal static int EmissivePowerLoc;
+        internal static int EmissiveColorLoc;
+        internal static int TextureTilingLoc;
 
         internal static void Init()
         {
@@ -159,9 +173,41 @@ namespace Orion_Desktop
         }
 
         /// <summary>Loads the shaders of the application.</summary>
-        internal static void LoadShaders()
+        internal static unsafe void LoadShaders()
         {
             HologramShader = LoadShader("assets/shaders/shader.vs", "assets/shaders/shader.fs");
+            PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
+            // Modify PBR shader uniform locations
+            PBRLightingShader.Locs[(int)ShaderLocationIndex.MapAlbedo] = GetShaderLocation(PBRLightingShader, "albedoMap");
+            PBRLightingShader.Locs[(int)ShaderLocationIndex.MapMetalness] = GetShaderLocation(PBRLightingShader, "mraMap");
+            PBRLightingShader.Locs[(int)ShaderLocationIndex.MapNormal] = GetShaderLocation(PBRLightingShader, "normalMap");
+            PBRLightingShader.Locs[(int)ShaderLocationIndex.MapEmission] = GetShaderLocation(PBRLightingShader, "emissiveMap");
+            PBRLightingShader.Locs[(int)ShaderLocationIndex.ColorDiffuse] = GetShaderLocation(PBRLightingShader, "albedoColor");
+            // Set PBR shader uniform locations
+            PBRLightingShader.Locs[(int)ShaderLocationIndex.VectorView] = GetShaderLocation(PBRLightingShader, "viewPos");
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "numOfLights"), Rlights.MAX_LIGHTS, ShaderUniformDataType.Int);
+            // Set PBR shader ambient color and intensity parameters
+            float ambientIntensity = 0.02f;
+            Color ambientColor = new Color(26, 32, 135, 255);
+            Vector3 ambientColorNormalized = new Vector3(ambientColor.R, ambientColor.G, ambientColor.B) / 255;
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambientColor"), &ambientColorNormalized, ShaderUniformDataType.Vec3);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambient"), &ambientIntensity, ShaderUniformDataType.Float);
+            // Get real-time modification elligible uniforms
+            EmissivePowerLoc = GetShaderLocation(PBRLightingShader, "emissivePower");
+            EmissiveColorLoc = GetShaderLocation(PBRLightingShader, "emissiveColor");
+            TextureTilingLoc = GetShaderLocation(PBRLightingShader, "tiling");
+            // Create main light source
+            GlobalLight = Rlights.CreateLight(0, LightType.LIGHT_POINT, new Vector3(-3.7f, 5, 0f), Vector3.Zero, new Color(253, 255, 184, 255), PBRLightingShader);
+            Rlights.UpdateLightValues(PBRLightingShader, GlobalLight); // Update light at launch
+        }
+
+        internal static unsafe void UpdatePBRLighting(Vector3 viewPos)
+        {
+            SetShaderValue(PBRLightingShader, PBRLightingShader.Locs[(int)ShaderLocationIndex.VectorView], viewPos, ShaderUniformDataType.Vec3);
+
+            SetShaderValue(PBRLightingShader, TextureTilingLoc, Vector2.One, ShaderUniformDataType.Vec2);
+            Vector4 emissiveColor = ColorNormalize(Resources.PBRMaterials["rim"].Material.Maps[(int)MaterialMapIndex.Albedo].Color);
+            SetShaderValue(PBRLightingShader, EmissiveColorLoc, emissiveColor, ShaderUniformDataType.Vec4);
         }
 
         /// <summary>Loads the shader materials of the application.</summary>

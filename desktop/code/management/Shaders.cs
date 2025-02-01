@@ -201,8 +201,7 @@ namespace Orion_Desktop
             // Create main light source
             Lights[0] = PbrLights.CreateLight(0, PbrLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(8, 181, 255, 255), 10, PBRLightingShader);
             Lights[1] = PbrLights.CreateLight(1, PbrLightType.Point, EarthHologram.CENTER + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
-            Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-10f, 2f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
-            //GlobalLight = PbrLights.CreateLight(0, PbrLightType.Point, new Vector3(-3.7f, 6, 0f), Vector3.Zero, new Color(253, 255, 184, 255), 50, PBRLightingShader);
+            Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-10f, 2.4f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
             // Set PBR shader used maps
             int usage = 1;
             SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexAlbedo"), &usage, ShaderUniformDataType.Int);

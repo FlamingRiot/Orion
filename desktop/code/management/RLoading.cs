@@ -25,13 +25,14 @@ namespace Orion_Desktop
             objects.Where(x => x is UModel).ToList().ForEach(x =>
             {
                 string id = ((UModel)x).ModelID;
+                string name = x.Name;
                 if (!Resources.Models.ContainsKey(id)) // Load model if not already loaded
                 {
                     Resources.Models.Add(((UModel)x).ModelID, pakReader.LoadModelFromPak(id));
                 }
                 // Bind resources to object
                 ((UModel)x).LoadMeshes();
-                ((UModel)x).LoadMaterials();
+                ((UModel)x).LoadMaterials(Resources.PBRMaterials[x.Name]);
             });
 
             return objects;

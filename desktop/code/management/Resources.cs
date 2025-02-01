@@ -32,7 +32,7 @@ namespace Orion_Desktop
             Materials.Add("earth", earthMat);
 
             // Load PBRs
-            PBRMaterials.Add("ground", new PBRMaterial("assets/pbr/rim")); 
+            PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim")); 
             PBRMaterials.Add("terminal", new PBRMaterial("assets/pbr/terminal")); 
         }
 

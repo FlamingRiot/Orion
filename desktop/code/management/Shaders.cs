@@ -32,7 +32,9 @@ namespace Orion_Desktop
                 string mapType = mapsPaths[i].Split('_').Last().Split('.')[0];
                 if (Enum.IsDefined(typeof(MaterialMapIndex), mapType))
                 {
-                    Maps.Add((MaterialMapIndex)Enum.Parse(typeof(MaterialMapIndex), mapType), LoadTexture(mapsPaths[i]));
+                    MaterialMapIndex _type = (MaterialMapIndex)Enum.Parse(typeof(MaterialMapIndex), mapType);
+                    Maps.Add(_type, LoadTexture(mapsPaths[i]));
+                    SetMaterialTexture(ref Material, _type, Maps[_type]);
                 } 
             }
 

@@ -134,8 +134,6 @@ namespace Uniray
         {
             // Apply Model
             ModelID = modelID;
-            LoadMeshes();
-            LoadMaterials();
 
             // Position
             Transform = Matrix4x4.Identity;
@@ -147,7 +145,7 @@ namespace Uniray
         {
             for (int j = 0; j < MeshCount; j++)
             {
-                Raylib.DrawMesh(Meshes[j], Materials[j + 1], Transform);
+                Raylib.DrawMesh(Meshes[j], Materials[j], Transform);
             }
         }
 
@@ -175,12 +173,14 @@ namespace Uniray
         }
 
         /// <summary>Loads personal materials (used for applying different shaders and effects).</summary>
-        internal void LoadMaterials()
+        internal void LoadMaterials(PBRMaterial mat)
         {
-            int materialCount = Resources.Models[ModelID].MaterialCount;
-            Materials = new Material[materialCount];
-            Material* materials = Resources.Models[ModelID].Materials;
-            for (int i = 0; i < materialCount; i++) Materials[i] = materials[i];
+            int meshCount = Resources.Models[ModelID].MeshCount;
+            Materials = new Material[meshCount];
+            for (int i = 0; i < MeshCount; i++)
+            {
+                Materials[i] = mat.Material;
+            }
         }
 
         /// <summary>Returns informations about the current instance.</summary>

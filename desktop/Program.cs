@@ -16,7 +16,9 @@ namespace Orion
         public static void Main(string[] args)
         {
             // Open base window
-            InitWindow(800, 500, $"{APP_NAME} {APP_VERSION}");
+            InitWindow(1600, 1000, $"{APP_NAME} {APP_VERSION}");
+            SetWindowState(ConfigFlags.ResizableWindow);
+            SetWindowState(ConfigFlags.MaximizedWindow);
 
             // Open different services
             Conceptor3D.Init();

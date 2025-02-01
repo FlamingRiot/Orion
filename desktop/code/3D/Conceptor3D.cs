@@ -42,7 +42,7 @@ namespace Orion_Desktop
             // Draw earth hologram
             EarthHologram.Draw();
             // Draw Orion robot simulation
-            OrionSim.Draw();
+            //OrionSim.Draw();
 
             // Draw scene
             objects.ForEach(x => x.Draw());

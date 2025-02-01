@@ -1,6 +1,5 @@
 ﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
-using System.Numerics;
 using Orion_Desktop;
 
 namespace Orion
@@ -10,7 +9,7 @@ namespace Orion
     {
         // Constants
         public const string APP_NAME = "Orion";
-        public const string APP_VERSION = "0.0.0-alpha";  
+        public const string APP_VERSION = "0.1.0-alpha";  
 
         /// <summary>Defines the entry point of the program.</summary>
         /// <param name="args">Arguments passed from outside the progam.</param>

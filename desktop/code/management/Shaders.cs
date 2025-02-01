@@ -40,10 +40,10 @@ namespace Orion_Desktop
             }
 
             Material.Maps[(int)MaterialMapIndex.Albedo].Color = Color.White;
-            Material.Maps[(int)MaterialMapIndex.Metalness].Value = 1;
-            Material.Maps[(int)MaterialMapIndex.Roughness].Value = 1;
+            Material.Maps[(int)MaterialMapIndex.Metalness].Value = 0;
+            Material.Maps[(int)MaterialMapIndex.Roughness].Value = 0;
             Material.Maps[(int)MaterialMapIndex.Occlusion].Value = 1;
-            Material.Maps[(int)MaterialMapIndex.Emission].Color = Color.Black;
+            Material.Maps[(int)MaterialMapIndex.Emission].Color = Color.White;
 
 
             Console.ForegroundColor = ConsoleColor.Green;
@@ -53,47 +53,38 @@ namespace Orion_Desktop
     }
 
     /// <summary>Defines the type of a light source.</summary>
-    internal enum LightType
+    public enum PbrLightType
     {
-        LIGHT_DIRECTIONAL,
-        LIGHT_POINT,
-        LIGHT_SPOT
+        Directorional,
+        Point,
+        Spot
     }
 
     /// <summary>Represents an instance of light point in 3D world.</summary>
-    internal struct Light
+    public struct PbrLight
     {
-        internal int TypeLoc;
-        internal int EnabledLoc;
-        internal int PositionLoc;
-        internal int TargetLoc;
-        internal int ColorLoc;
-        internal int IntensityLoc;
+        public PbrLightType Type;
+        public bool Enabled;
+        public Vector3 Position;
+        public Vector3 Target;
+        public Vector4 Color;
+        public float Intensity;
 
-        internal LightType Type;
-        internal bool Enabled;
-        internal Vector3 Position;
-        internal Vector3 Target;
-        internal Color Color;
-        internal float Intensity;
+        // Shader light parameters locations
+        public int TypeLoc;
+        public int EnabledLoc;
+        public int PositionLoc;
+        public int TargetLoc;
+        public int ColorLoc;
+        public int IntensityLoc;
     }
 
     /// <summary>Represents an instance of the static lights management class.</summary>
-    internal static class Rlights
+    public class PbrLights
     {
-        internal const int MAX_LIGHTS = 4;
-
-        /// <summary>Creates a light source and links its shader attributes.</summary>
-        /// <param name="lightsIndex">Index within total lights.</param>
-        /// <param name="type">Light type.</param>
-        /// <param name="pos">Light source position.</param>
-        /// <param name="target">Light source target.</param>
-        /// <param name="color">Light source color.</param>
-        /// <param name="shader">Shader to use for light rendering.</param>
-        /// <returns>Correctly configured light source.</returns>
-        internal static Light CreateLight(
-            int lightsIndex,
-            LightType type,
+        public static PbrLight CreateLight(
+            int lightsCount,
+            PbrLightType type,
             Vector3 pos,
             Vector3 target,
             Color color,
@@ -101,21 +92,26 @@ namespace Orion_Desktop
             Shader shader
         )
         {
-            Light light = new();
+            PbrLight light = new();
 
             light.Enabled = true;
             light.Type = type;
             light.Position = pos;
             light.Target = target;
-            light.Color = color;
+            light.Color = new Vector4(
+                color.R / 255.0f,
+                color.G / 255.0f,
+                color.B / 255.0f,
+                color.A / 255.0f
+            );
             light.Intensity = intensity;
 
-            string enabledName = "lights[" + lightsIndex + "].enabled";
-            string typeName = "lights[" + lightsIndex + "].type";
-            string posName = "lights[" + lightsIndex + "].position";
-            string targetName = "lights[" + lightsIndex + "].target";
-            string colorName = "lights[" + lightsIndex + "].color";
-            string intensityName = "lights[" + lightsIndex + "].intensity";
+            string enabledName = "lights[" + lightsCount + "].enabled";
+            string typeName = "lights[" + lightsCount + "].type";
+            string posName = "lights[" + lightsCount + "].position";
+            string targetName = "lights[" + lightsCount + "].target";
+            string colorName = "lights[" + lightsCount + "].color";
+            string intensityName = "lights[" + lightsCount + "].intensity";
 
             light.EnabledLoc = GetShaderLocation(shader, enabledName);
             light.TypeLoc = GetShaderLocation(shader, typeName);
@@ -129,10 +125,7 @@ namespace Orion_Desktop
             return light;
         }
 
-        /// <summary>Updates the values of a light source.</summary>
-        /// <param name="shader">Shader to update values to.</param>
-        /// <param name="light">Light source to update.</param>
-        internal static void UpdateLightValues(Shader shader, Light light)
+        public static void UpdateLightValues(Shader shader, PbrLight light)
         {
             // Send to shader light enabled state and type
             SetShaderValue(
@@ -150,14 +143,9 @@ namespace Orion_Desktop
             SetShaderValue(shader, light.TargetLoc, light.Target, ShaderUniformDataType.Vec3);
 
             // Send to shader light color values
-            float[] color = new[]
-            {
-                light.Color.R / (float)255,
-                light.Color.G / (float)255,
-                light.Color.B / (float)255,
-                light.Color.A / (float)255
-            };
-            SetShaderValue(shader, light.ColorLoc, color, ShaderUniformDataType.Vec4);
+            SetShaderValue(shader, light.ColorLoc, light.Color, ShaderUniformDataType.Vec4);
+
+            // Send to shader light intensity values
             SetShaderValue(shader, light.IntensityLoc, light.Intensity, ShaderUniformDataType.Float);
         }
     }
@@ -168,7 +156,7 @@ namespace Orion_Desktop
         internal static Shader HologramShader;
         internal static Shader PBRLightingShader;
 
-        internal static Light GlobalLight;
+        internal static PbrLight[] Lights = new PbrLight[4];
 
         internal static int EmissivePowerLoc;
         internal static int EmissiveColorLoc;
@@ -185,43 +173,67 @@ namespace Orion_Desktop
         {
             HologramShader = LoadShader("assets/shaders/shader.vs", "assets/shaders/shader.fs");
             PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
+
             // Modify PBR shader uniform locations
             PBRLightingShader.Locs[(int)ShaderLocationIndex.MapAlbedo] = GetShaderLocation(PBRLightingShader, "albedoMap");
             PBRLightingShader.Locs[(int)ShaderLocationIndex.MapMetalness] = GetShaderLocation(PBRLightingShader, "mraMap");
             PBRLightingShader.Locs[(int)ShaderLocationIndex.MapNormal] = GetShaderLocation(PBRLightingShader, "normalMap");
             PBRLightingShader.Locs[(int)ShaderLocationIndex.MapEmission] = GetShaderLocation(PBRLightingShader, "emissiveMap");
             PBRLightingShader.Locs[(int)ShaderLocationIndex.ColorDiffuse] = GetShaderLocation(PBRLightingShader, "albedoColor");
+
             // Set PBR shader uniform locations
             PBRLightingShader.Locs[(int)ShaderLocationIndex.VectorView] = GetShaderLocation(PBRLightingShader, "viewPos");
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "numOfLights"), Rlights.MAX_LIGHTS, ShaderUniformDataType.Int);
-            // Set PBR shader ambient color and intensity parameters
-            float ambientIntensity = 0.02f;
+            var lightCountLoc = GetShaderLocation(PBRLightingShader, "numOfLights");
+            var maxLightCount = 4;
+            SetShaderValue(PBRLightingShader, lightCountLoc, &maxLightCount, ShaderUniformDataType.Int);            // Set PBR shader ambient color and intensity parameters
+
+            // Setup ambient color and intensity parameters
+            float ambientIntensity = 0.01f;
             Color ambientColor = new Color(0, 0, 0, 255);
-            Vector3 ambientColorNormalized = new Vector3(ambientColor.R, ambientColor.G, ambientColor.B) / 255;
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambientColor"), ambientColorNormalized, ShaderUniformDataType.Vec3);
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambient"), ambientIntensity, ShaderUniformDataType.Float);
+            Vector3 ambientColorNormalized = new Vector3(ambientColor.R / 255f, ambientColor.G / 255f, ambientColor.B / 255f);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambientColor"), &ambientColorNormalized, ShaderUniformDataType.Vec3);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambient"), &ambientIntensity, ShaderUniformDataType.Float);
+       
             // Get real-time modification elligible uniforms
             EmissivePowerLoc = GetShaderLocation(PBRLightingShader, "emissivePower");
             EmissiveColorLoc = GetShaderLocation(PBRLightingShader, "emissiveColor");
             TextureTilingLoc = GetShaderLocation(PBRLightingShader, "tiling");
             // Create main light source
-            GlobalLight = Rlights.CreateLight(0, LightType.LIGHT_POINT, new Vector3(-3.7f, 5, 0f), Vector3.Zero, new Color(253, 255, 184, 255), 5, PBRLightingShader);
+            Lights[0] = PbrLights.CreateLight(0, PbrLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(8, 181, 255, 255), 10, PBRLightingShader);
+            Lights[1] = PbrLights.CreateLight(1, PbrLightType.Point, EarthHologram.CENTER + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
+            Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-10f, 2f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
+            //GlobalLight = PbrLights.CreateLight(0, PbrLightType.Point, new Vector3(-3.7f, 6, 0f), Vector3.Zero, new Color(253, 255, 184, 255), 50, PBRLightingShader);
             // Set PBR shader used maps
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexAlbedo"), 1, ShaderUniformDataType.Int);
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexNormal"), 1, ShaderUniformDataType.Int);
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexMRA"), 1, ShaderUniformDataType.Int);
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexEmissive"), 1, ShaderUniformDataType.Int);
+            int usage = 1;
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexAlbedo"), &usage, ShaderUniformDataType.Int);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexNormal"), &usage, ShaderUniformDataType.Int);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexMRA"), &usage, ShaderUniformDataType.Int);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexEmissive"), &usage, ShaderUniformDataType.Int);
         }
 
         internal static unsafe void UpdatePBRLighting(Vector3 viewPos)
         {
             SetShaderValue(PBRLightingShader, PBRLightingShader.Locs[(int)ShaderLocationIndex.VectorView], viewPos, ShaderUniformDataType.Vec3);
+            //UpdateLight(PBRLightingShader, GlobalLight);
             // Update tiling values
             SetShaderValue(PBRLightingShader, TextureTilingLoc, Vector2.One / 2, ShaderUniformDataType.Vec2);
             // Update intensity
-            SetShaderValue(PBRLightingShader, EmissivePowerLoc, 0.01f, ShaderUniformDataType.Float);
+            SetShaderValue(PBRLightingShader, EmissivePowerLoc, 0.5f, ShaderUniformDataType.Float);
             SetShaderValue(PBRLightingShader, EmissiveColorLoc, Vector4.One, ShaderUniformDataType.Vec4);
-            Rlights.UpdateLightValues(PBRLightingShader, GlobalLight);
+        }
+
+        internal static void UpdateLight(Shader shader, PbrLight light)
+        {
+            SetShaderValue(shader, light.EnabledLoc, light.Enabled, ShaderUniformDataType.Int);
+            SetShaderValue(shader, light.TypeLoc, light.Type, ShaderUniformDataType.Int);
+
+            // Send to shader light position values
+            SetShaderValue(shader, light.PositionLoc, light.Position, ShaderUniformDataType.Vec3);
+
+            // Send to shader light target position values
+            SetShaderValue(shader, light.TargetLoc, light.Target, ShaderUniformDataType.Vec3);
+            SetShaderValue(shader, light.ColorLoc, light.Color, ShaderUniformDataType.Vec4);
+            SetShaderValue(shader, light.IntensityLoc, light.Intensity, ShaderUniformDataType.Float);
         }
 
         /// <summary>Loads the shader materials of the application.</summary>

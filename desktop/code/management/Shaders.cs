@@ -205,7 +205,7 @@ namespace Orion_Desktop
         {
             SetShaderValue(PBRLightingShader, PBRLightingShader.Locs[(int)ShaderLocationIndex.VectorView], viewPos, ShaderUniformDataType.Vec3);
 
-            SetShaderValue(PBRLightingShader, TextureTilingLoc, Vector2.One, ShaderUniformDataType.Vec2);
+            SetShaderValue(PBRLightingShader, TextureTilingLoc, Vector2.One / 2, ShaderUniformDataType.Vec2);
             Vector4 emissiveColor = ColorNormalize(Resources.PBRMaterials["rim"].Material.Maps[(int)MaterialMapIndex.Albedo].Color);
             SetShaderValue(PBRLightingShader, EmissiveColorLoc, emissiveColor, ShaderUniformDataType.Vec4);
         }

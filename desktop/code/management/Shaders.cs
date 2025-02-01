@@ -5,7 +5,7 @@ using static Raylib_cs.Raylib;
 namespace Orion_Desktop
 {
     /// <summary>Represents an instance of a PBR material.</summary>
-    internal struct PBRMaterial
+    internal unsafe struct PBRMaterial
     {
         internal Material Material;
         internal Dictionary<MaterialMapIndex, Texture2D> Maps;
@@ -25,6 +25,7 @@ namespace Orion_Desktop
         internal PBRMaterial(string mapFolder)
         {
             Material = LoadMaterialDefault();
+            Material.Shader = Shaders.PBRLightingShader;
             Maps = new Dictionary<MaterialMapIndex, Texture2D>();
             string[] mapsPaths = Directory.GetFiles(mapFolder);
             for (int i = 0; i < mapsPaths.Length; i++)
@@ -38,7 +39,12 @@ namespace Orion_Desktop
                 } 
             }
 
-            Material.Shader = Shaders.PBRLightingShader;
+            Material.Maps[(int)MaterialMapIndex.Albedo].Color = Color.White;
+            Material.Maps[(int)MaterialMapIndex.Metalness].Value = 1;
+            Material.Maps[(int)MaterialMapIndex.Roughness].Value = 1;
+            Material.Maps[(int)MaterialMapIndex.Occlusion].Value = 1;
+            Material.Maps[(int)MaterialMapIndex.Emission].Color = Color.Black;
+
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"ORION: PBR Material loaded successfully");
@@ -91,6 +97,7 @@ namespace Orion_Desktop
             Vector3 pos,
             Vector3 target,
             Color color,
+            float intensity,
             Shader shader
         )
         {
@@ -101,20 +108,21 @@ namespace Orion_Desktop
             light.Position = pos;
             light.Target = target;
             light.Color = color;
+            light.Intensity = intensity;
 
             string enabledName = "lights[" + lightsIndex + "].enabled";
             string typeName = "lights[" + lightsIndex + "].type";
             string posName = "lights[" + lightsIndex + "].position";
             string targetName = "lights[" + lightsIndex + "].target";
             string colorName = "lights[" + lightsIndex + "].color";
-            string intensity = "lights[" + lightsIndex + "].intensity";
+            string intensityName = "lights[" + lightsIndex + "].intensity";
 
             light.EnabledLoc = GetShaderLocation(shader, enabledName);
             light.TypeLoc = GetShaderLocation(shader, typeName);
             light.PositionLoc = GetShaderLocation(shader, posName);
             light.TargetLoc = GetShaderLocation(shader, targetName);
             light.ColorLoc = GetShaderLocation(shader, colorName);
-            light.IntensityLoc = GetShaderLocation(shader, intensity);
+            light.IntensityLoc = GetShaderLocation(shader, intensityName);
 
             UpdateLightValues(shader, light);
 
@@ -188,26 +196,32 @@ namespace Orion_Desktop
             SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "numOfLights"), Rlights.MAX_LIGHTS, ShaderUniformDataType.Int);
             // Set PBR shader ambient color and intensity parameters
             float ambientIntensity = 0.02f;
-            Color ambientColor = new Color(26, 32, 135, 255);
+            Color ambientColor = new Color(0, 0, 0, 255);
             Vector3 ambientColorNormalized = new Vector3(ambientColor.R, ambientColor.G, ambientColor.B) / 255;
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambientColor"), &ambientColorNormalized, ShaderUniformDataType.Vec3);
-            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambient"), &ambientIntensity, ShaderUniformDataType.Float);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambientColor"), ambientColorNormalized, ShaderUniformDataType.Vec3);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambient"), ambientIntensity, ShaderUniformDataType.Float);
             // Get real-time modification elligible uniforms
             EmissivePowerLoc = GetShaderLocation(PBRLightingShader, "emissivePower");
             EmissiveColorLoc = GetShaderLocation(PBRLightingShader, "emissiveColor");
             TextureTilingLoc = GetShaderLocation(PBRLightingShader, "tiling");
             // Create main light source
-            GlobalLight = Rlights.CreateLight(0, LightType.LIGHT_POINT, new Vector3(-3.7f, 5, 0f), Vector3.Zero, new Color(253, 255, 184, 255), PBRLightingShader);
-            Rlights.UpdateLightValues(PBRLightingShader, GlobalLight); // Update light at launch
+            GlobalLight = Rlights.CreateLight(0, LightType.LIGHT_POINT, new Vector3(-3.7f, 5, 0f), Vector3.Zero, new Color(253, 255, 184, 255), 5, PBRLightingShader);
+            // Set PBR shader used maps
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexAlbedo"), 1, ShaderUniformDataType.Int);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexNormal"), 1, ShaderUniformDataType.Int);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexMRA"), 1, ShaderUniformDataType.Int);
+            SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexEmissive"), 1, ShaderUniformDataType.Int);
         }
 
         internal static unsafe void UpdatePBRLighting(Vector3 viewPos)
         {
             SetShaderValue(PBRLightingShader, PBRLightingShader.Locs[(int)ShaderLocationIndex.VectorView], viewPos, ShaderUniformDataType.Vec3);
-
+            // Update tiling values
             SetShaderValue(PBRLightingShader, TextureTilingLoc, Vector2.One / 2, ShaderUniformDataType.Vec2);
-            Vector4 emissiveColor = ColorNormalize(Resources.PBRMaterials["rim"].Material.Maps[(int)MaterialMapIndex.Albedo].Color);
-            SetShaderValue(PBRLightingShader, EmissiveColorLoc, emissiveColor, ShaderUniformDataType.Vec4);
+            // Update intensity
+            SetShaderValue(PBRLightingShader, EmissivePowerLoc, 0.01f, ShaderUniformDataType.Float);
+            SetShaderValue(PBRLightingShader, EmissiveColorLoc, Vector4.One, ShaderUniformDataType.Vec4);
+            Rlights.UpdateLightValues(PBRLightingShader, GlobalLight);
         }
 
         /// <summary>Loads the shader materials of the application.</summary>

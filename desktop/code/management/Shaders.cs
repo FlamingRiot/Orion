@@ -17,7 +17,7 @@ namespace Orion_Desktop
         /// <summary>Loads the shaders of the application.</summary>
         internal static void LoadShaders()
         {
-            HologramShader = LoadShader("assets/shader.vs", "assets/shader.fs");
+            HologramShader = LoadShader("assets/shaders/shader.vs", "assets/shaders/shader.fs");
         }
 
         /// <summary>Loads the shader materials of the application.</summary>

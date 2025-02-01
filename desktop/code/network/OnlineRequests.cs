@@ -61,7 +61,7 @@ namespace Orion_Desktop
                     //}
 
                     EarthHologram.Satellite.UpdateSatellite(json);
-                    EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEF(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude) * (EarthHologram.HOLOGRAM_RADIUS + 1)); // Compute XYZ coord.
+                    EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEF(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
 
                     Console.WriteLine($"ORION: Succesfully retrieved {(string)json["name"]} informations");
                 }

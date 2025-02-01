@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
 using System.Numerics;
+using Uniray;
 
 namespace Orion_Desktop
 {
@@ -8,6 +9,7 @@ namespace Orion_Desktop
     internal static class Conceptor3D
     {
         internal static Camera3D Camera;
+        internal static List<GameObject3D> objects = new List<GameObject3D>();
 
         /// <summary>Initializes the 3D conceptor.</summary>
         internal static void Init()
@@ -15,7 +17,7 @@ namespace Orion_Desktop
             // Create camera object.
             Camera = new Camera3D()
             {
-                Position = new Vector3(25.0f, 15.0f, 25.0f),
+                Position = new Vector3(5.0f, 5.0f, 5.0f),
                 Target = Vector3.Zero,
                 Up = Vector3.UnitY,
                 FovY = 45f,
@@ -28,6 +30,8 @@ namespace Orion_Desktop
 
             Shaders.Init(); // Load program shaders
             Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
+
+            objects = RLoading.LoadScene();
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -39,6 +43,9 @@ namespace Orion_Desktop
             EarthHologram.Draw();
             // Draw Orion robot simulation
             OrionSim.Draw();
+
+            // Draw scene
+            objects.ForEach(x => x.Draw());
 
             EndMode3D();
         }

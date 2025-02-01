@@ -109,7 +109,10 @@ namespace Orion_Desktop
                 // Load model from tmp created file and fix material issue
                 Console.WriteLine($"ORION: Preparing to extract {fileName} from PAK archive");
                 Model model = Raylib.LoadModel(DEFAULT_TMP_FILE + ".m3d");
-                Raylib.GenMeshTangents(ref model.Meshes[0]);
+                for (int i = 0; i < model.MeshCount; i++)
+                {
+                    Raylib.GenMeshTangents(ref model.Meshes[i]);
+                }
                 // Delete tmp file
                 File.Delete(DEFAULT_TMP_FILE + ".m3d");
                 return model;

@@ -48,8 +48,6 @@ namespace Orion_Desktop
             // Draw scene
             objects.ForEach(x => x.Draw());
 
-            DrawSphereWires(Shaders.Lights[2].Position, 0.2f, 10, 10, Color.White);
-
             EndMode3D();
         }
 

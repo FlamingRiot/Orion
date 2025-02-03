@@ -105,6 +105,7 @@ namespace Orion_Desktop
             {
                 View.Camera.Position += Vector3.Normalize(movement) * GetFrameTime() * View3D.SPEED;
                 View.Camera.Target = Vector3.Add(View.Camera.Target, View.Camera.Position);
+                View.UpdateCircularConstraint();
             }
 
             // Camera target movement
@@ -122,7 +123,7 @@ namespace Orion_Desktop
         }
     }
 
-    /// <summary>Represents a enhanced 3D camera object.</summary>
+    /// <summary>Represents an enhanced 3D camera object.</summary>
     internal struct View3D
     {
         internal static float SMOOTH_FACTOR = 15.0f;
@@ -135,6 +136,8 @@ namespace Orion_Desktop
         internal float _pitchSpeed;
 
         internal Camera3D Camera;
+        internal Vector3 PreviousPosition;
+        internal MotionConstraint CircularConstraint;
 
         /// <summary>Yaw angle of the camera.</summary>
         internal float Yaw { get { return _yaw; } set { _yaw = value; UpdateView(); } }
@@ -146,6 +149,19 @@ namespace Orion_Desktop
         public View3D(Camera3D camera)
         {
             Camera = camera;
+            CircularConstraint = new MotionConstraint();
+        }
+
+        /// <summary>Updates the circular constraint for the current 3D view.</summary>
+        internal void UpdateCircularConstraint()
+        {
+            //CircularConstraint.Calculate(Camera.Target, Camera.Position);
+            float distance = (Camera.Position - EarthHologram.CENTER).Length();
+            if (distance > Conceptor3D.HUB_RADIUS)
+            {
+                Camera.Position = PreviousPosition;
+            }
+            PreviousPosition = Camera.Position;
         }
 
         /// <summary>Updates the view (target) of the camera.</summary>
@@ -155,6 +171,35 @@ namespace Orion_Desktop
             Camera.Target.Y = MathF.Sin(Pitch);
             Camera.Target.Z = MathF.Cos(Pitch) * MathF.Cos(Yaw);
             Camera.Target += Camera.Position;
+        }
+    }
+
+    /// <summary>Represents a circular motion constraint.</summary>
+    internal struct MotionConstraint
+    {
+        internal static readonly MotionConstraint Default = new MotionConstraint(); // Base motion constraint
+
+        internal float Value;
+        internal Vector3 Constraint;
+
+        internal Ray DetectionRay;
+        internal RayCollision DetectionInfo;
+
+        /// <summary>Creates an instance of <see cref="MotionConstraint"/>.</summary>
+        public MotionConstraint()
+        {
+            Value = 1;
+            DetectionRay = new Ray();
+            DetectionInfo = new RayCollision();
+            Constraint = new Vector3(1, 0, 1);
+        }
+
+        /// <summary>Calculates the circular motion constraint for the camera.</summary>
+        /// <param name="target">Current target of the camera.</param>
+        /// <param name="position">Current position of the camera.</param>
+        internal void Calculate(Vector3 target, Vector3 position)
+        {
+            
         }
     }
 }

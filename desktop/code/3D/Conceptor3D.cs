@@ -18,7 +18,7 @@ namespace Orion_Desktop
             // Create camera object.
             Camera = new Camera3D()
             {
-                Position = new Vector3(5.0f, 5.0f, 5.0f),
+                Position = new Vector3(3.0f, 3.0f, 3.0f),
                 Target = Vector3.Zero,
                 Up = Vector3.UnitY,
                 FovY = 60f,
@@ -55,6 +55,8 @@ namespace Orion_Desktop
 
             // Draw scene
             objects.ForEach(x => x.Draw());
+
+            DrawCube(new Vector3(-3.2f, 8, 0.2f), 6.5f, 0.4f, 27f, Color.White);
 
             EndMode3D();
         }

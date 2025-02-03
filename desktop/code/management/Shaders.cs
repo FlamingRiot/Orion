@@ -192,7 +192,8 @@ namespace Orion_Desktop
 
             // Setup ambient color and intensity parameters
             float ambientIntensity = 0.01f;
-            Color ambientColor = new Color(75, 75, 75, 255);
+            Color ambientColor = Color.White;
+            //Color ambientColor = new Color(75, 75, 75, 255);
             Vector3 ambientColorNormalized = new Vector3(ambientColor.R / 255f, ambientColor.G / 255f, ambientColor.B / 255f);
             SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambientColor"), &ambientColorNormalized, ShaderUniformDataType.Vec3);
             SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambient"), &ambientIntensity, ShaderUniformDataType.Float);
@@ -204,7 +205,7 @@ namespace Orion_Desktop
             // Create main light source
             Lights[0] = PbrLights.CreateLight(0, PbrLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(8, 181, 255, 255), 10, PBRLightingShader);
             Lights[1] = PbrLights.CreateLight(1, PbrLightType.Point, EarthHologram.CENTER + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
-            Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-10f, 2.4f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
+            //Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-7f, 3f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
             // Set PBR shader used maps
             int usage = 1;
             SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "useTexAlbedo"), &usage, ShaderUniformDataType.Int);

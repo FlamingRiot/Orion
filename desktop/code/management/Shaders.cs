@@ -156,15 +156,15 @@ namespace Orion_Desktop
         internal static Shader HologramShader;
         internal static Shader PBRLightingShader;
         internal static Shader SkyboxShader;
-        internal static Shader CubemapShader;
+        private static Shader CubemapShader;
 
-        internal static PbrLight[] Lights = new PbrLight[4];
+        private static PbrLight[] Lights = new PbrLight[4];
 
-        internal static int EmissivePowerLoc;
-        internal static int EmissiveColorLoc;
-        internal static int TextureTilingLoc;
+        private static int EmissivePowerLoc;
+        private static int EmissiveColorLoc;
+        private static int TextureTilingLoc;
 
-        internal static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
+        private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
         internal static void Init()
         {
@@ -264,6 +264,21 @@ namespace Orion_Desktop
             Rlgl.EnableDepthMask();
         }
 
+        /// <summary>Loads a skybox and configures its material.</summary>
+        /// <param name="path">Path to .hdr file.</param>
+        /// <returns>Configured skybox material.</returns>
+        internal static Material LoadSkybox(string path)
+        {
+            Texture2D panorama = LoadTexture(path);
+            Material mat = LoadMaterialDefault();
+            mat.Shader = SkyboxShader;
+            Texture2D cubemap = GenTextureCubemap(panorama, 512, PixelFormat.UncompressedR8G8B8A8);
+            SetMaterialTexture(ref mat, MaterialMapIndex.Cubemap, cubemap);
+            UnloadTexture(panorama); // Unload unused texture;
+
+            return mat;
+        }
+
         /// <summary>Genreates a cubemap texture by processing data into a cubemap shader.</summary>
         /// <param name="panorama">2D texture to use for cubemap.</param>
         /// <param name="size">Pixel size of the cubemap.</param>
@@ -282,7 +297,7 @@ namespace Orion_Desktop
 
             uint fbo = Rlgl.LoadFramebuffer(size, size);
             Rlgl.FramebufferAttach(fbo, rbo, FramebufferAttachType.Depth, FramebufferAttachTextureType.Renderbuffer, 0);
-            Rlgl.FramebufferAttach(fbo, cubemap.Id, FramebufferAttachType.ColorChannel0, FramebufferAttachTextureType.CubemapPositiveX, 0);
+            Rlgl.FramebufferAttach(fbo, cubemap.Id, FramebufferAttachType.ColorChannel0, FramebufferAttachTextureType.CubemapPositiveY, 0);
 
             // Check if framebuffer is valid
 

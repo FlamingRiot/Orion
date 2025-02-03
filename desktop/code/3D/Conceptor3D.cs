@@ -10,6 +10,7 @@ namespace Orion_Desktop
     {
         internal static Camera3D Camera;
         internal static List<GameObject3D> objects = new List<GameObject3D>();
+        internal static Material SkyboxMat;
 
         /// <summary>Initializes the 3D conceptor.</summary>
         internal static void Init()
@@ -33,6 +34,10 @@ namespace Orion_Desktop
             Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
 
             objects = RLoading.LoadScene();
+
+            // Load skybox and apply hdr texture
+            SkyboxMat = Shaders.LoadSkybox("assets/textures/skybox.hdr");
+            
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -40,8 +45,11 @@ namespace Orion_Desktop
         {
             BeginMode3D(Camera);
 
+            Shaders.DrawSkybox(SkyboxMat);
+
             // Draw earth hologram
             EarthHologram.Draw();
+
             // Draw Orion robot simulation
             //OrionSim.Draw();
 

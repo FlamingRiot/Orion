@@ -192,7 +192,7 @@ namespace Orion_Desktop
 
             // Setup ambient color and intensity parameters
             float ambientIntensity = 0.01f;
-            Color ambientColor = Color.White;
+            Color ambientColor = Color.Black;
             //Color ambientColor = new Color(75, 75, 75, 255);
             Vector3 ambientColorNormalized = new Vector3(ambientColor.R / 255f, ambientColor.G / 255f, ambientColor.B / 255f);
             SetShaderValue(PBRLightingShader, GetShaderLocation(PBRLightingShader, "ambientColor"), &ambientColorNormalized, ShaderUniformDataType.Vec3);

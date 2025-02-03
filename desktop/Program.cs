@@ -1,8 +1,7 @@
 ﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
-using Orion_Desktop;
 
-namespace Orion
+namespace Orion_Desktop
 {
     /// <summary>Represents an instance of the running program.</summary>
     public class Program

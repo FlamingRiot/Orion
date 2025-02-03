@@ -8,7 +8,9 @@ namespace Orion_Desktop
     /// <summary>Represents the 3D conceptor of the program.</summary>
     internal static class Conceptor3D
     {
-        internal static Camera3D Camera;
+        internal const int HUB_RADIUS = 8;
+
+        internal static View3D View;
         internal static List<GameObject3D> objects = new List<GameObject3D>();
         internal static Material SkyboxMat;
 
@@ -16,7 +18,7 @@ namespace Orion_Desktop
         internal static void Init()
         {
             // Create camera object.
-            Camera = new Camera3D()
+            Camera3D cam = new Camera3D()
             {
                 Position = new Vector3(3.0f, 3.0f, 3.0f),
                 Target = Vector3.Zero,
@@ -24,10 +26,15 @@ namespace Orion_Desktop
                 FovY = 60f,
                 Projection = CameraProjection.Perspective
             };
+            // Create View 3D object.
+            View = new View3D()
+            {
+                Camera = cam,
+            };
 
             // Init center tables
             EarthHologram.Init(); // Connect to earth hologram
-            Camera.Target = EarthHologram.CENTER;
+            View.Camera.Target = EarthHologram.CENTER;
             OrionSim.Init(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE); // Start Orion robot simulation
 
             Shaders.Init(); // Load program shaders
@@ -43,7 +50,7 @@ namespace Orion_Desktop
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
         internal static void Draw()
         {
-            BeginMode3D(Camera);
+            BeginMode3D(View.Camera);
 
             Shaders.DrawSkybox(SkyboxMat);
 
@@ -56,19 +63,73 @@ namespace Orion_Desktop
             // Draw scene
             objects.ForEach(x => x.Draw());
 
-            DrawCube(new Vector3(-3.2f, 8, 0.2f), 6.5f, 0.4f, 27f, Color.White);
+            DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
 
             EndMode3D();
+
+            DrawText(View._pitchSpeed.ToString(), 20, 20, 20, Color.Red);
+            DrawText(View._yawSpeed.ToString(), 20, 50, 20, Color.Red);
+
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
         internal static void Update()
         {
             // Update environment camera
-            UpdateCamera(ref Camera, CameraMode.Free);
+            UpdateCamera();
 
             // Update PBR lighting
-            Shaders.UpdatePBRLighting(Camera.Position);
+            Shaders.UpdatePBRLighting(View.Camera.Position);
+        }
+
+        internal static void UpdateCamera()
+        {
+            Vector2 mouse = GetMouseDelta();
+            float targetYawSpeed = -mouse.X * 0.003f;
+            float targetPitchSpeed = -mouse.Y * 0.003f;
+
+            View._yawSpeed = Raymath.Lerp(View._yawSpeed, targetYawSpeed, GetFrameTime() * View3D.SMOOTH_FACTOR);
+            View._pitchSpeed = Raymath.Lerp(View._pitchSpeed, targetPitchSpeed, GetFrameTime() * View3D.SMOOTH_FACTOR);
+
+            View.Yaw += View._yawSpeed;
+            View.Pitch += View._pitchSpeed;
+
+            View.Pitch = Math.Clamp(View.Pitch, -1.5f, 1.5f);
+        }
+    }
+
+    /// <summary>Represents a enhanced 3D camera object.</summary>
+    internal struct View3D
+    {
+        internal static float SMOOTH_FACTOR = 9.0f;
+
+        private float _yaw;
+        private float _pitch;
+
+        internal float _yawSpeed;
+        internal float _pitchSpeed;
+
+        internal Camera3D Camera;
+
+        /// <summary>Yaw angle of the camera.</summary>
+        internal float Yaw { get { return _yaw; } set { _yaw = value; UpdateView(); } }
+        /// <summary>Pitch angle of the camera.</summary>
+        internal float Pitch { get { return _pitch; } set { _pitch = value; UpdateView(); } }
+
+        /// <summary>Creates an instance of <see cref="View3D"/>.</summary>
+        /// <param name="camera">3D camera object to use.</param>
+        public View3D(Camera3D camera)
+        {
+            Camera = camera;
+        }
+
+        /// <summary>Updates the view (target) of the camera.</summary>
+        private void UpdateView()
+        {
+            Camera.Target.X = MathF.Cos(Pitch) * MathF.Sin(Yaw);
+            Camera.Target.Y = MathF.Sin(Pitch);
+            Camera.Target.Z = MathF.Cos(Pitch) * MathF.Cos(Yaw);
+            Camera.Target += Camera.Position;
         }
     }
 }

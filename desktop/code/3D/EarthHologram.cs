@@ -18,7 +18,7 @@ namespace Orion_Desktop
         /// <summary>Inits the earth hologram.</summary>
         public static void Init()
         {
-            CENTER = new Vector3(-3.7f, 2, 0f);
+            CENTER = new Vector3(-3.5f, 2, 0.2f);
             // Create standby position
             SatellitePoints.Add((CENTER + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
             Satellite = new Satellite();

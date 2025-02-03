@@ -20,7 +20,7 @@ namespace Orion_Desktop
             // Create camera object.
             Camera3D cam = new Camera3D()
             {
-                Position = new Vector3(3.0f, 3.0f, 3.0f),
+                Position = new Vector3(3.0f, 2.5f, 3.0f),
                 Target = Vector3.Zero,
                 Up = Vector3.UnitY,
                 FovY = 60f,
@@ -66,10 +66,6 @@ namespace Orion_Desktop
             DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
 
             EndMode3D();
-
-            DrawText(View._pitchSpeed.ToString(), 20, 20, 20, Color.Red);
-            DrawText(View._yawSpeed.ToString(), 20, 50, 20, Color.Red);
-
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
@@ -82,8 +78,36 @@ namespace Orion_Desktop
             Shaders.UpdatePBRLighting(View.Camera.Position);
         }
 
+        /// <summary>Updates the camera movement.</summary>
         internal static void UpdateCamera()
         {
+            // Camera position movement
+            Vector3 movement = new Vector3();
+            if (IsKeyDown(KeyboardKey.W))
+            {
+                movement -= Raymath.Vector3CrossProduct(GetCameraRight(ref View.Camera), Vector3.UnitY);
+            }
+            if (IsKeyDown(KeyboardKey.S))
+            {
+                movement += Raymath.Vector3CrossProduct(GetCameraRight(ref View.Camera), Vector3.UnitY);
+            }
+            if (IsKeyDown(KeyboardKey.D))
+            {
+                movement += GetCameraRight(ref View.Camera);
+            }
+            if (IsKeyDown(KeyboardKey.A))
+            {
+                movement -= GetCameraRight(ref View.Camera);
+            }
+
+            // Update movement
+            if (movement.Length() > 0)
+            {
+                View.Camera.Position += Vector3.Normalize(movement) * GetFrameTime() * View3D.SPEED;
+                View.Camera.Target = Vector3.Add(View.Camera.Target, View.Camera.Position);
+            }
+
+            // Camera target movement
             Vector2 mouse = GetMouseDelta();
             float targetYawSpeed = -mouse.X * 0.003f;
             float targetPitchSpeed = -mouse.Y * 0.003f;
@@ -101,7 +125,8 @@ namespace Orion_Desktop
     /// <summary>Represents a enhanced 3D camera object.</summary>
     internal struct View3D
     {
-        internal static float SMOOTH_FACTOR = 9.0f;
+        internal static float SMOOTH_FACTOR = 15.0f;
+        internal static float SPEED = 8f;
 
         private float _yaw;
         private float _pitch;

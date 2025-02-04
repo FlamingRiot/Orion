@@ -12,6 +12,7 @@ namespace Orion_Desktop
         private static Matrix4x4 _globeCorrectionMat;
 
         internal static Vector3 CENTER;
+        internal static Vector3 CENTER_USER_WISE;
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite;
 
@@ -19,6 +20,7 @@ namespace Orion_Desktop
         public static void Init()
         {
             CENTER = new Vector3(-3.5f, 2, 0.2f);
+            CENTER_USER_WISE = new Vector3(CENTER.X, Conceptor3D.View.Camera.Position.Y, CENTER.Z);
             // Create standby position
             SatellitePoints.Add((CENTER + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
             Satellite = new Satellite();

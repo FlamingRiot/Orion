@@ -62,8 +62,12 @@ namespace Orion_Desktop
 
             // Draw scene
             objects.ForEach(x => x.Draw());
-#if DEBUG
+#if DEBUG   
+            // Collision detection debug draw calls
+            DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
             DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
+            DrawLine3D(EarthHologram.CENTER, View.PreviousPosition - Vector3.UnitY * 0.5f, Color.Red);
+            DrawLine3D(View.Tangent * -2 - Vector3.UnitY * 0.5f + View.PreviousPosition, View.Tangent * 2 - Vector3.UnitY * 0.5f + View.PreviousPosition, Color.Red);
 #endif
             EndMode3D();
         }
@@ -126,18 +130,24 @@ namespace Orion_Desktop
     /// <summary>Represents an enhanced 3D camera object.</summary>
     internal struct View3D
     {
+        // Constants
         internal static float SMOOTH_FACTOR = 15.0f;
         internal static float SENSITIVITY = 1.6f;
         internal static float SPEED = 8f;
 
+        // Rotation angless
         private float _yaw;
         private float _pitch;
 
+        // Rotation angles speed (lerp.)
         internal float _yawSpeed;
         internal float _pitchSpeed;
 
         internal Camera3D Camera;
-        internal Vector3 PreviousPosition;
+        internal Vector3 PreviousPosition; // used for circular collision detection
+        
+        internal Vector3 Tangent;
+        internal Vector3 Segment;
 
         /// <summary>Yaw angle of the camera.</summary>
         internal float Yaw { get { return _yaw; } set { _yaw = value; UpdateView(); } }
@@ -155,9 +165,16 @@ namespace Orion_Desktop
         internal void UpdateCircularConstraint()
         {
             float distance = (Camera.Position - EarthHologram.CENTER).Length();
-            if (distance > Conceptor3D.HUB_RADIUS)
+            if (distance >= Conceptor3D.HUB_RADIUS)
             {
                 Camera.Position = PreviousPosition;
+                // Calculate circle tangent on collision point (previous position.)
+                Segment = PreviousPosition - EarthHologram.CENTER_USER_WISE;
+                Tangent = new Vector3(-Segment.Z, 0, Segment.X);
+            }
+            else
+            {
+                Tangent = Vector3.Zero;
             }
             PreviousPosition = Camera.Position;
         }

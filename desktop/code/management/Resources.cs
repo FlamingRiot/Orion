@@ -28,7 +28,7 @@ namespace Orion_Desktop
         {
             Material earthMat = LoadMaterialDefault();
             SetMaterialTexture(ref earthMat, MaterialMapIndex.Diffuse, LoadTexture("assets/textures/earth.png"));
-            earthMat.Shader = Shaders.HologramShader;
+            earthMat.Shader = Shaders.FixShader;
             Materials.Add("earth", earthMat);
 
             // Load PBRs

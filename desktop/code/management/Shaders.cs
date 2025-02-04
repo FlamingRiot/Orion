@@ -153,16 +153,21 @@ namespace Orion_Desktop
     /// <summary>Represents an instance of the static shader class.</summary>
     internal static class Shaders
     {
-        internal static Shader HologramShader;
+        internal const float BLUR_AMOUNT = 1f;
+
+        internal static Shader FixShader;
+        internal static Shader PostProShader;
         internal static Shader PBRLightingShader;
         internal static Shader SkyboxShader;
         private static Shader CubemapShader;
 
         private static PbrLight[] Lights = new PbrLight[4];
+        private static Texture2D prevRenderTexture; // Previous render texture for motion blur post-processing
 
         private static int EmissivePowerLoc;
         private static int EmissiveColorLoc;
         private static int TextureTilingLoc;
+        private static int RenderTextureLoc;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -174,7 +179,15 @@ namespace Orion_Desktop
         /// <summary>Loads the shaders of the application.</summary>
         internal static unsafe void LoadShaders()
         {
-            HologramShader = LoadShader("assets/shaders/shader.vs", "assets/shaders/shader.fs");
+            // UV coord fix shader
+            FixShader = LoadShader(null, "assets/shaders/shader.fs"); // Earth hologram rotation fix shader
+            
+            // Post-Processing shader
+            PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
+            RenderTextureLoc = GetShaderLocation(PostProShader, "prevRender");
+            SetShaderValue(PostProShader, GetShaderLocation(PostProShader, "blurAmount"), BLUR_AMOUNT, ShaderUniformDataType.Float);
+
+            // PBR lighting shader
             PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
 
             // Modify PBR shader uniform locations
@@ -278,6 +291,21 @@ namespace Orion_Desktop
             UnloadTexture(panorama); // Unload unused texture;
 
             return mat;
+        }
+
+        /// <summary>Updates the render texture used for post-processing motion blur. (call once per loop).</summary>
+        /// <param name="render">Current render texture to use.</param>
+        internal static void UpdateRenderTexture(RenderTexture2D render)
+        {
+            SetShaderValueTexture(PostProShader, RenderTextureLoc, prevRenderTexture);
+            prevRenderTexture = render.Texture;
+        }
+
+        /// <summary>Generates a render texture with a depth buffer attached to it.</summary>
+        /// <returns></The configured render texture.returns>
+        internal static RenderTexture2D GenRenderTexture(int width, int height)
+        {
+            return new RenderTexture2D();
         }
 
         /// <summary>Genreates a cubemap texture by processing data into a cubemap shader.</summary>

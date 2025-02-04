@@ -62,9 +62,9 @@ namespace Orion_Desktop
 
             // Draw scene
             objects.ForEach(x => x.Draw());
-
+#if DEBUG
             DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
-
+#endif
             EndMode3D();
         }
 
@@ -110,8 +110,8 @@ namespace Orion_Desktop
 
             // Camera target movement
             Vector2 mouse = GetMouseDelta();
-            float targetYawSpeed = -mouse.X * 0.003f;
-            float targetPitchSpeed = -mouse.Y * 0.003f;
+            float targetYawSpeed = -mouse.X * View3D.SENSITIVITY / 1000;
+            float targetPitchSpeed = -mouse.Y * View3D.SENSITIVITY / 1000;
 
             View._yawSpeed = Raymath.Lerp(View._yawSpeed, targetYawSpeed, GetFrameTime() * View3D.SMOOTH_FACTOR);
             View._pitchSpeed = Raymath.Lerp(View._pitchSpeed, targetPitchSpeed, GetFrameTime() * View3D.SMOOTH_FACTOR);
@@ -127,6 +127,7 @@ namespace Orion_Desktop
     internal struct View3D
     {
         internal static float SMOOTH_FACTOR = 15.0f;
+        internal static float SENSITIVITY = 1.6f;
         internal static float SPEED = 8f;
 
         private float _yaw;

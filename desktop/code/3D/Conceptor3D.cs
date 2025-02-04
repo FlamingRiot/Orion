@@ -67,11 +67,13 @@ namespace Orion_Desktop
             DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
             DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
             DrawLine3D(EarthHologram.CENTER, View.PreviousPosition - Vector3.UnitY * 0.5f, Color.Red);
-            DrawLine3D(View.Tangent * -2 - Vector3.UnitY * 0.5f + View.PreviousPosition, View.Tangent * 2 - Vector3.UnitY * 0.5f + View.PreviousPosition, Color.Red);
+            DrawLine3D(View.Tangent * -10, View.Tangent * 10, Color.Red);
+            DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
 #endif
             EndMode3D();
 
             DrawText(View.Constraint.Value.ToString(), 20, 20, 20, Color.Red);
+            DrawText(View.Camera.Target.ToString(), 20, 50, 20, Color.Red);
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
@@ -175,7 +177,7 @@ namespace Orion_Desktop
                 Segment = PreviousPosition - EarthHologram.CENTER_USER_WISE;
                 Tangent = new Vector3(-Segment.Z, 0, Segment.X);
                 // Calcualte constraint value
-                Constraint.ComputeConstraint(Vector3.Normalize(Camera.Target), Vector3.Normalize(Tangent));
+                Constraint.ComputeConstraint(Camera.Target, Tangent);
             }
             else
             {
@@ -205,7 +207,11 @@ namespace Orion_Desktop
         /// <param name="constraint">Constraint vector (e.g. wall, tangent, ect.)</param>
         internal void ComputeConstraint(Vector3 direction, Vector3 constraint)
         {
+            // Normalize vectors
+            direction = Raymath.Vector3Normalize(direction); 
+            constraint = Raymath.Vector3Normalize(constraint);
             Value = Math.Abs(Raymath.Vector3DotProduct(direction, constraint));
+            //Value = vDot / (direction.Length() * constraint.Length());
         }
     }
 }

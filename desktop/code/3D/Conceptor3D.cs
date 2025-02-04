@@ -70,6 +70,8 @@ namespace Orion_Desktop
             DrawLine3D(View.Tangent * -2 - Vector3.UnitY * 0.5f + View.PreviousPosition, View.Tangent * 2 - Vector3.UnitY * 0.5f + View.PreviousPosition, Color.Red);
 #endif
             EndMode3D();
+
+            DrawText(View.Constraint.Value.ToString(), 20, 20, 20, Color.Red);
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
@@ -109,7 +111,7 @@ namespace Orion_Desktop
             {
                 View.Camera.Position += Vector3.Normalize(movement) * GetFrameTime() * View3D.SPEED;
                 View.Camera.Target = Vector3.Add(View.Camera.Target, View.Camera.Position);
-                View.UpdateCircularConstraint();
+                View.UpdateCircularConstraint(); // Compute motion constraint of the 3D view
             }
 
             // Camera target movement
@@ -145,6 +147,7 @@ namespace Orion_Desktop
 
         internal Camera3D Camera;
         internal Vector3 PreviousPosition; // used for circular collision detection
+        internal MotionConstraint Constraint;
         
         internal Vector3 Tangent;
         internal Vector3 Segment;
@@ -171,6 +174,8 @@ namespace Orion_Desktop
                 // Calculate circle tangent on collision point (previous position.)
                 Segment = PreviousPosition - EarthHologram.CENTER_USER_WISE;
                 Tangent = new Vector3(-Segment.Z, 0, Segment.X);
+                // Calcualte constraint value
+                Constraint.ComputeConstraint(Vector3.Normalize(Camera.Target), Vector3.Normalize(Tangent));
             }
             else
             {
@@ -186,6 +191,21 @@ namespace Orion_Desktop
             Camera.Target.Y = MathF.Sin(Pitch);
             Camera.Target.Z = MathF.Cos(Pitch) * MathF.Cos(Yaw);
             Camera.Target += Camera.Position;
+        }
+    }
+
+    /// <summary>Represents a motion constraint object.</summary>
+    internal struct MotionConstraint
+    {
+        internal float Value;
+        internal Vector3 Direction;
+
+        /// <summary>Calculates the direction and intensity of a constraint based on passed values.</summary>
+        /// <param name="direction">Direction of the movement.</param>
+        /// <param name="constraint">Constraint vector (e.g. wall, tangent, ect.)</param>
+        internal void ComputeConstraint(Vector3 direction, Vector3 constraint)
+        {
+            Value = Math.Abs(Raymath.Vector3DotProduct(direction, constraint));
         }
     }
 }

@@ -26,6 +26,7 @@ namespace Orion_Desktop
 
             // Open different services
             Conceptor3D.Init();
+            Conceptor2D.Init();
 
             // Load render texture
             LoadRender();
@@ -44,7 +45,7 @@ namespace Orion_Desktop
                 // Define default background color
                 ClearBackground(Color.White);
 
-                // Draw functions
+                // Draw 3D environement
                 Conceptor3D.Draw();
 
                 // Close rendering to texture
@@ -64,6 +65,9 @@ namespace Orion_Desktop
 
                 // End post-processing shader
                 EndShaderMode();
+
+                // Draw 2D information
+                Conceptor2D.Draw();
 
                 // Draw debug framerate
                 DrawFPS(10, 10);    

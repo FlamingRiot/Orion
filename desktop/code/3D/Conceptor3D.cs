@@ -10,6 +10,7 @@ namespace Orion_Desktop
     {
         internal const int HUB_RADIUS = 8;
 
+        // General 3D environement objets
         internal static View3D View;
         internal static List<GameObject3D> objects = new List<GameObject3D>();
         internal static Material SkyboxMat;
@@ -44,7 +45,6 @@ namespace Orion_Desktop
 
             // Load skybox and apply hdr texture
             SkyboxMat = Shaders.LoadSkybox("assets/textures/skybox.hdr");
-            
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -63,17 +63,14 @@ namespace Orion_Desktop
             // Draw scene
             objects.ForEach(x => x.Draw());
 #if DEBUG   
-            // Collision detection debug draw calls
-            DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
-            DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
-            DrawLine3D(EarthHologram.CENTER, View.PreviousPosition - Vector3.UnitY * 0.5f, Color.Red);
-            DrawLine3D(View.Tangent * -10, View.Tangent * 10, Color.Red);
-            DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
+            //// Collision detection debug draw calls
+            //DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
+            //DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
+            //DrawLine3D(EarthHologram.CENTER, View.PreviousPosition - Vector3.UnitY * 0.5f, Color.Red);
+            //DrawLine3D(View.Tangent * -10, View.Tangent * 10, Color.Red);
+            //DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
 #endif
             EndMode3D();
-
-            DrawText(View.Constraint.Value.ToString(), 20, 20, 20, Color.Red);
-            DrawText(View.Camera.Target.ToString(), 20, 50, 20, Color.Red);
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
@@ -84,6 +81,9 @@ namespace Orion_Desktop
 
             // Update PBR lighting
             Shaders.UpdatePBRLighting(View.Camera.Position);
+
+            // Update action-ray detection
+            Conceptor2D.InteractiveEnabled = GetRayCollisionSphere(GetMouseRay(Conceptor2D.Size / 2, View.Camera), EarthHologram.CENTER, EarthHologram.HOLOGRAM_RADIUS).Hit;
         }
 
         /// <summary>Updates the camera movement.</summary>

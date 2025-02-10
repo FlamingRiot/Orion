@@ -9,7 +9,7 @@ namespace Orion_Desktop
     internal static class EarthHologram
     {
         internal const float HOLOGRAM_RADIUS = 0.8f;
-        private static Matrix4x4 _globeCorrectionMat;
+        public static Matrix4x4 _globeCorrectionMat;
 
         internal static Vector3 CENTER;
         internal static Vector3 CENTER_USER_WISE;
@@ -47,12 +47,10 @@ namespace Orion_Desktop
             // Draw earth hologram box
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], _globeCorrectionMat);
 
-            // Draw line
-            DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
-
             // Draw satellite point
             DrawSphere(Satellite.RelativePosition + CENTER, 0.02f, Color.Yellow);
 
+            // Draw current position
             DrawSphere(CelestialMaths.ComputeECEF(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
         }
 

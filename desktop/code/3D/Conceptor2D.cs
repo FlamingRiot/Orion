@@ -1,0 +1,47 @@
+﻿using static Raylib_cs.Raylib;
+using Raylib_cs;
+using System.Numerics;
+
+namespace Orion_Desktop
+{
+    /// <summary>Represents the 2D conceptor of the game.</summary>
+    internal class Conceptor2D
+    {
+        internal const int ACTION_REC_SIZE = 30;
+
+        // Defines if player is approaching interactible object
+        internal static bool InteractiveEnabled;
+        internal static Rectangle ActionRec;
+        internal static Font Font;
+
+        // (Should be monitor size.)
+        internal static int Width;
+        internal static int Height;
+        internal static Vector2 Size;
+
+        /// <summary>Opens the 2D conceptor and loads its parameters.</summary>
+        internal static void Init()
+        {
+            // Get window size
+            Width = GetScreenWidth();
+            Height = GetScreenHeight();
+            Size = new Vector2(Width, Height);
+
+            // Load font
+            Font = LoadFont("assets/textures/Ubuntu-Bold.ttf");
+
+            ActionRec = new Rectangle(Width / 2 - ACTION_REC_SIZE, Height / 2 - ACTION_REC_SIZE, ACTION_REC_SIZE, ACTION_REC_SIZE);
+            InteractiveEnabled = true;
+        }
+
+        /// <summary>Displays 2D information to the screen.</summary>
+        internal static void Draw()
+        {
+            if (InteractiveEnabled) 
+            {
+                DrawRectangleRounded(ActionRec, 0.5f, 5, new Color(222, 222, 222, 255));
+                DrawTextPro(Font, "E", ActionRec.Position, new Vector2(-10, -6), 0, 20, 1, new Color(66, 66, 66, 255));
+            }
+        }
+    }
+}

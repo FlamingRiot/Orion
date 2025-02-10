@@ -9,7 +9,7 @@ namespace Orion_Desktop
     internal static class EarthHologram
     {
         internal const float HOLOGRAM_RADIUS = 0.8f;
-        internal const float EARTH_TLIT = 23.44f;
+        internal const float EARTH_TILT = 23.44f;
 
         private static Matrix4x4 _globeCorrectionMat;
 
@@ -73,10 +73,10 @@ namespace Orion_Desktop
         internal static void UpdateTransform()
         {
             Matrix4x4 rm;
-            if (!InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, 23.44f, 0) / RAD2DEG);
+            if (!InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, 0) / RAD2DEG);
             else
             {
-                rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
+                rm = Raymath.MatrixRotateY((IYaw) / RAD2DEG);
 
                 // Compute X/Z axis weights
                 Vector3 cam = new Vector3(Conceptor3D.View.Camera.Position.X, 0, Conceptor3D.View.Camera.Position.Z) - 
@@ -85,7 +85,7 @@ namespace Orion_Desktop
                 float xWeight = Raymath.Vector3DotProduct(Vector3.UnitZ, Vector3.Normalize(cam));
                 float zWeight = Raymath.Vector3DotProduct(Vector3.UnitX, Vector3.Normalize(cam));
                 // Create weighted matrix
-                rm *= Raymath.MatrixRotateXYZ(new Vector3(IPitch * xWeight + 90, 0, IPitch * zWeight) / RAD2DEG);
+                rm *= Raymath.MatrixRotateXYZ(new Vector3(IPitch * xWeight + 90, EARTH_TILT, IPitch * zWeight) / RAD2DEG);
             }
             Matrix4x4 sm = Raymath.MatrixScale(1, 1, 1);
             Matrix4x4 pm = Raymath.MatrixTranslate(CENTER.X, CENTER.Y, CENTER.Z);

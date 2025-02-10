@@ -73,6 +73,8 @@ namespace Orion_Desktop
                 {
                     EarthHologram.InterfaceActive = false;
                     EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
+                    EarthHologram.IPitch = 0;
+                    EarthHologram.IYaw = 0;
                     DisableCursor();
                 }
             }

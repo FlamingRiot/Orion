@@ -159,7 +159,7 @@ namespace Orion_Desktop
         internal static Shader SkyboxShader;
         private static Shader CubemapShader;
 
-        private static PbrLight[] Lights = new PbrLight[4];
+        public static PbrLight[] Lights = new PbrLight[4];
         private static Texture2D prevRenderTexture; // Previous render texture for motion blur post-processing
 
         private static int EmissivePowerLoc;

@@ -9,6 +9,8 @@ namespace Orion_Desktop
     internal static class EarthHologram
     {
         internal const float HOLOGRAM_RADIUS = 0.8f;
+        internal const float EARTH_TLIT = 23.44f;
+
         private static Matrix4x4 _globeCorrectionMat;
 
         internal static Vector3 ORIGIN; // no modification
@@ -17,6 +19,8 @@ namespace Orion_Desktop
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite;
         internal static bool InterfaceActive = false;
+
+        internal static float IYaw, IPitch;
 
         /// <summary>Inits the earth hologram.</summary>
         public static void Init()
@@ -46,6 +50,7 @@ namespace Orion_Desktop
         {
             // Update lerp
             CENTER = Raymath.Vector3Lerp(CENTER, CENTER_TO_BE, GetFrameTime() * 3);
+            Shaders.Lights[0].Position = CENTER;
             UpdateTransform();
 
             // Update satellite
@@ -66,8 +71,22 @@ namespace Orion_Desktop
         /// <summary>Updates the earth hologram matrix</summary>
         internal static void UpdateTransform()
         {
-            // Calculate matrix rotation
-            Matrix4x4 rm = Raymath.MatrixRotateXYZ(new Vector3(90, 23.44f, 0) / RAD2DEG);
+            Matrix4x4 rm;
+            if (!InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, 23.44f, 0) / RAD2DEG);
+            //else rm = Raymath.MatrixRotateXYZ(new Vector3(IYaw + 90, IPitch, 0) / RAD2DEG);
+            else
+            {
+                rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
+
+                // Compute X/Z axis weights
+                Vector3 cam = new Vector3(Conceptor3D.View.Camera.Position.X, 0, Conceptor3D.View.Camera.Position.Z) - 
+                    new Vector3(Conceptor3D.View.Camera.Target.X, 0, Conceptor3D.View.Camera.Target.Z);
+
+                float xWeight = Raymath.Vector3DotProduct(Vector3.UnitZ, Vector3.Normalize(cam));
+                float zWeight = Raymath.Vector3DotProduct(Vector3.UnitX, Vector3.Normalize(cam));
+                // Create weighted matrix
+                rm *= Raymath.MatrixRotateXYZ(new Vector3((90 + IPitch) * xWeight, 0, -(90 + IPitch) * zWeight) / RAD2DEG);
+            }
             Matrix4x4 sm = Raymath.MatrixScale(1, 1, 1);
             Matrix4x4 pm = Raymath.MatrixTranslate(CENTER.X, CENTER.Y, CENTER.Z);
             // Multiply matrices

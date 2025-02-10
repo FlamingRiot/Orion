@@ -32,11 +32,10 @@ namespace Orion_Desktop
             Materials.Add("earth", earthMat);
 
             // Load PBRs
-            PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim")); 
+            PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim"));
             PBRMaterials.Add("terminal", new PBRMaterial("assets/pbr/terminal")); 
             PBRMaterials.Add("bench", new PBRMaterial("assets/pbr/bench")); 
             PBRMaterials.Add("ceiling", new PBRMaterial("assets/pbr/ceiling")); 
-            //PBRMaterials.Add("walls", new PBRMaterial("assets/pbr/test")); 
         }
 
         /// <summary>Loads the application's textures.</summary>

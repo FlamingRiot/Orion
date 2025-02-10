@@ -36,15 +36,25 @@ namespace Orion_Desktop
         /// <summary>Displays 2D information to the screen.</summary>
         internal static void Draw()
         {
+            // Draw E hint
             if (InteractiveEnabled) 
             {
                 if (!EarthHologram.InterfaceActive)
                 {
                     DrawRectangleRounded(ActionRec, 0.5f, 5, new Color(222, 222, 222, 255));
                     DrawTextPro(Font, "E", ActionRec.Position, new Vector2(-10, -6), 0, 20, 1, new Color(66, 66, 66, 255));
-
                 }
-               
+            }
+
+            // Update earth hologram interface
+            if (EarthHologram.InterfaceActive)
+            {
+                if (IsMouseButtonDown(MouseButton.Left))
+                {
+                    Vector2 mouse = GetMouseDelta() * 0.2f;
+                    EarthHologram.IYaw += mouse.X;
+                    EarthHologram.IPitch += mouse.Y;
+                }
             }
 
             if (IsKeyPressed(KeyboardKey.E))
@@ -57,11 +67,13 @@ namespace Orion_Desktop
                     Ray dir = GetMouseRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
                     Vector3 pos = dir.Position + dir.Direction * 2.5f;
                     EarthHologram.CENTER_TO_BE = pos;
+                    EnableCursor();
                 }
                 else
                 {
                     EarthHologram.InterfaceActive = false;
                     EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
+                    DisableCursor();
                 }
             }
         }

@@ -56,14 +56,12 @@ namespace Orion_Desktop
                     // Define 3D post based current camera pos
                     Ray dir = GetMouseRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
                     Vector3 pos = dir.Position + dir.Direction * 2.5f;
-                    EarthHologram.CENTER = pos;
-                    EarthHologram.UpdateTransform();
+                    EarthHologram.CENTER_TO_BE = pos;
                 }
                 else
                 {
                     EarthHologram.InterfaceActive = false;
-                    EarthHologram.CENTER = EarthHologram.ORIGIN;
-                    EarthHologram.UpdateTransform();
+                    EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
                 }
             }
         }

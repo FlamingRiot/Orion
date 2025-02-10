@@ -12,8 +12,8 @@ namespace Orion_Desktop
         private static Matrix4x4 _globeCorrectionMat;
 
         internal static Vector3 ORIGIN; // no modification
+        internal static Vector3 CENTER_TO_BE; // Used for interface interpolation
         internal static Vector3 CENTER;
-        internal static Vector3 CENTER_USER_WISE;
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite;
         internal static bool InterfaceActive = false;
@@ -23,7 +23,7 @@ namespace Orion_Desktop
         {
             CENTER = new Vector3(-3.5f, 2, 0.2f);
             ORIGIN = CENTER;
-            CENTER_USER_WISE = new Vector3(CENTER.X, Conceptor3D.View.Camera.Position.Y, CENTER.Z);
+            CENTER_TO_BE = CENTER;
             // Create standby position
             SatellitePoints.Add((CENTER + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
             Satellite = new Satellite();
@@ -44,6 +44,10 @@ namespace Orion_Desktop
         /// <summary>Draws the earth hologam.</summary>
         internal static void Draw()
         {
+            // Update lerp
+            CENTER = Raymath.Vector3Lerp(CENTER, CENTER_TO_BE, GetFrameTime() * 3);
+            UpdateTransform();
+
             // Update satellite
             UpdateSatellite();
 

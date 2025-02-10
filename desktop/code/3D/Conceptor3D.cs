@@ -174,7 +174,7 @@ namespace Orion_Desktop
             {
                 Camera.Position = PreviousPosition;
                 // Calculate circle tangent on collision point (previous position.)
-                Segment = PreviousPosition - EarthHologram.CENTER_USER_WISE;
+                Segment = PreviousPosition - EarthHologram.CENTER;
                 Tangent = new Vector3(-Segment.Z, 0, Segment.X);
                 // Calcualte constraint value
                 Constraint.ComputeConstraint(Camera.Target, Tangent);

@@ -77,7 +77,7 @@ namespace Orion_Desktop
         internal static void Update()
         {
             // Update environment camera
-            UpdateCamera();
+            if (!EarthHologram.InterfaceActive) UpdateCamera();
 
             // Update PBR lighting
             Shaders.UpdatePBRLighting(View.Camera.Position);

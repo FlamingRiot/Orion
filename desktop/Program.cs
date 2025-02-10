@@ -57,9 +57,6 @@ namespace Orion_Desktop
                 // Start post-processing shader
                 BeginShaderMode(Shaders.PostProShader);
 
-                // Update render texture used for motion blur
-                Shaders.UpdateRenderTexture(Render);
-
                 // Draw Render Texture
                 DrawTexturePro(Render.Texture, SourceRender, DestinationRender, Vector2.Zero, 0, Color.White);
 

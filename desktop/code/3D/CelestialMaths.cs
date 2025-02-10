@@ -19,6 +19,29 @@ namespace Orion_Desktop
         public const float POSITION_LATITUDE = 40 + 6.94f;
         public const float POSITION_LONGITUDE = 46.99f - 40;
 
+        internal static Vector3 ComputeECEFTilted(float latitude, float longitude)
+        {
+            // Fix negative/positive latitude
+            if (longitude < 0) longitude = 180 + Math.Abs(longitude);
+            else longitude = 180 - longitude;
+            // Convert data to radians
+            float latRad = latitude * Raylib.DEG2RAD;
+            float longRad = longitude * Raylib.DEG2RAD;
+
+            // Compute coordinates based on ECEF equations
+            float x = MathF.Cos(latRad) * MathF.Cos(longRad);
+            float y = MathF.Cos(latRad) * MathF.Sin(longRad);
+            float z = MathF.Sin(latRad);
+
+            Matrix4x4 rotatedMat = Raymath.MatrixRotateXYZ(new Vector3(0, -23, 0) / Raylib.RAD2DEG);
+
+            float newX = rotatedMat.M11 * x + rotatedMat.M12 * y + rotatedMat.M13 * z;
+            float newY = rotatedMat.M21 * x + rotatedMat.M22 * y + rotatedMat.M23 * z;
+            float newZ = rotatedMat.M31 * x + rotatedMat.M32 * y + rotatedMat.M33 * z;
+
+            return new Vector3(newX, newZ, newY);
+        }
+
         internal static Vector3 ComputeECEF(float latitude, float longitude)
         {
             // Fix negative/positive latitude

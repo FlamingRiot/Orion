@@ -19,7 +19,7 @@ namespace Orion_Desktop
             _hemisphere = LoadModelFromMesh(GenMeshHemiSphere(2, 15, 15));
             ViewerLatitude = lat;
             ViewerLongitude = lon;
-            ViewerPosition = CelestialMaths.ComputeECEF(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (EarthHologram.HOLOGRAM_RADIUS + 1);
+            ViewerPosition = CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (EarthHologram.HOLOGRAM_RADIUS + 1);
         }
 
         /// <summary>Draws the Orion robot simulation.</summary>

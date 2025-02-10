@@ -9,7 +9,7 @@ namespace Orion_Desktop
     internal static class EarthHologram
     {
         internal const float HOLOGRAM_RADIUS = 0.8f;
-        public static Matrix4x4 _globeCorrectionMat;
+        private static Matrix4x4 _globeCorrectionMat;
 
         internal static Vector3 CENTER;
         internal static Vector3 CENTER_USER_WISE;
@@ -51,14 +51,16 @@ namespace Orion_Desktop
             DrawSphere(Satellite.RelativePosition + CENTER, 0.02f, Color.Yellow);
 
             // Draw current position
-            DrawSphere(CelestialMaths.ComputeECEF(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
+            DrawSphere(CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
+
+            DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
         }
 
         /// <summary>Updates the earth hologram matrix</summary>
         internal static void UpdateTransform()
         {
             // Calculate matrix rotation
-            Matrix4x4 rm = Raymath.MatrixRotateXYZ(new Vector3(90, 0, 0) / RAD2DEG);
+            Matrix4x4 rm = Raymath.MatrixRotateXYZ(new Vector3(90, 23.44f, 0) / RAD2DEG);
             Matrix4x4 sm = Raymath.MatrixScale(1, 1, 1);
             Matrix4x4 pm = Raymath.MatrixTranslate(CENTER.X, CENTER.Y, CENTER.Z);
             // Multiply matrices

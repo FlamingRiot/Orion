@@ -250,7 +250,7 @@ namespace Orion_Desktop
         /// <summary>Updates a single PBR light source.</summary>
         /// <param name="shader">PBR shader to update to.</param>
         /// <param name="light">PBR light to use.</param>
-        private static void UpdateLight(Shader shader, PbrLight light)
+        internal static void UpdateLight(Shader shader, PbrLight light)
         {
             SetShaderValue(shader, light.EnabledLoc, light.Enabled, ShaderUniformDataType.Int);
             SetShaderValue(shader, light.TypeLoc, light.Type, ShaderUniformDataType.Int);

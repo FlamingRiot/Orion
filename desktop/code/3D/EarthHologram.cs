@@ -51,6 +51,7 @@ namespace Orion_Desktop
             // Update lerp
             CENTER = Raymath.Vector3Lerp(CENTER, CENTER_TO_BE, GetFrameTime() * 3);
             Shaders.Lights[0].Position = CENTER;
+            Shaders.UpdateLight(Shaders.PBRLightingShader, Shaders.Lights[0]);
             UpdateTransform();
 
             // Update satellite

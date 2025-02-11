@@ -53,7 +53,7 @@ namespace Orion_Desktop
                 {
                     Vector2 mouse = GetMouseDelta() * 0.2f;
                     EarthHologram.IYaw += mouse.X;
-                    EarthHologram.IPitch += mouse.Y;
+                    //EarthHologram.IPitch += mouse.Y;
                 }
             }
 

@@ -4,7 +4,6 @@
 #pragma warning disable CS8601
 
 using System.Numerics;
-using Newtonsoft.Json.Linq;
 using Raylib_cs;
 
 namespace Orion_Desktop
@@ -19,7 +18,7 @@ namespace Orion_Desktop
         public const float POSITION_LATITUDE = 40 + 6.94f;
         public const float POSITION_LONGITUDE = 46.99f - 40;
 
-        internal static Vector3 ComputeECEFTilted(float latitude, float longitude)
+        internal static Vector3 ComputeECEFTilted(float latitude, float longitude, float globeYaw)
         {
             // Fix negative/positive latitude
             if (longitude < 0) longitude = 180 + Math.Abs(longitude);
@@ -32,17 +31,18 @@ namespace Orion_Desktop
             float x = MathF.Cos(latRad) * MathF.Cos(longRad);
             float y = MathF.Cos(latRad) * MathF.Sin(longRad);
             float z = MathF.Sin(latRad);
+           
+            Matrix4x4 rotation = Raymath.MatrixRotateZ(-globeYaw / Raylib.RAD2DEG);
+            rotation *= Raymath.MatrixRotateY(-EarthHologram.EARTH_TILT / Raylib.RAD2DEG);
 
-            Matrix4x4 rotatedMat = Raymath.MatrixRotateXYZ(new Vector3(0, -23, 0) / Raylib.RAD2DEG);
-
-            float newX = rotatedMat.M11 * x + rotatedMat.M12 * y + rotatedMat.M13 * z;
-            float newY = rotatedMat.M21 * x + rotatedMat.M22 * y + rotatedMat.M23 * z;
-            float newZ = rotatedMat.M31 * x + rotatedMat.M32 * y + rotatedMat.M33 * z;
+            float newX = rotation.M11 * x + rotation.M12 * y + rotation.M13 * z;
+            float newY = rotation.M21 * x + rotation.M22 * y + rotation.M23 * z;
+            float newZ = rotation.M31 * x + rotation.M32 * y + rotation.M33 * z;
 
             return new Vector3(newX, newZ, newY);
         }
 
-        internal static Vector3 ComputeECEF(float latitude, float longitude)
+        internal static Vector3 ComputeECEF(float latitude, float longitude, Matrix4x4 rotation)
         {
             // Fix negative/positive latitude
             if (longitude < 0) longitude = 180 + Math.Abs(longitude);

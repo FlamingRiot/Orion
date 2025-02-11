@@ -11,8 +11,7 @@ namespace Orion_Desktop
         internal const float HOLOGRAM_RADIUS = 0.8f;
         internal const float EARTH_TILT = 23.44f;
 
-        private static Matrix4x4 _globeCorrectionMat;
-
+        internal static Matrix4x4 GlobeRotationMat; // Earth globe rotation matrix
         internal static Vector3 ORIGIN; // no modification
         internal static Vector3 CENTER_TO_BE; // Used for interface interpolation
         internal static Vector3 CENTER;
@@ -58,15 +57,16 @@ namespace Orion_Desktop
             UpdateSatellite();
 
             // Draw earth hologram box
-            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], _globeCorrectionMat);
+            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeRotationMat);
 
             // Draw satellite point
             DrawSphere(Satellite.RelativePosition + CENTER, 0.02f, Color.Yellow);
 
             // Draw current position
-            DrawSphere(CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
-
+            DrawSphere(CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE, EarthHologram.IYaw) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
+#if DEBUG
             DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
+#endif
         }
 
         /// <summary>Updates the earth hologram matrix</summary>
@@ -90,7 +90,7 @@ namespace Orion_Desktop
             Matrix4x4 sm = Raymath.MatrixScale(1, 1, 1);
             Matrix4x4 pm = Raymath.MatrixTranslate(CENTER.X, CENTER.Y, CENTER.Z);
             // Multiply matrices
-            _globeCorrectionMat = pm * sm * rm;
+            GlobeRotationMat = pm * sm * rm;
         }
     }
 }

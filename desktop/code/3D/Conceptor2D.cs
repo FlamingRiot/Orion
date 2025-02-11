@@ -49,12 +49,7 @@ namespace Orion_Desktop
             // Update earth hologram interface
             if (EarthHologram.InterfaceActive)
             {
-                if (IsMouseButtonDown(MouseButton.Left))
-                {
-                    Vector2 mouse = GetMouseDelta() * 0.2f;
-                    EarthHologram.IYaw += mouse.X;
-                    //EarthHologram.IPitch += mouse.Y;
-                }
+                if (IsMouseButtonDown(MouseButton.Left)) EarthHologram.UpdateInterface();
             }
 
             if (IsKeyPressed(KeyboardKey.E))

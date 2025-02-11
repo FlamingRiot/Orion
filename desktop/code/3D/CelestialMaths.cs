@@ -18,6 +18,11 @@ namespace Orion_Desktop
         public const float POSITION_LATITUDE = 40 + 6.94f;
         public const float POSITION_LONGITUDE = 46.99f - 40;
 
+        /// <summary>Computes an object's 3D position based on its latitude/longitude.</summary>
+        /// <param name="latitude">Latitude of the object.</param>
+        /// <param name="longitude">Longitude of the object.</param>
+        /// <param name="globeYaw">Yaw angle of the globe (used for interface mode.)</param>
+        /// <returns>3D position of the object on a normalized basis.</returns>
         internal static Vector3 ComputeECEFTilted(float latitude, float longitude, float globeYaw)
         {
             // Fix negative/positive latitude
@@ -42,9 +47,13 @@ namespace Orion_Desktop
             return new Vector3(newX, newZ, newY);
         }
 
-        internal static Vector3 ComputeECEF(float latitude, float longitude, Matrix4x4 rotation)
+        /// <summary>Computes an object's 3D position based on its latitude/longitude. (used for robot information computing.)</summary>
+        /// <param name="latitude">Latitude of the object.</param>
+        /// <param name="longitude">Longitude of the object.</param>
+        /// <returns>3D position of the object on a normalized basis.</returns>
+        internal static Vector3 ComputeECEF(float latitude, float longitude)
         {
-            // Fix negative/positive latitude
+            // Fix negative/positive longitude
             if (longitude < 0) longitude = 180 + Math.Abs(longitude);
             else longitude = 180 - longitude;
             // Convert data to radians
@@ -57,6 +66,33 @@ namespace Orion_Desktop
             float z = MathF.Sin(latRad);
 
             return new Vector3(x, z, y);
+        }
+
+        /// <summary>Computes the latitude/longitude of a 3D position around a sphere.</summary>
+        /// <param name="position">Position around the sphere.</param>
+        /// <returns>Calculated Latitude & Longitude.</returns>
+        internal static (float, float) ComputeECEFeverse(Vector3 position)
+        {
+            // Reverse latitude and longitude as radians (from ECEF equations)
+            float latRad = MathF.Asin(position.Y);
+            float longRad = MathF.Asin(position.Z / MathF.Cos(latRad));
+        
+            // Convert from radians to degrees
+            float latitude = latRad * Raylib.RAD2DEG;
+            float longitude = longRad * Raylib.RAD2DEG;
+
+            // Recover negative/positive longitude fix
+            if (longitude - 180 > 0)
+            {
+                longitude -= 180;
+                longitude -= longitude * 2;
+            }
+            else
+            {
+                longitude = 180 - longitude;
+            }
+
+            return (latitude, longitude);
         }
     }
 }

@@ -23,6 +23,9 @@ namespace Orion_Desktop
         internal static float IYaw, IPitch;
         internal static float PointLatitude, PointLongitude; // Simulation point coordinates
 
+        private static double _holdTime;
+        private static Vector2 _mouseOrigin;
+
         /// <summary>Inits the earth hologram.</summary>
         public static void Init()
         {
@@ -104,15 +107,26 @@ namespace Orion_Desktop
                 IYaw += mouse.X;
                 // Update view-point (relative to new rotation)
                 OrionSim.UpdateViewPoint(PointLatitude, PointLongitude);
-            }
-            if (IsMouseButtonPressed(MouseButton.Left)) // Point click
-            {
-                RayCollision collision = GetRayCollisionSphere(GetMouseRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
-                if (collision.Hit)
+                // Start hold time
+                if (_holdTime == 0)
                 {
-                    (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);
-                    OrionSim.UpdateViewPoint(PointLatitude, PointLongitude);
+                    _holdTime = GetTime();
+                    _mouseOrigin = GetMousePosition();
                 }
+            }
+            if (IsMouseButtonReleased(MouseButton.Left)) // Point click
+            {
+                // Check for hold-time
+                if ((GetMousePosition() - _mouseOrigin).Length() == 0)
+                {
+                    RayCollision collision = GetRayCollisionSphere(GetMouseRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
+                    if (collision.Hit)
+                    {
+                        (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);
+                        OrionSim.UpdateViewPoint(PointLatitude, PointLongitude);
+                    }
+                } 
+                _holdTime = 0;
             }
         }
     }

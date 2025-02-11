@@ -80,8 +80,7 @@ namespace Orion_Desktop
             EndMode3D();
 
 #if DEBUG
-            DrawText(EarthHologram.PointLatitude.ToString() + " & " + EarthHologram.PointLongitude.ToString(), 20, 40, 20, Color.Red);
-            DrawText(EarthHologram.Satellite.Latitude.ToString() + " & " + EarthHologram.Satellite.Longitude.ToString(), 20, 80, 20, Color.Red);
+            // Debug text
 #endif
         }
 

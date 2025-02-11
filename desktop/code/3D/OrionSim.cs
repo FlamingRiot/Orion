@@ -17,9 +17,17 @@ namespace Orion_Desktop
         internal static void Init(float lat, float lon)
         {
             _hemisphere = LoadModelFromMesh(GenMeshHemiSphere(2, 15, 15));
+            UpdateViewPoint(lat, lon);
+        }
+
+        /// <summary>Updates the viewer's position.</summary>
+        /// <param name="lat">New latitude.</param>
+        /// <param name="lon">New longitude.</param>
+        internal static void UpdateViewPoint(float lat, float lon)
+        {
             ViewerLatitude = lat;
             ViewerLongitude = lon;
-            ViewerPosition = CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE, EarthHologram.IYaw) * (EarthHologram.HOLOGRAM_RADIUS + 1);
+            ViewerPosition = CelestialMaths.ComputeECEFTilted(lat, lon, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
         }
 
         /// <summary>Draws the Orion robot simulation.</summary>

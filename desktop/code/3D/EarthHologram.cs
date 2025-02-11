@@ -22,7 +22,6 @@ namespace Orion_Desktop
 
         internal static float IYaw, IPitch;
         internal static float PointLatitude, PointLongitude; // Simulation point coordinates
-        internal static Vector3 PointPos; //test
 
         /// <summary>Inits the earth hologram.</summary>
         public static void Init()
@@ -66,7 +65,7 @@ namespace Orion_Desktop
             DrawSphere(Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Yellow);
 
             // Draw current position
-            DrawSphere(CelestialMaths.ComputeECEFTilted(PointLatitude, PointLongitude, IYaw) * (HOLOGRAM_RADIUS) + CENTER, 0.02f, Color.Red);
+            DrawSphere(OrionSim.ViewerPosition + CENTER, 0.02f, Color.Red);
 #if DEBUG
             DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
 #endif
@@ -103,13 +102,17 @@ namespace Orion_Desktop
             {
                 Vector2 mouse = GetMouseDelta() * 0.2f;
                 IYaw += mouse.X;
-                //EarthHologram.IPitch += mouse.Y;
+                // Update view-point (relative to new rotation)
+                OrionSim.UpdateViewPoint(PointLatitude, PointLongitude);
             }
             if (IsMouseButtonPressed(MouseButton.Left)) // Point click
             {
                 RayCollision collision = GetRayCollisionSphere(GetMouseRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
-                PointPos = collision.Point;
-                (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER)/HOLOGRAM_RADIUS, IYaw);
+                if (collision.Hit)
+                {
+                    (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);
+                    OrionSim.UpdateViewPoint(PointLatitude, PointLongitude);
+                }
             }
         }
     }

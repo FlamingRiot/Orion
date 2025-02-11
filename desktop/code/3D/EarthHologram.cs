@@ -66,7 +66,7 @@ namespace Orion_Desktop
             DrawSphere(Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Yellow);
 
             // Draw current position
-            DrawSphere(CelestialMaths.ComputeECEFTilted(PointLatitude, PointLongitude, IYaw) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Red);
+            DrawSphere(CelestialMaths.ComputeECEFTilted(PointLatitude, PointLongitude, IYaw) * (HOLOGRAM_RADIUS) + CENTER, 0.02f, Color.Red);
 #if DEBUG
             DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
 #endif
@@ -109,7 +109,7 @@ namespace Orion_Desktop
             {
                 RayCollision collision = GetRayCollisionSphere(GetMouseRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
                 PointPos = collision.Point;
-                (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFReverse((collision.Point - CENTER)/HOLOGRAM_RADIUS);
+                (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER)/HOLOGRAM_RADIUS, IYaw);
             }
         }
     }

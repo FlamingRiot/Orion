@@ -49,7 +49,7 @@ namespace Orion_Desktop
             // Update earth hologram interface
             if (EarthHologram.InterfaceActive)
             {
-                if (IsMouseButtonDown(MouseButton.Left)) EarthHologram.UpdateInterface();
+                EarthHologram.UpdateInterface();
             }
 
             if (IsKeyPressed(KeyboardKey.E))

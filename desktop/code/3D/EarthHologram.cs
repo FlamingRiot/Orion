@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
@@ -22,6 +21,8 @@ namespace Orion_Desktop
         internal static bool InterfaceActive = false;
 
         internal static float IYaw, IPitch;
+        internal static float PointLatitude, PointLongitude; // Simulation point coordinates
+        internal static Vector3 PointPos; //test
 
         /// <summary>Inits the earth hologram.</summary>
         public static void Init()
@@ -65,7 +66,7 @@ namespace Orion_Desktop
             DrawSphere(Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Yellow);
 
             // Draw current position
-            DrawSphere(CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE, IYaw) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
+            DrawSphere(CelestialMaths.ComputeECEFTilted(PointLatitude, PointLongitude, IYaw) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Red);
 #if DEBUG
             DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
 #endif
@@ -98,9 +99,18 @@ namespace Orion_Desktop
         /// <summary>Updates the interface of the hologram.</summary>
         internal static void UpdateInterface()
         {
-            Vector2 mouse = GetMouseDelta() * 0.2f;
-            IYaw += mouse.X;
-            //EarthHologram.IPitch += mouse.Y;
+            if (IsMouseButtonDown(MouseButton.Left)) // Drag
+            {
+                Vector2 mouse = GetMouseDelta() * 0.2f;
+                IYaw += mouse.X;
+                //EarthHologram.IPitch += mouse.Y;
+            }
+            if (IsMouseButtonPressed(MouseButton.Left)) // Point click
+            {
+                RayCollision collision = GetRayCollisionSphere(GetMouseRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
+                PointPos = collision.Point;
+                (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFeverse((collision.Point - CENTER)/HOLOGRAM_RADIUS);
+            }
         }
     }
 }

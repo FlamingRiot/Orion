@@ -45,6 +45,13 @@ namespace Orion_Desktop
 
             // Load skybox and apply hdr texture
             SkyboxMat = Shaders.LoadSkybox("assets/textures/skybox.hdr");
+
+            // Rount-trip
+#if DEBUG
+            Vector3 pos = CelestialMaths.ComputeECEF(-23.0f, 180.0f);
+            (float lat, float lon) = CelestialMaths.ComputeECEFeverse(pos);
+            Console.WriteLine($"Lat {lat}, Lon {lon}");
+#endif
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -71,6 +78,11 @@ namespace Orion_Desktop
             //DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
 #endif
             EndMode3D();
+
+#if DEBUG
+            DrawText(EarthHologram.PointLatitude.ToString() + " & " + EarthHologram.PointLongitude.ToString(), 20, 40, 20, Color.Red);
+            DrawText(EarthHologram.Satellite.Latitude.ToString() + " & " + EarthHologram.Satellite.Longitude.ToString(), 20, 80, 20, Color.Red);
+#endif
         }
 
         /// <summary>Updates the 3D conceptor.</summary>

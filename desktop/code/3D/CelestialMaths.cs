@@ -75,7 +75,8 @@ namespace Orion_Desktop
         {
             // Reverse latitude and longitude as radians (from ECEF equations)
             float latRad = MathF.Asin(position.Y);
-            float longRad = MathF.Asin(position.Z / MathF.Cos(latRad));
+            //float longRad = MathF.Asin(position.Z / MathF.Cos(latRad));
+            float longRad = MathF.Atan2(position.Z, position.X);
         
             // Convert from radians to degrees
             float latitude = latRad * Raylib.RAD2DEG;
@@ -89,7 +90,8 @@ namespace Orion_Desktop
             }
             else
             {
-                longitude = 180 - longitude;
+                if (longitude < 0) longitude = -180 - longitude;
+                else longitude = 180 - longitude;
             }
 
             return (latitude, longitude);

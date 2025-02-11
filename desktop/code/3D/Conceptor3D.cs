@@ -81,6 +81,7 @@ namespace Orion_Desktop
 
 #if DEBUG
             // Debug text
+            DrawText(EarthHologram.IYaw.ToString(), 20, 40, 20, Color.Red);
 #endif
         }
 

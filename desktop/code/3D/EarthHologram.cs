@@ -20,7 +20,7 @@ namespace Orion_Desktop
         internal static Satellite Satellite; // Satellite object
         internal static bool InterfaceActive = false;
 
-        internal static float IYaw, IPitch;
+        internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
         internal static float PointLatitude, PointLongitude; // Simulation point coordinates
 
         private static double _holdTime;
@@ -56,6 +56,7 @@ namespace Orion_Desktop
             CENTER = Raymath.Vector3Lerp(CENTER, CENTER_TO_BE, GetFrameTime() * LERP_SPEED);
             Shaders.Lights[0].Position = CENTER;
             Shaders.UpdateLight(Shaders.PBRLightingShader, Shaders.Lights[0]);
+            IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * LERP_SPEED);
             UpdateTransform();
 
             // Update satellite
@@ -78,10 +79,10 @@ namespace Orion_Desktop
         internal static void UpdateTransform()
         {
             Matrix4x4 rm;
-            if (!InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, 0) / RAD2DEG);
+            if (!InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, IYaw) / RAD2DEG);
             else
             {
-                rm = Raymath.MatrixRotateY((IYaw) / RAD2DEG);
+                rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
 
                 // Compute X/Z axis weights
                 Vector3 cam = new Vector3(Conceptor3D.View.Camera.Position.X, 0, Conceptor3D.View.Camera.Position.Z) - 
@@ -96,6 +97,9 @@ namespace Orion_Desktop
             Matrix4x4 pm = Raymath.MatrixTranslate(CENTER.X, CENTER.Y, CENTER.Z);
             // Multiply matrices
             GlobeRotationMat = pm * sm * rm;
+                
+            // Update ECEF position of the viewpoint
+            OrionSim.UpdateViewPoint(PointLatitude, PointLongitude); // Update un-rotated pos
         }
 
         /// <summary>Updates the interface of the hologram.</summary>
@@ -105,8 +109,7 @@ namespace Orion_Desktop
             {
                 Vector2 mouse = GetMouseDelta() * 0.2f;
                 IYaw += mouse.X;
-                // Update view-point (relative to new rotation)
-                OrionSim.UpdateViewPoint(PointLatitude, PointLongitude);
+                IYawToBe = IYaw;
                 // Start hold time
                 if (_holdTime == 0)
                 {
@@ -123,7 +126,6 @@ namespace Orion_Desktop
                     if (collision.Hit)
                     {
                         (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);
-                        OrionSim.UpdateViewPoint(PointLatitude, PointLongitude);
                     }
                 } 
                 _holdTime = 0;

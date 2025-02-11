@@ -68,9 +68,8 @@ namespace Orion_Desktop
                 {
                     EarthHologram.InterfaceActive = false;
                     EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
-                    EarthHologram.IPitch = 0;
-                    EarthHologram.IYaw = 0;
-                    OrionSim.UpdateViewPoint(EarthHologram.PointLatitude, EarthHologram.PointLongitude); // Update un-rotated pos
+                    EarthHologram.IPitchToBe = 0;
+                    EarthHologram.IYawToBe = 0;
                     DisableCursor();
                 }
             }

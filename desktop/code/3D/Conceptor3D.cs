@@ -48,8 +48,8 @@ namespace Orion_Desktop
 
             // Rount-trip
 #if DEBUG
-            Vector3 pos = CelestialMaths.ComputeECEF(-23.0f, 180.0f);
-            (float lat, float lon) = CelestialMaths.ComputeECEFeverse(pos);
+            Vector3 pos = CelestialMaths.ComputeECEFTilted(-34.0f, 22.0f, 90);
+            (float lat, float lon) = CelestialMaths.ComputeECEFTiltedReverse(pos, 90);
             Console.WriteLine($"Lat {lat}, Lon {lon}");
 #endif
         }

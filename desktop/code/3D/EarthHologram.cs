@@ -109,7 +109,7 @@ namespace Orion_Desktop
             {
                 RayCollision collision = GetRayCollisionSphere(GetMouseRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
                 PointPos = collision.Point;
-                (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFeverse((collision.Point - CENTER)/HOLOGRAM_RADIUS);
+                (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFReverse((collision.Point - CENTER)/HOLOGRAM_RADIUS);
             }
         }
     }

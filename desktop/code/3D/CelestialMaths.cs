@@ -36,7 +36,7 @@ namespace Orion_Desktop
             float x = MathF.Cos(latRad) * MathF.Cos(longRad);
             float y = MathF.Cos(latRad) * MathF.Sin(longRad);
             float z = MathF.Sin(latRad);
-           
+
             Matrix4x4 rotation = Raymath.MatrixRotateZ(-globeYaw / Raylib.RAD2DEG);
             rotation *= Raymath.MatrixRotateY(-EarthHologram.EARTH_TILT / Raylib.RAD2DEG);
 
@@ -71,13 +71,51 @@ namespace Orion_Desktop
         /// <summary>Computes the latitude/longitude of a 3D position around a sphere.</summary>
         /// <param name="position">Position around the sphere.</param>
         /// <returns>Calculated Latitude & Longitude.</returns>
-        internal static (float, float) ComputeECEFeverse(Vector3 position)
+        internal static (float, float) ComputeECEFReverse(Vector3 position)
         {
             // Reverse latitude and longitude as radians (from ECEF equations)
             float latRad = MathF.Asin(position.Y);
             //float longRad = MathF.Asin(position.Z / MathF.Cos(latRad));
             float longRad = MathF.Atan2(position.Z, position.X);
         
+            // Convert from radians to degrees
+            float latitude = latRad * Raylib.RAD2DEG;
+            float longitude = longRad * Raylib.RAD2DEG;
+
+            // Recover negative/positive longitude fix
+            if (longitude - 180 > 0)
+            {
+                longitude -= 180;
+                longitude -= longitude * 2;
+            }
+            else
+            {
+                if (longitude < 0) longitude = -180 - longitude;
+                else longitude = 180 - longitude;
+            }
+
+            return (latitude, longitude);
+        }
+
+        /// <summary>Computes the latitude/longitude of a 3D position around a sphere.</summary>
+        /// <param name="position">Position around the sphere.</param>
+        /// <returns>Calculated Latitude & Longitude.</returns>
+        internal static (float, float) ComputeECEFTiltedReverse(Vector3 position, float globeYaw)
+        {
+            // Compute inverse-rotation matrices
+            Matrix4x4 inverseRotation = Raymath.MatrixRotateY(EarthHologram.EARTH_TILT / Raylib.RAD2DEG);
+            inverseRotation *= Raymath.MatrixRotateZ(globeYaw / Raylib.RAD2DEG);
+            
+            // Apply inverse-rotation
+            float x = inverseRotation.M11 * position.X + inverseRotation.M12 * position.Z + inverseRotation.M13 * position.Y;
+            float y = inverseRotation.M21 * position.X + inverseRotation.M22 * position.Z + inverseRotation.M23 * position.Y;
+            float z = inverseRotation.M31 * position.X + inverseRotation.M32 * position.Z + inverseRotation.M33 * position.Y;
+
+            // Reverse latitude and longitude as radians (from ECEF equations)
+            float latRad = MathF.Asin(z);
+            //float longRad = MathF.Asin(position.Z / MathF.Cos(latRad));
+            float longRad = MathF.Atan2(y, x);
+
             // Convert from radians to degrees
             float latitude = latRad * Raylib.RAD2DEG;
             float longitude = longRad * Raylib.RAD2DEG;

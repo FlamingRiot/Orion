@@ -41,7 +41,7 @@ namespace Orion_Desktop
         internal static async void UpdateSatellite()
         {
             await OnlineRequests.UpdateCurrentSatellite();
-            Satellite.RelativePosition = Raymath.Vector3Lerp(Satellite.RelativePosition, SatellitePoints.Last(), (float)GetFrameTime());
+            Satellite.RelativePosition = CelestialMaths.ComputeECEFTilted(Satellite.Latitude, Satellite.Longitude, IYaw);
         }
 
         /// <summary>Draws the earth hologam.</summary>
@@ -60,10 +60,10 @@ namespace Orion_Desktop
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeRotationMat);
 
             // Draw satellite point
-            DrawSphere(Satellite.RelativePosition + CENTER, 0.02f, Color.Yellow);
+            DrawSphere(Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Yellow);
 
             // Draw current position
-            DrawSphere(CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE, EarthHologram.IYaw) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
+            DrawSphere(CelestialMaths.ComputeECEFTilted(CelestialMaths.POSITION_LATITUDE, CelestialMaths.POSITION_LONGITUDE, IYaw) * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Green);
 #if DEBUG
             DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
 #endif

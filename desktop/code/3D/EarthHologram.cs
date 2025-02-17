@@ -10,7 +10,6 @@ namespace Orion_Desktop
         // Constants
         internal const float HOLOGRAM_RADIUS = 0.8f;
         internal const float EARTH_TILT = 23.44f;
-        internal const float LERP_SPEED = 3f;
 
         internal static Matrix4x4 GlobeRotationMat; // Earth globe rotation matrix
         internal static Vector3 ORIGIN; // unmodified center, ever
@@ -52,10 +51,10 @@ namespace Orion_Desktop
         internal static void Draw()
         {
             // Update globe lerp
-            CENTER = Raymath.Vector3Lerp(CENTER, CENTER_TO_BE, GetFrameTime() * LERP_SPEED);
+            CENTER = Raymath.Vector3Lerp(CENTER, CENTER_TO_BE, GetFrameTime() * Conceptor3D.LERP_SPEED);
             Shaders.Lights[0].Position = CENTER;
             Shaders.UpdateLight(Shaders.PBRLightingShader, Shaders.Lights[0]);
-            IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * LERP_SPEED);
+            IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
 
             // Update satellite

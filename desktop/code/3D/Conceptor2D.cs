@@ -88,6 +88,9 @@ namespace Orion_Desktop
                             break;
                         case Interface.Terminal:
                             InterfaceActive = true;
+                            Ray center = GetMouseRay(Size / 2, Conceptor3D.View.Camera);
+                            pos = center.Position + center.Direction * 1f;
+                            OrionSim.PositionToBe = pos;
                             EnableCursor();
                             break;
                     }
@@ -95,9 +98,16 @@ namespace Orion_Desktop
                 else
                 {
                     InterfaceActive = false;
-                    EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
-                    EarthHologram.IPitchToBe = 0;
-                    EarthHologram.IYawToBe = 0;
+                    if (OpenedInterface == Interface.Earth)
+                    {
+                        EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
+                        EarthHologram.IPitchToBe = 0;
+                        EarthHologram.IYawToBe = 0;
+                    }
+                    else if (OpenedInterface == Interface.Terminal) 
+                    {
+                        OrionSim.PositionToBe = OrionSim.OriginPosition;
+                    }
                     DisableCursor();
                 }
             }

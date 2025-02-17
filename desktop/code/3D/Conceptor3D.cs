@@ -9,6 +9,7 @@ namespace Orion_Desktop
     internal static class Conceptor3D
     {
         internal const int HUB_RADIUS = 8;
+        internal const float LERP_SPEED = 3f;
 
         // General 3D environement objets
         internal static View3D View;

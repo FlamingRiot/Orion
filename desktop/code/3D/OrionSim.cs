@@ -9,8 +9,11 @@ namespace Orion_Desktop
     {
         internal static float ViewerLatitude;
         internal static float ViewerLongitude;
+
         internal static Vector3 ViewerPosition;
-        internal static Vector3 TerminalPosition = new Vector3(-10.1f, 1.7f, -0.16f);
+        internal static Vector3 OriginPosition = new Vector3(-10.1f, 1.7f, -0.16f);
+        internal static Vector3 TerminalPosition;
+        internal static Vector3 PositionToBe;
 
         internal static Matrix4x4 Transform;
         private static RenderTexture2D TerminalScreen;
@@ -25,6 +28,9 @@ namespace Orion_Desktop
             // Load screen render texture
             TerminalScreen = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
             TerminalScreenMat = LoadMaterialDefault();
+
+            TerminalPosition = OriginPosition;
+            PositionToBe = OriginPosition;
         }
 
         /// <summary>Updates the viewer's position.</summary>
@@ -39,6 +45,9 @@ namespace Orion_Desktop
 
         internal static void Draw()
         {
+            TerminalPosition = Raymath.Vector3Lerp(TerminalPosition, PositionToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            UpdateTransform();
+
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
 
             // Draw arrow
@@ -61,6 +70,13 @@ namespace Orion_Desktop
 
             // Set material texture
             SetMaterialTexture(ref TerminalScreenMat, MaterialMapIndex.Diffuse, TerminalScreen.Texture);
+        }
+
+        /// <summary>Updates the transform of the hologram screen.</summary>
+        internal static void UpdateTransform()
+        {
+            Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
+            Transform *= Raymath.MatrixRotateZ(-40f / RAD2DEG);
         }
     }
 }

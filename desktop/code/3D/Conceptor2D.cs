@@ -91,7 +91,10 @@ namespace Orion_Desktop
                             Ray center = GetMouseRay(Size / 2, Conceptor3D.View.Camera);
                             pos = center.Position + center.Direction * 1f;
                             OrionSim.PositionToBe = pos;
-                            OrionSim.IYawToBe = 90;
+
+                            // Define orientation angles
+
+                            OrionSim.IYawToBe = (Conceptor3D.View.Pitch * RAD2DEG) + 90;
                             EnableCursor();
                             break;
                     }

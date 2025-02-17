@@ -10,6 +10,7 @@ namespace Orion_Desktop
         // Internal resources
         internal static Dictionary<string, Material> Materials = new Dictionary<string, Material>();
         internal static Dictionary<string, Mesh> Meshes = new Dictionary<string, Mesh>();
+        internal static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
         internal static Dictionary<ShapeType, Mesh> ShapeMeshes = new Dictionary<ShapeType, Mesh>();
 
         // External resources
@@ -20,10 +21,11 @@ namespace Orion_Desktop
         internal static void Init()
         {
             LoadMaterials();
+            LoadTextures();
             LoadMeshes();
         }
 
-        /// <summary>Loads the application's textures.</summary>
+        /// <summary>Loads the application's materials and configures them.</summary>
         private static void LoadMaterials()
         {
             // Earth mat (texture-hologram)
@@ -39,7 +41,7 @@ namespace Orion_Desktop
             PBRMaterials.Add("ceiling", new PBRMaterial("assets/pbr/ceiling")); 
         }
 
-        /// <summary>Loads the application's textures.</summary>
+        /// <summary>Loads the application's shape meshes.</summary>
         private static void LoadMeshes()
         {
             Meshes.Add("sphere", GenMeshSphere(EarthHologram.HOLOGRAM_RADIUS, 20, 20));
@@ -56,6 +58,12 @@ namespace Orion_Desktop
                 { ShapeType.HemiSphere, GenMeshHemiSphere(0.5f, 15, 15) },
                 { ShapeType.Knot, GenMeshKnot(0.5f, 1, 20, 20) }
             };
+        }
+
+        /// <summary>Loads the application's textures.</summary>
+        private static void LoadTextures()
+        {
+            Textures.Add("earth_preview", LoadTexture("assets/textures/earth_preview.png"));
         }
     }
 }

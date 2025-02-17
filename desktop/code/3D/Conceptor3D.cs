@@ -37,9 +37,9 @@ namespace Orion_Desktop
             // Init center tables
             EarthHologram.Init(); // Connect to earth hologram
             View.Camera.Target = EarthHologram.CENTER;
-            OrionSim.Init(0, 0); // Start Orion robot simulation
 
             Shaders.Init(); // Load program shaders
+            OrionSim.Init(0, 0); // Start Orion robot simulation
             Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
 
             objects = RLoading.LoadScene();

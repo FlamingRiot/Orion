@@ -7,6 +7,8 @@ namespace Orion_Desktop
     /// <summary>Represents the Orion robot simulation.</summary>
     internal static class OrionSim
     {
+        internal const float INCLINE_YAW = 40f;
+
         internal static float ViewerLatitude;
         internal static float ViewerLongitude;
 
@@ -14,6 +16,7 @@ namespace Orion_Desktop
         internal static Vector3 OriginPosition = new Vector3(-10.1f, 1.7f, -0.16f);
         internal static Vector3 TerminalPosition;
         internal static Vector3 PositionToBe;
+        internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
 
         internal static Matrix4x4 Transform;
         private static RenderTexture2D TerminalScreen;
@@ -24,10 +27,13 @@ namespace Orion_Desktop
         {
             UpdateViewPoint(lat, lon);
             Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
-            Transform *= Raymath.MatrixRotateZ(-40f / RAD2DEG);
+            Transform *= Raymath.MatrixRotateZ(INCLINE_YAW / RAD2DEG);
+            IYaw = INCLINE_YAW;
+            IYawToBe = INCLINE_YAW;
             // Load screen render texture
             TerminalScreen = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
             TerminalScreenMat = LoadMaterialDefault();
+            TerminalScreenMat.Shader = Shaders.ScreenShader;
 
             TerminalPosition = OriginPosition;
             PositionToBe = OriginPosition;
@@ -46,6 +52,7 @@ namespace Orion_Desktop
         internal static void Draw()
         {
             TerminalPosition = Raymath.Vector3Lerp(TerminalPosition, PositionToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
 
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
@@ -63,7 +70,7 @@ namespace Orion_Desktop
 
             ClearBackground(Color.SkyBlue);
 
-
+            DrawTexture(Resources.Textures["earth_preview"], 100, 320, Color.White);
 
             // Close texture-mode
             EndTextureMode();
@@ -76,7 +83,7 @@ namespace Orion_Desktop
         internal static void UpdateTransform()
         {
             Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
-            Transform *= Raymath.MatrixRotateZ(-40f / RAD2DEG);
+            Transform *= Raymath.MatrixRotateZ(-IYaw / RAD2DEG);
         }
     }
 }

@@ -157,6 +157,7 @@ namespace Orion_Desktop
         internal static Shader PostProShader;
         internal static Shader PBRLightingShader;
         internal static Shader SkyboxShader;
+        internal static Shader ScreenShader;
         private static Shader CubemapShader;
 
         public static PbrLight[] Lights = new PbrLight[4];
@@ -179,6 +180,8 @@ namespace Orion_Desktop
         {
             // UV coord fix shader
             FixShader = LoadShader(null, "assets/shaders/shader.fs"); // Earth hologram rotation fix shader
+
+            ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader

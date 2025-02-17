@@ -91,6 +91,7 @@ namespace Orion_Desktop
                             Ray center = GetMouseRay(Size / 2, Conceptor3D.View.Camera);
                             pos = center.Position + center.Direction * 1f;
                             OrionSim.PositionToBe = pos;
+                            OrionSim.IYawToBe = 90;
                             EnableCursor();
                             break;
                     }
@@ -107,6 +108,7 @@ namespace Orion_Desktop
                     else if (OpenedInterface == Interface.Terminal) 
                     {
                         OrionSim.PositionToBe = OrionSim.OriginPosition;
+                        OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
                     }
                     DisableCursor();
                 }

@@ -13,6 +13,7 @@ namespace Orion_Desktop
         internal static bool InteractiveEnabled;
         internal static Rectangle ActionRec;
         internal static Font Font;
+        internal static RenderTexture2D OrionTerminalRender;
 
         // (Should be monitor size.)
         internal static int Width;
@@ -26,6 +27,8 @@ namespace Orion_Desktop
             Width = GetScreenWidth();
             Height = GetScreenHeight();
             Size = new Vector2(Width, Height);
+
+            OrionTerminalRender = LoadRenderTexture(Width, Height); // Load orion terminal render
 
             // Load font
             Font = LoadFont("assets/textures/Ubuntu-Bold.ttf");

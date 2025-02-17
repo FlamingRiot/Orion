@@ -45,13 +45,6 @@ namespace Orion_Desktop
 
             // Load skybox and apply hdr texture
             SkyboxMat = Shaders.LoadSkybox("assets/textures/skybox.hdr");
-
-            // Rount-trip
-#if DEBUG
-            Vector3 pos = CelestialMaths.ComputeECEFTilted(-34.0f, 22.0f, 90);
-            (float lat, float lon) = CelestialMaths.ComputeECEFTiltedReverse(pos, 90);
-            Console.WriteLine($"Lat {lat}, Lon {lon}");
-#endif
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -59,13 +52,8 @@ namespace Orion_Desktop
         {
             BeginMode3D(View.Camera);
 
+            // Draw skybox
             Shaders.DrawSkybox(SkyboxMat);
-
-            // Draw earth hologram
-            EarthHologram.Draw();
-
-            // Draw Orion robot simulation
-            //OrionSim.Draw();
 
             // Draw scene
             objects.ForEach(x => x.Draw());

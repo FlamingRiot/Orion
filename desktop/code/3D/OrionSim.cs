@@ -11,13 +11,14 @@ namespace Orion_Desktop
         internal static float ViewerLongitude;
         internal static Vector3 ViewerPosition;
 
-        private static Model _hemisphere;
+        private static Matrix4x4 _transform;
 
         /// <summary>Inits the Orion simulation robot.</summary>
         internal static void Init(float lat, float lon)
         {
-            _hemisphere = LoadModelFromMesh(GenMeshHemiSphere(2, 15, 15));
             UpdateViewPoint(lat, lon);
+            _transform = Raymath.MatrixTranslate(-10.1f, 1.7f, -0.16f);
+            _transform *= Raymath.MatrixRotateZ(-40f / RAD2DEG);
         }
 
         /// <summary>Updates the viewer's position.</summary>
@@ -33,7 +34,7 @@ namespace Orion_Desktop
         /// <summary>Draws the Orion robot simulation.</summary>
         internal static void Draw()
         {
-            DrawModelWires(_hemisphere, Vector3.UnitY * 10, 1, Color.Gray);
+            DrawMesh(Resources.Meshes["screen"], Resources.Materials["screen"], _transform); // Draw screen with shader
 
             // Draw arrow
             Vector3 target = Vector3.Normalize(Vector3.Subtract(EarthHologram.Satellite.RelativePosition, ViewerPosition));

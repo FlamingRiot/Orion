@@ -165,6 +165,7 @@ namespace Orion_Desktop
         private static int EmissivePowerLoc;
         private static int EmissiveColorLoc;
         private static int TextureTilingLoc;
+        private static int BackRenderLoc;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -181,8 +182,7 @@ namespace Orion_Desktop
             
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
-            SetShaderValue(PostProShader, GetShaderLocation(PostProShader, "blurAmount"), 1, ShaderUniformDataType.Float);
-            SetShaderValue(PostProShader, GetShaderLocation(PostProShader, "resolution"), new Vector2(GetScreenWidth(), GetScreenHeight()), ShaderUniformDataType.Vec2);
+            BackRenderLoc = GetShaderLocation(PostProShader, "bRender");
 
             // PBR lighting shader
             PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
@@ -262,6 +262,20 @@ namespace Orion_Desktop
             SetShaderValue(shader, light.TargetLoc, light.Target, ShaderUniformDataType.Vec3);
             SetShaderValue(shader, light.ColorLoc, light.Color, ShaderUniformDataType.Vec4);
             SetShaderValue(shader, light.IntensityLoc, light.Intensity, ShaderUniformDataType.Float);
+        }
+
+        /// <summary>Draws and overlaps the hologram render with the previous one.</summary>
+        internal static void OverlapHologramRender()
+        {
+            // Start post-processing shader
+            BeginShaderMode(PostProShader);
+
+            // Update background render
+            SetShaderValueTexture(PostProShader, BackRenderLoc, Program.Render.Texture);
+            DrawTexturePro(Program.HologramRender.Texture, Program.SourceRender, Program.DestinationRender, Vector2.Zero, 0, Color.White);
+
+            // Close post-processing shader
+            EndShaderMode();
         }
 
         /// <summary>Draws a skybox object to the screen (draw before anything else in the scene).</summary>

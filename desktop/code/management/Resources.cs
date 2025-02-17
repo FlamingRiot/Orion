@@ -26,10 +26,15 @@ namespace Orion_Desktop
         /// <summary>Loads the application's textures.</summary>
         private static void LoadMaterials()
         {
+            // Earth mat (texture-hologram)
             Material earthMat = LoadMaterialDefault();
             SetMaterialTexture(ref earthMat, MaterialMapIndex.Diffuse, LoadTexture("assets/textures/earth.png"));
             earthMat.Shader = Shaders.FixShader;
             Materials.Add("earth", earthMat);
+
+            // Screen mat (texture-hologram)
+            Material screenMat = LoadMaterialDefault();
+            Materials.Add("screen", screenMat);
 
             // Load PBRs
             PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim"));
@@ -42,6 +47,7 @@ namespace Orion_Desktop
         private static void LoadMeshes()
         {
             Meshes.Add("sphere", GenMeshSphere(EarthHologram.HOLOGRAM_RADIUS, 20, 20));
+            Meshes.Add("screen", GenMeshPlane(0.8f, 1.2f, 1 , 1));
 
             // Load UShape Meshes
             ShapeMeshes = new Dictionary<ShapeType, Mesh>()

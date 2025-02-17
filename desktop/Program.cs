@@ -12,6 +12,7 @@ namespace Orion_Desktop
         public const string APP_VERSION = "0.1.0-alpha";
 
         internal static RenderTexture2D Render;
+        internal static RenderTexture2D HologramRender;
         internal static Rectangle SourceRender;
         internal static Rectangle DestinationRender;
 
@@ -51,17 +52,34 @@ namespace Orion_Desktop
                 // Close rendering to texture
                 EndTextureMode();
 
+                // Start rendering to texture
+                BeginTextureMode(HologramRender);
+
+                ClearBackground(Color.White);
+
+                // re open 3d mode
+                BeginMode3D(Conceptor3D.View.Camera);
+
+                // Earth hologram drawing
+                EarthHologram.Draw();
+
+                // Orion terminal drawing
+                OrionSim.Draw();
+
+                // End 3D mode
+                EndMode3D();
+
+                // Close rendering to texture
+                EndTextureMode();
+
+                // Draw Orion Terminal screen (render to texture for next render pass.)
+
+
                 // Begin screen rendering
                 BeginDrawing();
 
-                // Start post-processing shader
-                BeginShaderMode(Shaders.PostProShader);
-
-                // Draw Render Texture
-                DrawTexturePro(Render.Texture, SourceRender, DestinationRender, Vector2.Zero, 0, Color.White);
-
-                // End post-processing shader
-                EndShaderMode();
+                // Draws the holographic elements of the scene and overlaps them with the current render
+                Shaders.OverlapHologramRender();
 
                 // Draw 2D information
                 Conceptor2D.Draw();
@@ -84,6 +102,7 @@ namespace Orion_Desktop
             int height = GetScreenHeight(); 
 
             Render = LoadRenderTexture(width, height);
+            HologramRender = LoadRenderTexture(width, height);
             SourceRender = new Rectangle(0, 0, width, -height);
             DestinationRender = new Rectangle(0, 0, width, height);
         }

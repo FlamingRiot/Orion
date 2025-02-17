@@ -16,6 +16,7 @@ namespace Orion_Desktop
         }
 
         internal const int ACTION_REC_SIZE = 30;
+        internal const int SCREEN_RATIO = 700;
 
         // Defines if player is approaching interactible object
         internal static bool InteractiveEnabled;
@@ -89,12 +90,12 @@ namespace Orion_Desktop
                         case Interface.Terminal:
                             InterfaceActive = true;
                             Ray center = GetMouseRay(Size / 2, Conceptor3D.View.Camera);
-                            pos = center.Position + center.Direction * 1f;
+                            pos = center.Position + center.Direction;
                             OrionSim.PositionToBe = pos;
 
                             // Define orientation angles
-
                             OrionSim.IYawToBe = (Conceptor3D.View.Pitch * RAD2DEG) + 90;
+                            OrionSim.IPitchToBe = (Conceptor3D.View.Yaw * RAD2DEG) + 90;
                             EnableCursor();
                             break;
                     }
@@ -112,6 +113,7 @@ namespace Orion_Desktop
                     {
                         OrionSim.PositionToBe = OrionSim.OriginPosition;
                         OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
+                        OrionSim.IPitchToBe = 0;
                     }
                     DisableCursor();
                 }

@@ -53,6 +53,7 @@ namespace Orion_Desktop
         {
             TerminalPosition = Raymath.Vector3Lerp(TerminalPosition, PositionToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            IPitch = Raymath.Lerp(IPitch, IPitchToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
 
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
@@ -83,6 +84,7 @@ namespace Orion_Desktop
         internal static void UpdateTransform()
         {
             Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
+            Transform *= Raymath.MatrixRotateY(IPitch / RAD2DEG);
             Transform *= Raymath.MatrixRotateZ(-IYaw / RAD2DEG);
         }
     }

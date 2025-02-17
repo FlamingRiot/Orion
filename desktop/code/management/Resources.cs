@@ -45,7 +45,7 @@ namespace Orion_Desktop
         private static void LoadMeshes()
         {
             Meshes.Add("sphere", GenMeshSphere(EarthHologram.HOLOGRAM_RADIUS, 20, 20));
-            Meshes.Add("screen", GenMeshPlane(0.8f, 1.2f, 1 , 1));
+            Meshes.Add("screen", GenMeshPlane(GetScreenHeight() / Conceptor2D.SCREEN_RATIO, GetScreenWidth() / Conceptor2D.SCREEN_RATIO, 1 , 1));
 
             // Load UShape Meshes
             ShapeMeshes = new Dictionary<ShapeType, Mesh>()

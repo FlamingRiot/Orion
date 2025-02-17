@@ -10,15 +10,21 @@ namespace Orion_Desktop
         internal static float ViewerLatitude;
         internal static float ViewerLongitude;
         internal static Vector3 ViewerPosition;
+        internal static Vector3 TerminalPosition = new Vector3(-10.1f, 1.7f, -0.16f);
 
-        private static Matrix4x4 _transform;
+        internal static Matrix4x4 Transform;
+        private static RenderTexture2D TerminalScreen;
+        private static Material TerminalScreenMat;
 
         /// <summary>Inits the Orion simulation robot.</summary>
         internal static void Init(float lat, float lon)
         {
             UpdateViewPoint(lat, lon);
-            _transform = Raymath.MatrixTranslate(-10.1f, 1.7f, -0.16f);
-            _transform *= Raymath.MatrixRotateZ(-40f / RAD2DEG);
+            Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
+            Transform *= Raymath.MatrixRotateZ(-40f / RAD2DEG);
+            // Load screen render texture
+            TerminalScreen = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+            TerminalScreenMat = LoadMaterialDefault();
         }
 
         /// <summary>Updates the viewer's position.</summary>
@@ -31,14 +37,30 @@ namespace Orion_Desktop
             ViewerPosition = CelestialMaths.ComputeECEFTilted(lat, lon, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
         }
 
-        /// <summary>Draws the Orion robot simulation.</summary>
         internal static void Draw()
         {
-            DrawMesh(Resources.Meshes["screen"], Resources.Materials["screen"], _transform); // Draw screen with shader
+            DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
 
             // Draw arrow
             Vector3 target = Vector3.Normalize(Vector3.Subtract(EarthHologram.Satellite.RelativePosition, ViewerPosition));
             DrawLine3D(Vector3.UnitY * 12, target * 2 + Vector3.UnitY * 12, Color.Red);
+        }
+
+        /// <summary>Draws the orion terminal screen to a render texture and applies it to a material.</summary>
+        internal static void DrawTerminalScreen()
+        {
+            // Open texture-mode
+            BeginTextureMode(TerminalScreen);
+
+            ClearBackground(Color.SkyBlue);
+
+
+
+            // Close texture-mode
+            EndTextureMode();
+
+            // Set material texture
+            SetMaterialTexture(ref TerminalScreenMat, MaterialMapIndex.Diffuse, TerminalScreen.Texture);
         }
     }
 }

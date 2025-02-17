@@ -77,13 +77,20 @@ namespace Orion_Desktop
         internal static void Update()
         {
             // Update environment camera
-            if (!EarthHologram.InterfaceActive) UpdateCamera();
+            if (!Conceptor2D.InterfaceActive) UpdateCamera();
 
             // Update PBR lighting
             Shaders.UpdatePBRLighting(View.Camera.Position);
 
             // Update action-ray detection
-            Conceptor2D.InteractiveEnabled = GetRayCollisionSphere(GetMouseRay(Conceptor2D.Size / 2, View.Camera), EarthHologram.CENTER, EarthHologram.HOLOGRAM_RADIUS).Hit;
+            Ray mouse = GetMouseRay(Conceptor2D.Size / 2, View.Camera);
+            Conceptor2D.InteractiveEnabled = GetRayCollisionSphere(mouse, EarthHologram.CENTER, EarthHologram.HOLOGRAM_RADIUS).Hit;
+            if (Conceptor2D.InteractiveEnabled) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Earth;
+            if (!Conceptor2D.InteractiveEnabled)
+            {
+                Conceptor2D.InteractiveEnabled = GetRayCollisionMesh(mouse, Resources.Meshes["screen"], OrionSim.Transform).Hit;
+                if (Conceptor2D.InteractiveEnabled) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Terminal;
+            }
         }
 
         /// <summary>Updates the camera movement.</summary>

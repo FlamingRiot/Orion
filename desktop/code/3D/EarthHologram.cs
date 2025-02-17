@@ -18,7 +18,6 @@ namespace Orion_Desktop
         internal static Vector3 CENTER; // current center
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite; // Satellite object
-        internal static bool InterfaceActive = false;
 
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
         internal static float PointLatitude, PointLongitude; // Simulation point coordinates
@@ -79,7 +78,7 @@ namespace Orion_Desktop
         internal static void UpdateTransform()
         {
             Matrix4x4 rm;
-            if (!InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, IYaw) / RAD2DEG);
+            if (!Conceptor2D.InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, IYaw) / RAD2DEG);
             else
             {
                 rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);

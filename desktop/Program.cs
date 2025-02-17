@@ -66,14 +66,14 @@ namespace Orion_Desktop
                 // Orion terminal drawing
                 OrionSim.Draw();
 
-                // End 3D mode
-                EndMode3D();
-
                 // Close rendering to texture
                 EndTextureMode();
 
                 // Draw Orion Terminal screen (render to texture for next render pass.)
+                OrionSim.DrawTerminalScreen();
 
+                // End 3D mode
+                EndMode3D();
 
                 // Begin screen rendering
                 BeginDrawing();

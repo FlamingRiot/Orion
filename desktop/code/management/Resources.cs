@@ -32,10 +32,6 @@ namespace Orion_Desktop
             earthMat.Shader = Shaders.FixShader;
             Materials.Add("earth", earthMat);
 
-            // Screen mat (texture-hologram)
-            Material screenMat = LoadMaterialDefault();
-            Materials.Add("screen", screenMat);
-
             // Load PBRs
             PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim"));
             PBRMaterials.Add("terminal", new PBRMaterial("assets/pbr/terminal")); 

@@ -7,13 +7,22 @@ namespace Orion_Desktop
     /// <summary>Represents the 2D conceptor of the game.</summary>
     internal class Conceptor2D
     {
+        /// <summary>Defines the type of opened interface.</summary>
+        internal enum Interface
+        {
+            None,
+            Earth,
+            Terminal
+        }
+
         internal const int ACTION_REC_SIZE = 30;
 
         // Defines if player is approaching interactible object
         internal static bool InteractiveEnabled;
         internal static Rectangle ActionRec;
         internal static Font Font;
-        internal static RenderTexture2D OrionTerminalRender;
+        internal static Interface OpenedInterface;
+        internal static bool InterfaceActive = false;
 
         // (Should be monitor size.)
         internal static int Width;
@@ -28,7 +37,7 @@ namespace Orion_Desktop
             Height = GetScreenHeight();
             Size = new Vector2(Width, Height);
 
-            OrionTerminalRender = LoadRenderTexture(Width, Height); // Load orion terminal render
+            OpenedInterface = Interface.None; // Defines the opened interface
 
             // Load font
             Font = LoadFont("assets/textures/Ubuntu-Bold.ttf");
@@ -42,7 +51,7 @@ namespace Orion_Desktop
             // Draw E hint
             if (InteractiveEnabled) 
             {
-                if (!EarthHologram.InterfaceActive)
+                if (!InterfaceActive)
                 {
                     DrawRectangleRounded(ActionRec, 0.5f, 5, new Color(222, 222, 222, 255));
                     DrawTextPro(Font, "E", ActionRec.Position, new Vector2(-10, -6), 0, 20, 1, new Color(66, 66, 66, 255));
@@ -50,26 +59,42 @@ namespace Orion_Desktop
             }
 
             // Update earth hologram interface
-            if (EarthHologram.InterfaceActive)
+            if (InterfaceActive)
             {
-                EarthHologram.UpdateInterface();
+                switch (OpenedInterface)
+                {
+                    case Interface.Earth:
+                        EarthHologram.UpdateInterface();
+                        break;
+                    case Interface.Terminal:
+                        break;
+                }
             }
 
             if (IsKeyPressed(KeyboardKey.E))
             {
-                if (!EarthHologram.InterfaceActive && InteractiveEnabled)
+                if (InteractiveEnabled && !InterfaceActive)
                 {
-                    // Activate background blur
-                    EarthHologram.InterfaceActive = true;
-                    // Define 3D post based current camera pos
-                    Ray dir = GetMouseRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
-                    Vector3 pos = dir.Position + dir.Direction * 2.5f;
-                    EarthHologram.CENTER_TO_BE = pos;
-                    EnableCursor();
+                    // Defines which interface to open
+                    switch (OpenedInterface)
+                    {
+                        case Interface.Earth:
+                            InterfaceActive = true;
+                            // Define 3D post based current camera pos
+                            Ray dir = GetMouseRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
+                            Vector3 pos = dir.Position + dir.Direction * 2.5f;
+                            EarthHologram.CENTER_TO_BE = pos;
+                            EnableCursor();
+                            break;
+                        case Interface.Terminal:
+                            InterfaceActive = true;
+                            EnableCursor();
+                            break;
+                    }
                 }
                 else
                 {
-                    EarthHologram.InterfaceActive = false;
+                    InterfaceActive = false;
                     EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
                     EarthHologram.IPitchToBe = 0;
                     EarthHologram.IYawToBe = 0;

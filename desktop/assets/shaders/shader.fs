@@ -9,6 +9,7 @@ in vec2 fragTexCoord;
 
 uniform sampler2D texture0;
 uniform float time;
+uniform vec3 viewPos;
 uniform bool closeup = true;
 
 out vec4 pixelColor;
@@ -19,7 +20,7 @@ void main()
     // Map UVs
     vec2 uv = vec2(fragTexCoord.y, fragTexCoord.x);
 
-    vec4 texelColor = texture(texture0, uv);
+    vec4 texelColor = texture(texture0, uv) * 1.6;
 
     // Convert to grayscale to simulate the hologram effect
     float grayscale = dot(texelColor.rgb, vec3(0.299, 0.587, 0.114));
@@ -35,7 +36,5 @@ void main()
     vec2 distortion = vec2(sin(fragTexCoord.y * 10.0 + time) * 0.005, 0.0); \
     hologramColor *= texture(texture0, uv + distortion).rgb; \
     
-    
-
     pixelColor = vec4(hologramColor, texelColor.a);
 }

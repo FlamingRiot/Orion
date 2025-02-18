@@ -169,6 +169,7 @@ namespace Orion_Desktop
         private static int BackRenderLoc;
         private static int TimeLocGlobe;
         private static int TimeLocScreen;
+        private static int ViewPosLoc;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -181,8 +182,9 @@ namespace Orion_Desktop
         internal static unsafe void LoadShaders()
         {
             // UV coord fix shader
-            FixShader = LoadShader(null, "assets/shaders/shader.fs"); // Earth hologram rotation fix shader
+            FixShader = LoadShader("assets/shaders/default.vs", "assets/shaders/shader.fs"); // Earth hologram rotation fix shader
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
+            ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");
@@ -220,7 +222,7 @@ namespace Orion_Desktop
             EmissiveColorLoc = GetShaderLocation(PBRLightingShader, "emissiveColor");
             TextureTilingLoc = GetShaderLocation(PBRLightingShader, "tiling");
             // Create main light source
-            Lights[0] = PbrLights.CreateLight(0, PbrLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(8, 181, 255, 255), 10, PBRLightingShader);
+            Lights[0] = PbrLights.CreateLight(0, PbrLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(35, 110, 232, 255), 10, PBRLightingShader);
             Lights[1] = PbrLights.CreateLight(1, PbrLightType.Point, EarthHologram.CENTER + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
             //Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-7f, 3f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
             // Set PBR shader used maps
@@ -252,6 +254,7 @@ namespace Orion_Desktop
             // Update intensity
             SetShaderValue(PBRLightingShader, EmissivePowerLoc, 0.5f, ShaderUniformDataType.Float);
             SetShaderValue(PBRLightingShader, EmissiveColorLoc, Vector4.One, ShaderUniformDataType.Vec4);
+            SetShaderValue(FixShader, ViewPosLoc, viewPos, ShaderUniformDataType.Vec3);
         }
 
         /// <summary>Updates a single PBR light source.</summary>

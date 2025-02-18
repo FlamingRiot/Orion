@@ -1,5 +1,7 @@
 #version 330
 
+// The following shader code is used for the terminal screen texture
+
 in vec2 fragTexCoord;
 in vec3 fragPosition;
 in vec3 fragNormal;

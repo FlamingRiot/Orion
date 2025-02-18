@@ -9,7 +9,7 @@ namespace Orion_Desktop
     {
         // Constants
         public const string APP_NAME = "Orion";
-        public const string APP_VERSION = "0.1.0-alpha";
+        public const string APP_VERSION = "0.2.0-alpha";
 
         internal static RenderTexture2D Render;
         internal static RenderTexture2D HologramRender;
@@ -55,7 +55,7 @@ namespace Orion_Desktop
                 // Start rendering to texture
                 BeginTextureMode(HologramRender);
 
-                ClearBackground(Color.White);
+                ClearBackground(Color.Black);
 
                 // re open 3d mode
                 BeginMode3D(Conceptor3D.View.Camera);

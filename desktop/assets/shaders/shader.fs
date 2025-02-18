@@ -1,5 +1,7 @@
 #version 330
 
+// The following shader code is used for earth-globe UV correction
+
 // Input attributes from vertex shader
 in vec3 fragPosition;
 in vec3 fragNormal;

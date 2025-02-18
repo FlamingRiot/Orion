@@ -1,5 +1,7 @@
 #version 330
 
+// This shader code is used as a default, basic vertex shader
+
 in vec3 vertexPosition;
 in vec3 vertexNormal;
 in vec2 vertexTexCoord;

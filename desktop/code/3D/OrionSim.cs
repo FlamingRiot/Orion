@@ -1,5 +1,6 @@
 ﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
+using RayGUI_cs;
 using System.Numerics;
 
 namespace Orion_Desktop
@@ -99,6 +100,11 @@ namespace Orion_Desktop
 
             // Earth texture on the left
             DrawTexture(Resources.TargetPreview, 100, 250, Color.White);
+
+            // Draw GUI
+
+            bool focus = false;
+            RayGUI.DrawGUIList(Conceptor2D.Components, ref focus);
 
             // Close texture-mode
             EndTextureMode();

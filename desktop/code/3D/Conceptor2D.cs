@@ -1,5 +1,7 @@
 ﻿using static Raylib_cs.Raylib;
 using Raylib_cs;
+using RayGUI_cs;
+using static RayGUI_cs.RayGUI;
 using System.Numerics;
 
 namespace Orion_Desktop
@@ -30,6 +32,8 @@ namespace Orion_Desktop
         internal static int Height;
         internal static Vector2 Size;
 
+        internal static List<Component> Components = new List<Component>();
+
         /// <summary>Opens the 2D conceptor and loads its parameters.</summary>
         internal static void Init()
         {
@@ -38,6 +42,10 @@ namespace Orion_Desktop
             Height = GetScreenHeight();
             Size = new Vector2(Width, Height);
 
+            // GUI
+            InitGUI(new Color(0, 225, 255), new Color(0, 135, 153), LoadFont("assets/textures/SpaceMono-Bold.ttf"));
+            ConstructUI();
+    
             OpenedInterface = Interface.None; // Defines the opened interface
 
             // Load font
@@ -118,6 +126,18 @@ namespace Orion_Desktop
                     DisableCursor();
                 }
             }
+        }
+
+        internal static void ConstructUI()
+        {
+            SetDefaultFontSize(64);
+            
+            Button leftButton = new Button("<", 800, 800, 50, 50);
+            Components.Add(leftButton);
+            Button rightButton = new Button(">", 1300, 800, 50, 50);
+            Components.Add(rightButton);
+            Textbox nameTxb = new Textbox(855, 800, 440, 50, "Saturn");
+            Components.Add(nameTxb);
         }
     }
 }

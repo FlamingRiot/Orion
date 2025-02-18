@@ -20,6 +20,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Reference Include="RayGUI_cs">
+      <HintPath>RayGUI_cs.dll</HintPath>
+    </Reference>
     <Reference Include="Raylib-cs">
       <HintPath>assets\Raylib-cs.dll</HintPath>
     </Reference>

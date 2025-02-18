@@ -3,7 +3,7 @@
 # [alpha-0.2.0]
 
 - Created the earth globe's UX interface
-- Created the orion terminal's UX interface
+- Created the orion terminal's interface opening
 - Lerped interfaces opening/closing
 - Upgraded ECEF functions by adding rotation values + reverse ECEF
 

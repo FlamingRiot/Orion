@@ -4,6 +4,20 @@ using System.Numerics;
 
 namespace Orion_Desktop
 {
+    /// <summary>Defines the currently targeted astral object.</summary>
+    internal enum AstralTarget
+    {
+        ISS,
+        Mercury,
+        Venus,
+        Mars,
+        Jupiter,
+        Saturn,
+        Uranus,
+        Neptune,
+        Pluto
+    }
+
     /// <summary>Represents the Orion robot simulation.</summary>
     internal static class OrionSim
     {
@@ -11,6 +25,7 @@ namespace Orion_Desktop
 
         internal static float ViewerLatitude;
         internal static float ViewerLongitude;
+        internal static AstralTarget Target;
 
         internal static Vector3 ViewerPosition;
         internal static Vector3 OriginPosition = new Vector3(-10.1f, 1.7f, -0.16f);
@@ -37,6 +52,10 @@ namespace Orion_Desktop
 
             TerminalPosition = OriginPosition;
             PositionToBe = OriginPosition;
+
+            Target = AstralTarget.Mars;
+            string? targetName = Enum.GetName(Target);
+            Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
         }
 
         /// <summary>Updates the viewer's position.</summary>
@@ -61,6 +80,9 @@ namespace Orion_Desktop
             // Draw arrow
             Vector3 target = Vector3.Normalize(Vector3.Subtract(EarthHologram.Satellite.RelativePosition, ViewerPosition));
             DrawLine3D(Vector3.UnitY * 12, target * 2 + Vector3.UnitY * 12, Color.Red);
+
+            if (IsKeyPressed(KeyboardKey.Left)) SwitchTarget(-1);
+            if (IsKeyPressed(KeyboardKey.Right)) SwitchTarget(1);
         }
 
         /// <summary>Draws the orion terminal screen to a render texture and applies it to a material.</summary>
@@ -69,15 +91,38 @@ namespace Orion_Desktop
             // Open texture-mode
             BeginTextureMode(TerminalScreen);
 
+            // Blue background for better hologram integration
             ClearBackground(Color.Blue);
 
-            DrawTexture(Resources.Textures["earth_preview"], 100, 320, Color.White);
+            // Earth texture on the left
+            DrawTexture(Resources.TargetPreview, 100, 250, Color.White);
 
             // Close texture-mode
             EndTextureMode();
 
             // Set material texture
             SetMaterialTexture(ref TerminalScreenMat, MaterialMapIndex.Diffuse, TerminalScreen.Texture);
+        }
+
+        /// <summary>Switches the targeted astral object.</summary>
+        /// <param name="delta">Index delta.</param>
+        internal static void SwitchTarget(int delta)
+        {
+            int current = (int)Target;
+            Target = (AstralTarget)Enum.ToObject(typeof(AstralTarget), current + delta);
+
+            string? targetName = Enum.GetName(Target);
+            if (targetName == null) // Check for null
+            {
+                if (delta == -1) Target = Enum.GetValues<AstralTarget>().Cast<AstralTarget>().Last();
+                else Target = (AstralTarget)Enum.ToObject(typeof(AstralTarget), 0);
+            }
+            targetName = Enum.GetName 
+               (Target);
+            // Unload previous
+            UnloadTexture(Resources.TargetPreview);            
+            // Load new
+            Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
         }
 
         /// <summary>Updates the transform of the hologram screen.</summary>

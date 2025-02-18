@@ -93,6 +93,9 @@ namespace Orion_Desktop
 
             // Close window and unload raylib default resources
             CloseWindow();
+
+            // Unloads the resources
+            Resources.Close();
         }
 
         /// <summary>Loads the <see cref="RenderTexture2D"/> for post-processing effects.</summary>

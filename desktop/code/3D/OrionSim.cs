@@ -36,6 +36,7 @@ namespace Orion_Desktop
         internal static Matrix4x4 Transform;
         private static RenderTexture2D TerminalScreen;
         private static Material TerminalScreenMat;
+        private static Material blackD;
 
         /// <summary>Inits the Orion simulation robot.</summary>
         internal static void Init(float lat, float lon)
@@ -49,6 +50,7 @@ namespace Orion_Desktop
             TerminalScreen = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
             TerminalScreenMat = LoadMaterialDefault();
             TerminalScreenMat.Shader = Shaders.ScreenShader;
+            blackD = LoadMaterialDefault();
 
             TerminalPosition = OriginPosition;
             PositionToBe = OriginPosition;
@@ -75,6 +77,7 @@ namespace Orion_Desktop
             IPitch = Raymath.Lerp(IPitch, IPitchToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
 
+            
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
 
             // Draw arrow

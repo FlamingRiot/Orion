@@ -25,6 +25,40 @@ namespace Orion_Desktop
             LoadMeshes();
         }
 
+        /// <summary>Unloads the GPU-loaded resources.</summary>
+        internal static void Close()
+        {
+            // Unload materials
+            foreach (KeyValuePair<string, Material> item in Materials)
+            {
+                UnloadMaterial(item.Value);
+            }
+
+            // Unload pbr materials
+            foreach (KeyValuePair<string, PBRMaterial> pBRMaterial in PBRMaterials) 
+            {
+                UnloadMaterial(pBRMaterial.Value.Material);
+            }
+
+            // Unload meshes
+            foreach (KeyValuePair <string, Mesh> mesh in Meshes)
+            {
+                UnloadMesh(mesh.Value);
+            }
+
+            // Unload meshes
+            foreach (KeyValuePair<ShapeType, Mesh> mesh in ShapeMeshes)
+            {
+                UnloadMesh(mesh.Value);
+            }
+
+            // Unload models
+            foreach (KeyValuePair<string, Model> models in Models)
+            {
+                UnloadModel(models.Value);
+            }
+        }
+
         /// <summary>Loads the application's materials and configures them.</summary>
         private static void LoadMaterials()
         {
@@ -59,5 +93,7 @@ namespace Orion_Desktop
                 { ShapeType.Knot, GenMeshKnot(0.5f, 1, 20, 20) }
             };
         }
+
+
     }
 }

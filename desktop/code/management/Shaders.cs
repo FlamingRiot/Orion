@@ -53,7 +53,7 @@ namespace Orion_Desktop
     }
 
     /// <summary>Defines the type of a light source.</summary>
-    public enum PbrLightType
+    public enum PBRLightType
     {
         Directorional,
         Point,
@@ -61,9 +61,9 @@ namespace Orion_Desktop
     }
 
     /// <summary>Represents an instance of light point in 3D world.</summary>
-    public struct PbrLight
+    public struct PBRLight
     {
-        public PbrLightType Type;
+        public PBRLightType Type;
         public bool Enabled;
         public Vector3 Position;
         public Vector3 Target;
@@ -80,11 +80,11 @@ namespace Orion_Desktop
     }
 
     /// <summary>Represents an instance of the static lights management class.</summary>
-    public class PbrLights
+    public class PBRLights
     {
-        public static PbrLight CreateLight(
+        public static PBRLight CreateLight(
             int lightsCount,
-            PbrLightType type,
+            PBRLightType type,
             Vector3 pos,
             Vector3 target,
             Color color,
@@ -92,7 +92,7 @@ namespace Orion_Desktop
             Shader shader
         )
         {
-            PbrLight light = new();
+            PBRLight light = new();
 
             light.Enabled = true;
             light.Type = type;
@@ -125,7 +125,7 @@ namespace Orion_Desktop
             return light;
         }
 
-        public static void UpdateLightValues(Shader shader, PbrLight light)
+        public static void UpdateLightValues(Shader shader, PBRLight light)
         {
             // Send to shader light enabled state and type
             SetShaderValue(
@@ -160,7 +160,7 @@ namespace Orion_Desktop
         internal static Shader ScreenShader;
         private static Shader CubemapShader;
 
-        public static PbrLight[] Lights = new PbrLight[4];
+        public static PBRLight[] Lights = new PBRLight[4];
         private static Texture2D prevRenderTexture; // Previous render texture for motion blur post-processing
 
         private static int EmissivePowerLoc;
@@ -222,8 +222,8 @@ namespace Orion_Desktop
             EmissiveColorLoc = GetShaderLocation(PBRLightingShader, "emissiveColor");
             TextureTilingLoc = GetShaderLocation(PBRLightingShader, "tiling");
             // Create main light source
-            Lights[0] = PbrLights.CreateLight(0, PbrLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(35, 110, 232, 255), 10, PBRLightingShader);
-            Lights[1] = PbrLights.CreateLight(1, PbrLightType.Point, EarthHologram.CENTER + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
+            Lights[0] = PBRLights.CreateLight(0, PBRLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(35, 110, 232, 255), 10, PBRLightingShader);
+            Lights[1] = PBRLights.CreateLight(1, PBRLightType.Point, EarthHologram.CENTER + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
             //Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-7f, 3f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
             // Set PBR shader used maps
             int usage = 1;
@@ -260,7 +260,7 @@ namespace Orion_Desktop
         /// <summary>Updates a single PBR light source.</summary>
         /// <param name="shader">PBR shader to update to.</param>
         /// <param name="light">PBR light to use.</param>
-        internal static void UpdateLight(Shader shader, PbrLight light)
+        internal static void UpdateLight(Shader shader, PBRLight light)
         {
             SetShaderValue(shader, light.EnabledLoc, light.Enabled, ShaderUniformDataType.Int);
             SetShaderValue(shader, light.TypeLoc, light.Type, ShaderUniformDataType.Int);

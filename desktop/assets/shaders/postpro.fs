@@ -16,9 +16,12 @@ void main()
     vec4 maskColor = texture(texture0, fragTexCoord);
 
     if (maskColor.rgb != vec3(0)){
-        pixelColor = mix(baseColor, maskColor, maskColor.g);
+        vec4 mixed = mix(baseColor, maskColor, maskColor.g * 3);
+        pixelColor = vec4(maskColor.r, mixed.g, mixed.b * 1.2, 1.0);
     }
     else{
         pixelColor = baseColor;
     }
+
+    //pixelColor = maskColor;
 }

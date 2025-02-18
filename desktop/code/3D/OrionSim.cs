@@ -69,7 +69,7 @@ namespace Orion_Desktop
             // Open texture-mode
             BeginTextureMode(TerminalScreen);
 
-            ClearBackground(Color.SkyBlue);
+            ClearBackground(Color.Blue);
 
             DrawTexture(Resources.Textures["earth_preview"], 100, 320, Color.White);
 

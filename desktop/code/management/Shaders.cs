@@ -167,6 +167,8 @@ namespace Orion_Desktop
         private static int EmissiveColorLoc;
         private static int TextureTilingLoc;
         private static int BackRenderLoc;
+        private static int TimeLocGlobe;
+        private static int TimeLocScreen;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -180,9 +182,11 @@ namespace Orion_Desktop
         {
             // UV coord fix shader
             FixShader = LoadShader(null, "assets/shaders/shader.fs"); // Earth hologram rotation fix shader
+            TimeLocGlobe = GetShaderLocation(FixShader, "time");
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
-            
+            TimeLocScreen = GetShaderLocation(ScreenShader, "time");
+
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
             BackRenderLoc = GetShaderLocation(PostProShader, "bRender");
@@ -270,6 +274,11 @@ namespace Orion_Desktop
         /// <summary>Draws and overlaps the hologram render with the previous one.</summary>
         internal static void OverlapHologramRender()
         {
+            // Update hologram-shaders time uniform
+            double time = GetTime();
+            SetShaderValue(FixShader, TimeLocGlobe, time, ShaderUniformDataType.Float);
+            SetShaderValue(ScreenShader, TimeLocScreen, time, ShaderUniformDataType.Float);
+
             // Start post-processing shader
             BeginShaderMode(PostProShader);
 

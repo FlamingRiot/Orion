@@ -2,7 +2,7 @@
 
 # [alpha-0.2.0]
 
-- Created the earth globe's UX interface
+- Created the earth-globe's UX interface
 - Created the orion terminal's interface opening
 - Lerped interfaces opening/closing
 - Upgraded ECEF functions by adding rotation values + reverse ECEF
@@ -11,7 +11,7 @@
 
 - An earth globe stands in the middle of the room
 - The ISS revolves around the globe in real-time
-- Uses A Uniray-designed environement 
+- Uses a Uniray-designed environement 
 - PBR lighting brightens up the scene
 
 ---

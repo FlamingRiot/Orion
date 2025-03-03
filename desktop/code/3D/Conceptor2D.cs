@@ -139,6 +139,7 @@ namespace Orion_Desktop
             }
         }
 
+        /// <summary>Constructs the UI of the Orion Terminal.</summary>
         internal static void ConstructUI()
         {
             SetDefaultFontSize(64);
@@ -159,14 +160,21 @@ namespace Orion_Desktop
             Components.Add(lblTarget);
 
             // Non-static fields
-            Label lblName = new Label(800, 170, "Name :");
+            Label lblName = new Label(800, 170, $"Name : {OrionSim.Target}");
             Components.Add(lblName);
-            Label lblLat = new Label(800, 220, "Latitude :");
+            Label lblLat = new Label(800, 220, $"Latitude : {EarthHologram.Satellite.Latitude}");
             Components.Add(lblLat);
-            Label lblLong = new Label(800, 270, "Longitude :");
+            Label lblLong = new Label(800, 270, $"Longitude : {EarthHologram.Satellite.Longitude}");
             Components.Add(lblLong);
-            Label lblDistance = new Label(800, 320, "Distance from Earth :");
+            Label lblDistance = new Label(800, 320, $"Distance from Earth : {EarthHologram.Satellite.Altitude} km");
             Components.Add(lblDistance);
+        }
+
+        internal static void UpdateUI()
+        {
+            ((Label)Components[6]).Text = $"Latitude : {EarthHologram.Satellite.Latitude}";
+            ((Label)Components[7]).Text = $"Longitude : {EarthHologram.Satellite.Longitude}";
+            ((Label)Components[8]).Text = $"Distance from Earth : {EarthHologram.Satellite.Altitude} km";
         }
     }
 }

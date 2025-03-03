@@ -134,6 +134,9 @@ namespace Orion_Desktop
             UnloadTexture(Resources.TargetPreview);            
             // Load new
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
+            // Udate components
+            Conceptor2D.Components.Clear();
+            Conceptor2D.ConstructUI();
             // Set textbox text
             ((Textbox)Conceptor2D.Components[2]).Text = $"{targetName}";
         }
@@ -161,6 +164,9 @@ namespace Orion_Desktop
                 UnloadTexture(Resources.TargetPreview);
                 // Load new
                 Resources.TargetPreview = LoadTexture($"assets/textures/previews/{value}.png");
+                // Udate components
+                Conceptor2D.Components.Clear();
+                Conceptor2D.ConstructUI();
             }
             else
             {

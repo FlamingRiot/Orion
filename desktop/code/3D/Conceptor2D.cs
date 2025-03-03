@@ -143,15 +143,30 @@ namespace Orion_Desktop
         {
             SetDefaultFontSize(64);
             
+            // Static fields
             Button leftButton = new Button("<", 800, 800, 50, 50);
             leftButton.Event = OrionSim.SwitchTargetLeft;
             Components.Add(leftButton);
             Button rightButton = new Button(">", 1300, 800, 50, 50);
             rightButton.Event = OrionSim.SwitchTargetRight;
             Components.Add(rightButton);
-            Textbox nameTxb = new Textbox(855, 800, 440, 50, "Mars");
+            Textbox nameTxb = new Textbox(855, 800, 440, 50, $"{OrionSim.Target}");
             nameTxb.OnEntry = OrionSim.VerifiyTargetEntry;
             Components.Add(nameTxb);
+            Label lblTerminal = new Label(780, 50, "Orion Terminal");
+            Components.Add(lblTerminal);
+            Label lblTarget = new Label(205, 170, "Current Target:");
+            Components.Add(lblTarget);
+
+            // Non-static fields
+            Label lblName = new Label(800, 170, "Name :");
+            Components.Add(lblName);
+            Label lblLat = new Label(800, 220, "Latitude :");
+            Components.Add(lblLat);
+            Label lblLong = new Label(800, 270, "Longitude :");
+            Components.Add(lblLong);
+            Label lblDistance = new Label(800, 320, "Distance from Earth :");
+            Components.Add(lblDistance);
         }
     }
 }

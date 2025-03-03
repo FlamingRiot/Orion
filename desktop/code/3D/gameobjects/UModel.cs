@@ -163,11 +163,7 @@ namespace Uniray
                 }
                 catch
                 {
-#if !DEBUG
-                    ErrorHandler.Send(new Error(3, $"No model found at registered location -> {ModelID}"));
-#elif DEBUG
                     Raylib.TraceLog(TraceLogLevel.Warning, $"No model found at registered location -> {ModelID}");
-#endif
                 }
             }
         }

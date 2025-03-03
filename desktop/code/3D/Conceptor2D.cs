@@ -54,6 +54,14 @@ namespace Orion_Desktop
             ActionRec = new Rectangle(Width / 2 - ACTION_REC_SIZE, Height / 2 - ACTION_REC_SIZE, ACTION_REC_SIZE, ACTION_REC_SIZE);
         }
 
+        internal static Vector2 RetargetMousePosition(Rectangle source, Rectangle destination)
+        {
+            Vector2 mouse = GetMousePosition();
+            float newX = destination.X + (mouse.X - source.X) * destination.Width / source.Width;
+            float newY = destination.Y - (mouse.Y - source.Y) * destination.Height / source.Height;
+            return new Vector2(newX, newY);
+        }
+
         /// <summary>Displays 2D information to the screen.</summary>
         internal static void Draw()
         {
@@ -76,6 +84,8 @@ namespace Orion_Desktop
                         EarthHologram.UpdateInterface();
                         break;
                     case Interface.Terminal:
+                        Vector2 mouse = RetargetMousePosition(Program.SourceRender, OrionSim.ScreenRelatedRender);
+                        DrawRectangle((int)mouse.X, (int)mouse.Y, 7, 7, Color.White);
                         break;
                 }
             }
@@ -105,6 +115,7 @@ namespace Orion_Desktop
                             OrionSim.IYawToBe = (Conceptor3D.View.Pitch * RAD2DEG) + 90;
                             OrionSim.IPitchToBe = (Conceptor3D.View.Yaw * RAD2DEG) + 90;
                             EnableCursor();
+                            DisableCursor();
                             break;
                     }
                 }

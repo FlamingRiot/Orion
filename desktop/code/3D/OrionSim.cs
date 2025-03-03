@@ -34,10 +34,10 @@ namespace Orion_Desktop
         internal static Vector3 PositionToBe;
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
 
+        internal static Rectangle ScreenRelatedRender;
         internal static Matrix4x4 Transform;
         private static RenderTexture2D TerminalScreen;
         private static Material TerminalScreenMat;
-        private static Material blackD;
 
         /// <summary>Inits the Orion simulation robot.</summary>
         internal static void Init(float lat, float lon)
@@ -51,7 +51,6 @@ namespace Orion_Desktop
             TerminalScreen = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
             TerminalScreenMat = LoadMaterialDefault();
             TerminalScreenMat.Shader = Shaders.ScreenShader;
-            blackD = LoadMaterialDefault();
 
             TerminalPosition = OriginPosition;
             PositionToBe = OriginPosition;
@@ -59,6 +58,11 @@ namespace Orion_Desktop
             Target = AstralTarget.Mars;
             string? targetName = Enum.GetName(Target);
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
+
+            // Define sim-to-screen ration
+            float x = GetScreenWidth() / 24;
+            float y = GetScreenHeight() / 15;
+            ScreenRelatedRender = new Rectangle(x, y, GetScreenWidth() - x * 2, GetScreenHeight() - y * 2);
         }
 
         /// <summary>Updates the viewer's position.</summary>

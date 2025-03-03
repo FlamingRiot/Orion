@@ -30,6 +30,7 @@ namespace Orion_Desktop
             CENTER = new Vector3(-3.5f, 2, 0.2f);
             ORIGIN = CENTER;
             CENTER_TO_BE = CENTER;
+            IPitch = 0;
             // Create standby position
             SatellitePoints.Add((CENTER + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
             Satellite = new Satellite();

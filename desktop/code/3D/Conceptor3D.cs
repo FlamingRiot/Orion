@@ -209,7 +209,6 @@ namespace Orion_Desktop
     internal struct MotionConstraint
     {
         internal float Value;
-        internal Vector3 Direction;
 
         /// <summary>Calculates the direction and intensity of a constraint based on passed values.</summary>
         /// <param name="direction">Direction of the movement.</param>

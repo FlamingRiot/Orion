@@ -86,11 +86,8 @@ namespace Orion_Desktop
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
 
             // Draw arrow
-            Vector3 target = Vector3.Normalize(Vector3.Subtract(EarthHologram.Satellite.RelativePosition, ViewerPosition));
-            DrawLine3D(Vector3.UnitY * 12, target * 2 + Vector3.UnitY * 12, Color.Red);
-
-            if (IsKeyPressed(KeyboardKey.Left)) SwitchTarget(-1);
-            if (IsKeyPressed(KeyboardKey.Right)) SwitchTarget(1);
+            //Vector3 target = Vector3.Normalize(Vector3.Subtract(EarthHologram.Satellite.RelativePosition, ViewerPosition));
+            //DrawLine3D(Vector3.UnitY * 12, target * 2 + Vector3.UnitY * 12, Color.Red);
         }
 
         /// <summary>Draws the orion terminal screen to a render texture and applies it to a material.</summary>
@@ -118,7 +115,7 @@ namespace Orion_Desktop
             SetMaterialTexture(ref TerminalScreenMat, MaterialMapIndex.Diffuse, TerminalScreen.Texture);
         }
 
-        /// <summary>Switches the targeted astral object.</summary>
+        /// <summary>Moves the targeted astral object.</summary>
         /// <param name="delta">Index delta.</param>
         internal static void SwitchTarget(int delta)
         {
@@ -137,6 +134,20 @@ namespace Orion_Desktop
             UnloadTexture(Resources.TargetPreview);            
             // Load new
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
+            // Set textbox text
+            ((Textbox)Conceptor2D.Components[2]).Text = $"{targetName}";
+        }
+
+        /// <summary>Moves the Orion robot target to the left.</summary>
+        internal static void SwitchTargetLeft()
+        {
+            SwitchTarget(-1);
+        }
+
+        /// <summary>Moves the Orion robot target to the right.</summary>
+        internal static void SwitchTargetRight()
+        {
+            SwitchTarget(1);
         }
 
         /// <summary>Updates the transform of the hologram screen.</summary>

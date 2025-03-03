@@ -144,10 +144,12 @@ namespace Orion_Desktop
             SetDefaultFontSize(64);
             
             Button leftButton = new Button("<", 800, 800, 50, 50);
+            leftButton.Event = OrionSim.SwitchTargetLeft;
             Components.Add(leftButton);
             Button rightButton = new Button(">", 1300, 800, 50, 50);
+            rightButton.Event = OrionSim.SwitchTargetRight;
             Components.Add(rightButton);
-            Textbox nameTxb = new Textbox(855, 800, 440, 50, "Saturn");
+            Textbox nameTxb = new Textbox(855, 800, 440, 50, "Mars");
             Components.Add(nameTxb);
         }
     }

@@ -150,6 +150,24 @@ namespace Orion_Desktop
             SwitchTarget(1);
         }
 
+        /// <summary>Parses a value to potentially update the orion target.</summary>
+        /// <param name="args">Arguments passed from the textbox.</param>
+        /// <param name="value">Textbox value.</param>
+        internal static void VerifiyTargetEntry(string[] args, string value)
+        {
+            if (Enum.IsDefined(typeof(AstralTarget), value))
+            {
+                Target = (AstralTarget)Enum.Parse(typeof(AstralTarget), value);
+                UnloadTexture(Resources.TargetPreview);
+                // Load new
+                Resources.TargetPreview = LoadTexture($"assets/textures/previews/{value}.png");
+            }
+            else
+            {
+                ((Textbox)Conceptor2D.Components[2]).Text = $"{Enum.GetName(typeof(AstralTarget), Target)}";
+            }
+        }
+
         /// <summary>Updates the transform of the hologram screen.</summary>
         internal static void UpdateTransform()
         {

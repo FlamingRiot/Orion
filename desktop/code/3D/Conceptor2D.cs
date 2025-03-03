@@ -150,6 +150,7 @@ namespace Orion_Desktop
             rightButton.Event = OrionSim.SwitchTargetRight;
             Components.Add(rightButton);
             Textbox nameTxb = new Textbox(855, 800, 440, 50, "Mars");
+            nameTxb.OnEntry = OrionSim.VerifiyTargetEntry;
             Components.Add(nameTxb);
         }
     }

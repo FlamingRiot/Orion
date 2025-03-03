@@ -105,6 +105,7 @@ namespace Orion_Desktop
 
             bool focus = false;
             RayGUI.DrawGUIList(Conceptor2D.Components, ref focus);
+            if (!focus) SetMouseCursor(MouseCursor.Default);
 
             // Close texture-mode
             EndTextureMode();

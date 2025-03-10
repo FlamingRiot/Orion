@@ -102,14 +102,14 @@ namespace Orion_Desktop
                         case Interface.Earth:
                             InterfaceActive = true;
                             // Define 3D post based current camera pos
-                            Ray dir = GetMouseRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
+                            Ray dir = GetScreenToWorldRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
                             Vector3 pos = dir.Position + dir.Direction * 2.5f;
                             EarthHologram.CENTER_TO_BE = pos;
                             EnableCursor();
                             break;
                         case Interface.Terminal:
                             InterfaceActive = true;
-                            Ray center = GetMouseRay(Size / 2, Conceptor3D.View.Camera);
+                            Ray center = GetScreenToWorldRay(Size / 2, Conceptor3D.View.Camera);
                             pos = center.Position + center.Direction;
                             OrionSim.PositionToBe = pos;
 

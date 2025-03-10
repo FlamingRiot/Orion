@@ -19,11 +19,11 @@ void main()
     if (vflipped) color = texture(environmentMap, vec3(fragPosition.x, -fragPosition.y, fragPosition.z)).rgb;
     else color = texture(environmentMap, fragPosition).rgb;
 
-    if (doGamma)// Apply gamma correction
-    {
-        color = color/(color + vec3(0.5));
-        color = pow(color, vec3(1.0/1.8));
-    }
+    //if (doGamma)// Apply gamma correction
+    //{
+    //    color = color/(color + vec3(0.5));
+    //    color = pow(color, vec3(1.0/1.8));
+    //}
 
     // Calculate final fragment color
     finalColor = vec4(color, 1.0);

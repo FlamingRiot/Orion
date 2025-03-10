@@ -158,6 +158,7 @@ namespace Orion_Desktop
         internal static Shader PBRLightingShader;
         internal static Shader SkyboxShader;
         internal static Shader ScreenShader;
+        internal static Shader FarawayEarth;
         private static Shader CubemapShader;
 
         public static PBRLight[] Lights = new PBRLight[4];
@@ -181,9 +182,12 @@ namespace Orion_Desktop
         internal static unsafe void LoadShaders()
         {
             // UV coord fix shader
-            FixShader = LoadShader("assets/shaders/default.vs", "assets/shaders/shader.fs"); // Earth hologram rotation fix shader
+            FixShader = LoadShader("assets/shaders/default.vs", "assets/shaders/hologram.fs"); // Earth hologram shader
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
             ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
+
+            // Faraway earth shader
+            FarawayEarth = LoadShader("assets/shaders/default.vs", "assets/shaders/farawayEarth.fs");
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");
@@ -311,7 +315,7 @@ namespace Orion_Desktop
             Texture2D panorama = LoadTexture(path);
             Material mat = LoadMaterialDefault();
             mat.Shader = SkyboxShader;
-            Texture2D cubemap = GenTextureCubemap(panorama, 512, PixelFormat.UncompressedR8G8B8A8);
+            Texture2D cubemap = GenTextureCubemap(panorama, 1024, PixelFormat.UncompressedR8G8B8A8);
             SetMaterialTexture(ref mat, MaterialMapIndex.Cubemap, cubemap);
             UnloadTexture(panorama); // Unload unused texture;
 

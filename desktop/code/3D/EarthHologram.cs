@@ -121,7 +121,7 @@ namespace Orion_Desktop
                 // Check for hold-time
                 if ((GetMousePosition() - _mouseOrigin).Length() == 0)
                 {
-                    RayCollision collision = GetRayCollisionSphere(GetMouseRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
+                    RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
                     if (collision.Hit)
                     {
                         (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);

@@ -12,6 +12,7 @@ namespace Orion_Desktop
         internal const float LERP_SPEED = 3f;
 
         // General 3D environement objets
+        internal static Matrix4x4 GlobeRotationMat;
         internal static View3D View;
         internal static List<GameObject3D> objects = new List<GameObject3D>();
         internal static Material SkyboxMat;
@@ -45,7 +46,16 @@ namespace Orion_Desktop
             objects = RLoading.LoadScene();
 
             // Load skybox and apply hdr texture
-            SkyboxMat = Shaders.LoadSkybox("assets/textures/skybox.png");
+            SkyboxMat = Shaders.LoadSkybox("assets/textures/space.png");
+
+            // Create farawy earth matrix
+
+            Matrix4x4 pm = Raymath.MatrixTranslate(-100, 0, -100);
+            Matrix4x4 sm = Raymath.MatrixScale(100, 100, 100);
+            Matrix4x4 rm = Raymath.MatrixRotateX(90);
+
+            // Multiply matrices
+            GlobeRotationMat = pm * sm * rm;
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -58,7 +68,7 @@ namespace Orion_Desktop
 
             // Draw scene
             objects.ForEach(x => x.Draw());
-#if DEBUG   
+#if DEBUG
             //// Collision detection debug draw calls
             //DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
             //DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
@@ -66,6 +76,9 @@ namespace Orion_Desktop
             //DrawLine3D(View.Tangent * -10, View.Tangent * 10, Color.Red);
             //DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
 #endif
+            // Draw faraway earth
+            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["faraway_earth"], GlobeRotationMat);
+
             EndMode3D();
 
 #if DEBUG
@@ -85,7 +98,7 @@ namespace Orion_Desktop
             Shaders.UpdatePBRLighting(View.Camera.Position);
 
             // Update action-ray detection
-            Ray mouse = GetMouseRay(Conceptor2D.Size / 2, View.Camera);
+            Ray mouse = GetScreenToWorldRay(Conceptor2D.Size / 2, View.Camera);
             Conceptor2D.InteractiveEnabled = GetRayCollisionSphere(mouse, EarthHologram.CENTER, EarthHologram.HOLOGRAM_RADIUS).Hit;
             if (Conceptor2D.InteractiveEnabled) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Earth;
             if (!Conceptor2D.InteractiveEnabled)

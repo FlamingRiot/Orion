@@ -62,11 +62,19 @@ namespace Orion_Desktop
         /// <summary>Loads the application's materials and configures them.</summary>
         private static void LoadMaterials()
         {
+            Texture2D earthTex = LoadTexture("assets/textures/earth.png");
+
             // Earth mat (texture-hologram)
             Material earthMat = LoadMaterialDefault();
-            SetMaterialTexture(ref earthMat, MaterialMapIndex.Diffuse, LoadTexture("assets/textures/earth.png"));
+            SetMaterialTexture(ref earthMat, MaterialMapIndex.Diffuse, earthTex);
             earthMat.Shader = Shaders.FixShader;
             Materials.Add("earth", earthMat);
+
+            // Faraway earth material
+            Material farawayEarthMat = LoadMaterialDefault();
+            SetMaterialTexture(ref farawayEarthMat, MaterialMapIndex.Diffuse, earthTex);
+            farawayEarthMat.Shader = Shaders.FarawayEarth;
+            Materials.Add("faraway_earth", farawayEarthMat);
 
             // Load PBRs
             PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim"));

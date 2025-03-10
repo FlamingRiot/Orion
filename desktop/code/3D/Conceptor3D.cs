@@ -45,7 +45,7 @@ namespace Orion_Desktop
             objects = RLoading.LoadScene();
 
             // Load skybox and apply hdr texture
-            SkyboxMat = Shaders.LoadSkybox("assets/textures/skybox.hdr");
+            SkyboxMat = Shaders.LoadSkybox("assets/textures/skybox.png");
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>

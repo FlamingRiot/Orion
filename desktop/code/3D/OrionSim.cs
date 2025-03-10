@@ -103,10 +103,7 @@ namespace Orion_Desktop
             DrawTexture(Resources.TargetPreview, 100, 250, Color.White);
 
             // Draw GUI
-
-            bool focus = false;
-            RayGUI.DrawGUIList(Conceptor2D.Components, ref focus);
-            if (!focus) SetMouseCursor(MouseCursor.Default);
+            Conceptor2D.TerminalGui.Draw();
 
             // Close texture-mode
             EndTextureMode();
@@ -135,10 +132,10 @@ namespace Orion_Desktop
             // Load new
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
             // Udate components
-            Conceptor2D.Components.Clear();
+            Conceptor2D.TerminalGui.Clear();
             Conceptor2D.ConstructUI();
             // Set textbox text
-            ((Textbox)Conceptor2D.Components[2]).Text = $"{targetName}";
+            ((Textbox)Conceptor2D.TerminalGui["nameTxb"]).Text = $"{targetName}";
         }
 
         /// <summary>Moves the Orion robot target to the left.</summary>
@@ -165,12 +162,12 @@ namespace Orion_Desktop
                 // Load new
                 Resources.TargetPreview = LoadTexture($"assets/textures/previews/{value}.png");
                 // Udate components
-                Conceptor2D.Components.Clear();
+                Conceptor2D.TerminalGui.Clear();
                 Conceptor2D.ConstructUI();
             }
             else
             {
-                ((Textbox)Conceptor2D.Components[2]).Text = $"{Enum.GetName(typeof(AstralTarget), Target)}";
+                ((Textbox)Conceptor2D.TerminalGui["nameTxb"]).Text = $"{Enum.GetName(typeof(AstralTarget), Target)}";
             }
         }
 

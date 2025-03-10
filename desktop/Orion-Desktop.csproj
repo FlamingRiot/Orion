@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="RayGUI-cs" Version="2.0.3" />
   </ItemGroup>
   
   <ItemGroup>
@@ -19,14 +20,11 @@
     </Content>
   </ItemGroup>
   
-  <ItemGroup>
-    <Reference Include="RayGUI_cs">
-      <HintPath>RayGUI_cs.dll</HintPath>
-    </Reference>
-    <Reference Include="Raylib-cs">
-      <HintPath>assets\Raylib-cs.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <!-- <ItemGroup> -->
+    <!-- <Reference Include="Raylib-cs"> -->
+      <!-- <HintPath>assets\Raylib-cs.dll</HintPath> -->
+    <!-- </Reference> -->
+  <!-- </ItemGroup> -->
   
   <ItemGroup>
     <None Update="raylib.dll">

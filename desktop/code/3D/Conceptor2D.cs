@@ -44,7 +44,7 @@ namespace Orion_Desktop
             Size = new Vector2(Width, Height);
 
             // Load GUi
-            TerminalGui = new GuiContainer(new Color(0, 225, 255), new Color(0, 135, 153));
+            TerminalGui = new GuiContainer(new Color(0, 225, 255), new Color(0, 190, 190));
             LoadGUI(LoadFont("assets/textures/SpaceMono-Bold.ttf"));
             ConstructUI();
     
@@ -145,7 +145,7 @@ namespace Orion_Desktop
         internal static void ConstructUI()
         {
             SetDefaultFontSize(64);
-            
+
             // Static fields
             Button leftButton = new Button( 800, 800, 50, 50, "<");
             leftButton.Event = OrionSim.SwitchTargetLeft;
@@ -153,6 +153,8 @@ namespace Orion_Desktop
             Button rightButton = new Button(1300, 800, 50, 50, ">");
             rightButton.Event = OrionSim.SwitchTargetRight;
             TerminalGui.Add("rightButton", rightButton);
+            Button submitButton = new Button(800, 730, 550, 50, "Submit");
+            TerminalGui.Add("submitButton", submitButton);
             Textbox nameTxb = new Textbox(855, 800, 440, 50, $"{OrionSim.Target}");
             nameTxb.OnEntry = OrionSim.VerifiyTargetEntry;
             TerminalGui.Add("nameTxb", nameTxb);
@@ -162,14 +164,16 @@ namespace Orion_Desktop
             TerminalGui.Add("lblTarget", lblTarget);
 
             // Non-static fields
-            Label lblName = new Label(800, 170, $"Name : {OrionSim.Target}");
+            Label lblName = new Label(700, 170, $"Name : {OrionSim.Target}");
             TerminalGui.Add("lblName", lblName);
-            Label lblLat = new Label(800, 220, $"Latitude : {EarthHologram.Satellite.Latitude}");
+            Label lblLat = new Label(700, 220, $"Latitude : {EarthHologram.Satellite.Latitude}");
             TerminalGui.Add("lblLat", lblLat);
-            Label lblLong = new Label(800, 270, $"Longitude : {EarthHologram.Satellite.Longitude}");
+            Label lblLong = new Label(700, 270, $"Longitude : {EarthHologram.Satellite.Longitude}");
             TerminalGui.Add("lblLong", lblLong);
-            Label lblDistance = new Label(800, 320, $"Distance from Earth : {EarthHologram.Satellite.Altitude} km");
+            Label lblDistance = new Label(700, 320, $"Distance from Earth : {EarthHologram.Satellite.Altitude} km");
             TerminalGui.Add("lblDistance", lblDistance);
+
+            TerminalGui.SetRoundness(0.25f);
         }
 
         internal static void UpdateUI()

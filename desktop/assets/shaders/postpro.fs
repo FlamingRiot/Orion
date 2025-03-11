@@ -18,6 +18,7 @@ void main()
     if (maskColor.rgb != vec3(0)){
         vec4 mixed = mix(baseColor, maskColor, maskColor.g * 3);
         pixelColor = vec4(maskColor.r, mixed.g, mixed.b * 1.2, 1.0);
+        //pixelColor = maskColor;
     }
     else{
         pixelColor = baseColor;

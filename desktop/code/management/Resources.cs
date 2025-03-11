@@ -70,12 +70,6 @@ namespace Orion_Desktop
             earthMat.Shader = Shaders.FixShader;
             Materials.Add("earth", earthMat);
 
-            // Faraway earth material
-            Material farawayEarthMat = LoadMaterialDefault();
-            SetMaterialTexture(ref farawayEarthMat, MaterialMapIndex.Diffuse, earthTex);
-            farawayEarthMat.Shader = Shaders.FarawayEarth;
-            Materials.Add("faraway_earth", farawayEarthMat);
-
             // Load PBRs
             PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim"));
             PBRMaterials.Add("terminal", new PBRMaterial("assets/pbr/terminal")); 
@@ -87,7 +81,9 @@ namespace Orion_Desktop
         private static void LoadMeshes()
         {
             Meshes.Add("sphere", GenMeshSphere(EarthHologram.HOLOGRAM_RADIUS, 20, 20));
-            Meshes.Add("screen", GenMeshPlane(GetScreenHeight() / Conceptor2D.SCREEN_RATIO, GetScreenWidth() / Conceptor2D.SCREEN_RATIO, 1 , 1));
+            float widthRatio = (float)GetScreenHeight() / Conceptor2D.SCREEN_RATIO;
+            float heightRatio = (float)GetScreenWidth() / Conceptor2D.SCREEN_RATIO;
+            Meshes.Add("screen", GenMeshPlane(widthRatio, heightRatio, 1 , 1));
 
             // Load UShape Meshes
             ShapeMeshes = new Dictionary<ShapeType, Mesh>()
@@ -101,7 +97,5 @@ namespace Orion_Desktop
                 { ShapeType.Knot, GenMeshKnot(0.5f, 1, 20, 20) }
             };
         }
-
-
     }
 }

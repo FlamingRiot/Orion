@@ -60,8 +60,8 @@ namespace Orion_Desktop
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
 
             // Define sim-to-screen ration
-            float x = GetScreenWidth() / 24;
-            float y = GetScreenHeight() / 15;
+            float x = GetScreenWidth() / 17;
+            float y = GetScreenHeight() / 17;
             ScreenRelatedRender = new Rectangle(x, y, GetScreenWidth() - x * 2, GetScreenHeight() - y * 2);
         }
 

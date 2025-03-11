@@ -18,7 +18,7 @@ namespace Orion_Desktop
         }
 
         internal const int ACTION_REC_SIZE = 30;
-        internal const int SCREEN_RATIO = 700;
+        internal const int SCREEN_RATIO = 1000;
 
         // Defines if player is approaching interactible object
         internal static bool InteractiveEnabled;

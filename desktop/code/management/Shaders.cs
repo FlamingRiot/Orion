@@ -315,7 +315,7 @@ namespace Orion_Desktop
             Texture2D panorama = LoadTexture(path);
             Material mat = LoadMaterialDefault();
             mat.Shader = SkyboxShader;
-            Texture2D cubemap = GenTextureCubemap(panorama, 1024, PixelFormat.UncompressedR8G8B8A8);
+            Texture2D cubemap = GenTextureCubemap(panorama, 3840, PixelFormat.UncompressedR8G8B8A8);
             SetMaterialTexture(ref mat, MaterialMapIndex.Cubemap, cubemap);
             UnloadTexture(panorama); // Unload unused texture;
 

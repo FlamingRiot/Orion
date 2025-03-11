@@ -24,13 +24,13 @@ void main()
     // Add a blue tint to the grayscale image
     vec3 hologramColor = vec3(0.0, 0.5, 1.0) * grayscale;
 
-    // Add scanline effect
-    float scanline = sin(fragTexCoord.x * 600.0 + time * 10.0) * 0.05; 
+    //// Add scanline effect
+    float scanline = sin(fragTexCoord.x * 600.0) * 0.05; 
     hologramColor += scanline;
 
-    // Add slight distortion for hologram effect
-    vec2 distortion = vec2(sin(fragTexCoord.y * 5.0 + time) * 0.0005, 0.0); \
-    hologramColor *= texture(texture0, -uv + distortion).rgb; \
+    //// Add slight distortion for hologram effect
+    vec2 distortion = vec2(sin(fragTexCoord.y * 5.0 + time) * 0.0005, 0.0);
+    hologramColor *= texture(texture0, -uv + distortion).rgb; 
 
     // Vignetting
     uv *= 1.0 - uv.yx;
@@ -38,5 +38,5 @@ void main()
     vig = pow(vig, 0.25);
 
     pixelColor = vec4(hologramColor, texelColor.a);
-    pixelColor *= vig;
+    pixelColor /= vig;
 }

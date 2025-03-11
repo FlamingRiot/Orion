@@ -12,7 +12,6 @@ namespace Orion_Desktop
         internal const float LERP_SPEED = 3f;
 
         // General 3D environement objets
-        internal static Matrix4x4 GlobeRotationMat;
         internal static View3D View;
         internal static List<GameObject3D> objects = new List<GameObject3D>();
         internal static Material SkyboxMat;
@@ -47,15 +46,6 @@ namespace Orion_Desktop
 
             // Load skybox and apply hdr texture
             SkyboxMat = Shaders.LoadSkybox("assets/textures/space.png");
-
-            // Create farawy earth matrix
-
-            Matrix4x4 pm = Raymath.MatrixTranslate(-100, 0, -100);
-            Matrix4x4 sm = Raymath.MatrixScale(100, 100, 100);
-            Matrix4x4 rm = Raymath.MatrixRotateX(90);
-
-            // Multiply matrices
-            GlobeRotationMat = pm * sm * rm;
         }
 
         /// <summary>Draws the components of the 3D conceptor to an opened render buffer.</summary>
@@ -76,9 +66,6 @@ namespace Orion_Desktop
             //DrawLine3D(View.Tangent * -10, View.Tangent * 10, Color.Red);
             //DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
 #endif
-            // Draw faraway earth
-            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["faraway_earth"], GlobeRotationMat);
-
             EndMode3D();
 
 #if DEBUG

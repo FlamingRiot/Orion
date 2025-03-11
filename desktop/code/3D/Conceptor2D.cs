@@ -173,6 +173,18 @@ namespace Orion_Desktop
             Label lblDistance = new Label(700, 320, $"Distance from Earth : {EarthHologram.Satellite.Altitude} km");
             TerminalGui.Add("lblDistance", lblDistance);
 
+            Label lblViewPoint = new Label(700, 390, $"Current Earth viewpoint :");
+            TerminalGui.Add("lblViewPoint", lblViewPoint);
+            Label lblCurrentLat = new Label(700, 450, $"Latitude");
+            TerminalGui.Add("lblCurrentLat", lblCurrentLat);
+            Label lblCurrentLong = new Label(700, 510, $"Longitude");
+            TerminalGui.Add("lblCurrentLong", lblCurrentLong);
+
+            Textbox txbCurrentLat = new Textbox(935, 430, 360, 45, "Lat");
+            TerminalGui.Add("txbCurrentLat", txbCurrentLat);
+            Textbox txbCurrentLon = new Textbox(950, 490, 360, 45, "Lon");
+            TerminalGui.Add("txbCurrentLon", txbCurrentLon);
+
             TerminalGui.SetRoundness(0.25f);
         }
 

@@ -180,11 +180,13 @@ namespace Orion_Desktop
             Label lblCurrentLong = new Label(700, 510, $"Longitude (East)");
             TerminalGui.Add("lblCurrentLong", lblCurrentLong);
 
-            Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, "Lat");
+            Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, $"{OrionSim.ViewerLatitude}");
             txbCurrentLat.OnEntry = UpdateLatitude;
+            txbCurrentLat.Filter = Textbox.TextFilter.Decimals;
             TerminalGui.Add("txbCurrentLat", txbCurrentLat);
-            Textbox txbCurrentLon = new Textbox(1160, 490, 360, 45, "Lon");
+            Textbox txbCurrentLon = new Textbox(1160, 490, 360, 45, $"{OrionSim.ViewerLongitude}");
             txbCurrentLon.OnEntry = UpdateLongitude;
+            txbCurrentLon.Filter = Textbox.TextFilter.Decimals;
             TerminalGui.Add("txbCurrentLon", txbCurrentLon);
 
             TerminalGui.SetRoundness(0.25f);

@@ -130,5 +130,25 @@ namespace Orion_Desktop
 
             return (latitude, longitude);
         }
+
+        /// <summary>Clamps an angle (radians) to rotate around negative radian to 0.</summary>
+        /// <param name="radians">Angle in radians.</param>
+        /// <returns>Clamped angle</returns>
+        internal static float ClampAngleRadianNegative(float radians)
+        {
+            if (radians > 0) return -2 * MathF.PI;
+            else if (radians < -2 * MathF.PI) return 0;
+            else return radians;
+        }
+
+        /// <summary>Clamps an angle (radians) to rotate around positive radian to 0.</summary>
+        /// <param name="radians">Angle in radians.</param>
+        /// <returns>Clamped angle</returns>
+        internal static float ClampAngleRadianPositive(float radians)
+        {
+            if (radians > 2*MathF.PI) return 0;
+            else if (radians < 0) return 2*MathF.PI;
+            else return radians;
+        }
     }
 }

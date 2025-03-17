@@ -136,6 +136,9 @@ namespace Orion_Desktop
             View.Yaw += View._yawSpeed;
             View.Pitch += View._pitchSpeed;
 
+            // Correct angles to stay in desired values
+            View.Yaw = CelestialMaths.ClampAngleRadianNegative(View.Yaw);
+
             View.Pitch = Math.Clamp(View.Pitch, -1.5f, 1.5f);
         }
     }

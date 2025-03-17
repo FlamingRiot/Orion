@@ -177,13 +177,13 @@ namespace Orion_Desktop
             TerminalGui.Add("lblViewPoint", lblViewPoint);
             Label lblCurrentLat = new Label(700, 450, $"Latitude (North)");
             TerminalGui.Add("lblCurrentLat", lblCurrentLat);
-            Label lblCurrentLong = new Label(700, 510, $"Longitude (Greenwich)");
+            Label lblCurrentLong = new Label(700, 510, $"Longitude (East)");
             TerminalGui.Add("lblCurrentLong", lblCurrentLong);
 
             Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, "Lat");
             txbCurrentLat.OnEntry = UpdateLatitude;
             TerminalGui.Add("txbCurrentLat", txbCurrentLat);
-            Textbox txbCurrentLon = new Textbox(1300, 490, 360, 45, "Lon");
+            Textbox txbCurrentLon = new Textbox(1160, 490, 360, 45, "Lon");
             txbCurrentLon.OnEntry = UpdateLongitude;
             TerminalGui.Add("txbCurrentLon", txbCurrentLon);
 

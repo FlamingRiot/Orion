@@ -15,14 +15,23 @@ namespace Orion_Desktop
         internal static Rectangle SourceRender;
         internal static Rectangle DestinationRender;
 
+        public static int Width;
+        public static int Height;
+
         /// <summary>Defines the entry point of the program.</summary>
         /// <param name="args">Arguments passed from outside the progam.</param>
         public static void Main(string[] args)
         {
             // Open base window
-            InitWindow(1600, 1000, $"{APP_NAME} {APP_VERSION}");
+            InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), $"{APP_NAME} {APP_VERSION}");
             SetWindowState(ConfigFlags.ResizableWindow);
-            SetWindowState(ConfigFlags.MaximizedWindow);
+
+            MaximizeWindow();
+#if !DEBUG
+            ToggleFullscreen();
+#endif
+            Width = GetScreenWidth();
+            Height = GetScreenHeight();
 
             // Open different services
             Conceptor3D.Init();
@@ -100,13 +109,10 @@ namespace Orion_Desktop
         /// <summary>Loads the <see cref="RenderTexture2D"/> for post-processing effects.</summary>
         internal static void LoadRender()
         {
-            int width = GetScreenWidth();
-            int height = GetScreenHeight(); 
-
-            Render = LoadRenderTexture(width, height);
-            HologramRender = LoadRenderTexture(width, height);
-            SourceRender = new Rectangle(0, 0, width, -height);
-            DestinationRender = new Rectangle(0, 0, width, height);
+            Render = LoadRenderTexture(Width, Height);
+            HologramRender = LoadRenderTexture(Width, Height);
+            SourceRender = new Rectangle(0, 0, Width, -Height);
+            DestinationRender = new Rectangle(0, 0, Width, Height);
         }
     }
 }

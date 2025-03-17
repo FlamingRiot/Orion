@@ -7,7 +7,7 @@ using System.Numerics;
 namespace Orion_Desktop
 {
     /// <summary>Represents the 2D conceptor of the game.</summary>
-    internal class Conceptor2D
+    internal static partial class Conceptor2D
     {
         /// <summary>Defines the type of opened interface.</summary>
         internal enum Interface
@@ -148,10 +148,10 @@ namespace Orion_Desktop
 
             // Static fields
             Button leftButton = new Button( 800, 800, 50, 50, "<");
-            leftButton.Event = OrionSim.SwitchTargetLeft;
+            leftButton.Event = SwitchTargetLeft;
             TerminalGui.Add("leftButton", leftButton);
             Button rightButton = new Button(1300, 800, 50, 50, ">");
-            rightButton.Event = OrionSim.SwitchTargetRight;
+            rightButton.Event = SwitchTargetRight;
             TerminalGui.Add("rightButton", rightButton);
             Button submitButton = new Button(800, 730, 550, 50, "Submit");
             TerminalGui.Add("submitButton", submitButton);
@@ -175,19 +175,22 @@ namespace Orion_Desktop
 
             Label lblViewPoint = new Label(700, 390, $"Current Earth viewpoint :");
             TerminalGui.Add("lblViewPoint", lblViewPoint);
-            Label lblCurrentLat = new Label(700, 450, $"Latitude");
+            Label lblCurrentLat = new Label(700, 450, $"Latitude (North)");
             TerminalGui.Add("lblCurrentLat", lblCurrentLat);
-            Label lblCurrentLong = new Label(700, 510, $"Longitude");
+            Label lblCurrentLong = new Label(700, 510, $"Longitude (Greenwich)");
             TerminalGui.Add("lblCurrentLong", lblCurrentLong);
 
-            Textbox txbCurrentLat = new Textbox(935, 430, 360, 45, "Lat");
+            Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, "Lat");
+            txbCurrentLat.OnEntry = UpdateLatitude;
             TerminalGui.Add("txbCurrentLat", txbCurrentLat);
-            Textbox txbCurrentLon = new Textbox(950, 490, 360, 45, "Lon");
+            Textbox txbCurrentLon = new Textbox(1300, 490, 360, 45, "Lon");
+            txbCurrentLon.OnEntry = UpdateLongitude;
             TerminalGui.Add("txbCurrentLon", txbCurrentLon);
 
             TerminalGui.SetRoundness(0.25f);
         }
 
+        /// <summary>Updates the UI components based on real-time values from the retrievement point.</summary>
         internal static void UpdateUI()
         {
             ((Label)TerminalGui["lblLat"]).Text = $"Latitude : {EarthHologram.Satellite.Latitude}";

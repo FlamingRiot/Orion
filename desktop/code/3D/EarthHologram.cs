@@ -19,7 +19,6 @@ namespace Orion_Desktop
         internal static Satellite Satellite; // Satellite object
 
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
-        internal static float PointLatitude, PointLongitude; // Simulation point coordinates
 
         private static double _holdTime;
         private static Vector2 _mouseOrigin;
@@ -98,7 +97,7 @@ namespace Orion_Desktop
             GlobeRotationMat = pm * sm * rm;
                 
             // Update ECEF position of the viewpoint
-            OrionSim.UpdateViewPoint(PointLatitude, PointLongitude); // Update un-rotated pos
+            OrionSim.UpdateViewPoint(); // Update un-rotated pos
         }
 
         /// <summary>Updates the interface of the hologram.</summary>
@@ -124,7 +123,7 @@ namespace Orion_Desktop
                     RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), CENTER, HOLOGRAM_RADIUS);
                     if (collision.Hit)
                     {
-                        (PointLatitude, PointLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);
+                        (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);
                     }
                 } 
                 _holdTime = 0;

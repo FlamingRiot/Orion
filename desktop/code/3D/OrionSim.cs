@@ -42,7 +42,11 @@ namespace Orion_Desktop
         /// <summary>Inits the Orion simulation robot.</summary>
         internal static void Init(float lat, float lon)
         {
-            UpdateViewPoint(lat, lon);
+            // Initialize view point
+            ViewerLongitude = lon;
+            ViewerLatitude = lat;
+            UpdateViewPoint();
+
             Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
             Transform *= Raymath.MatrixRotateZ(INCLINE_YAW / RAD2DEG);
             IYaw = INCLINE_YAW;
@@ -68,11 +72,9 @@ namespace Orion_Desktop
         /// <summary>Updates the viewer's position.</summary>
         /// <param name="lat">New latitude.</param>
         /// <param name="lon">New longitude.</param>
-        internal static void UpdateViewPoint(float lat, float lon)
+        internal static void UpdateViewPoint()
         {
-            ViewerLatitude = lat;
-            ViewerLongitude = lon;
-            ViewerPosition = CelestialMaths.ComputeECEFTilted(lat, lon, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
+            ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
         }
 
         internal static void Draw()
@@ -136,18 +138,6 @@ namespace Orion_Desktop
             Conceptor2D.ConstructUI();
             // Set textbox text
             ((Textbox)Conceptor2D.TerminalGui["nameTxb"]).Text = $"{targetName}";
-        }
-
-        /// <summary>Moves the Orion robot target to the left.</summary>
-        internal static void SwitchTargetLeft()
-        {
-            SwitchTarget(-1);
-        }
-
-        /// <summary>Moves the Orion robot target to the right.</summary>
-        internal static void SwitchTargetRight()
-        {
-            SwitchTarget(1);
         }
 
         /// <summary>Parses a value to potentially update the orion target.</summary>

@@ -144,9 +144,9 @@ namespace Orion_Desktop
     internal struct View3D
     {
         // Constants
-        internal static float SMOOTH_FACTOR = 15.0f;
-        internal static float SENSITIVITY = 1.6f;
-        internal static float SPEED = 8f;
+        internal const float SMOOTH_FACTOR = 15.0f;
+        internal const float SENSITIVITY = 1.6f;
+        internal const float SPEED = 8f;
 
         // Rotation angless
         private float _yaw;

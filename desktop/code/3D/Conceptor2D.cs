@@ -123,20 +123,30 @@ namespace Orion_Desktop
                 }
                 else
                 {
-                    InterfaceActive = false;
-                    if (OpenedInterface == Interface.Earth)
+                    // Check if no textbox's opened
+                    bool focus = false;
+                    TerminalGui.ForEach(x =>
                     {
-                        EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
-                        EarthHologram.IPitchToBe = 0;
-                        EarthHologram.IYawToBe = 0;
-                    }
-                    else if (OpenedInterface == Interface.Terminal) 
+                        if (x is Textbox textbox) if (textbox.Focus) focus = true;
+                    });
+                    // Close only if no textbox's opened
+                    if (!focus)
                     {
-                        OrionSim.PositionToBe = OrionSim.OriginPosition;
-                        OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
-                        OrionSim.IPitchToBe = 0;
+                        InterfaceActive = false;
+                        if (OpenedInterface == Interface.Earth)
+                        {
+                            EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
+                            EarthHologram.IPitchToBe = 0;
+                            EarthHologram.IYawToBe = 0;
+                        }
+                        else if (OpenedInterface == Interface.Terminal)
+                        {
+                            OrionSim.PositionToBe = OrionSim.OriginPosition;
+                            OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
+                            OrionSim.IPitchToBe = 0;
+                        }
+                        DisableCursor();
                     }
-                    DisableCursor();
                 }
             }
         }
@@ -182,11 +192,9 @@ namespace Orion_Desktop
 
             Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, $"{OrionSim.ViewerLatitude}");
             txbCurrentLat.OnEntry = UpdateLatitude;
-            txbCurrentLat.Filter = Textbox.TextFilter.Decimals;
             TerminalGui.Add("txbCurrentLat", txbCurrentLat);
             Textbox txbCurrentLon = new Textbox(1160, 490, 360, 45, $"{OrionSim.ViewerLongitude}");
             txbCurrentLon.OnEntry = UpdateLongitude;
-            txbCurrentLon.Filter = Textbox.TextFilter.Decimals;
             TerminalGui.Add("txbCurrentLon", txbCurrentLon);
 
             TerminalGui.SetRoundness(0.25f);

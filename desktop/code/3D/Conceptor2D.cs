@@ -67,6 +67,15 @@ namespace Orion_Desktop
         /// <summary>Displays 2D information to the screen.</summary>
         internal static void Draw()
         {
+            if (IsMouseButtonPressed(MouseButton.Left))
+            {
+                // Update action sounds
+                TerminalGui.ForEach(x =>
+                {
+                    if (Hover(x)) AudioCenter.PlaySound("button_click");
+                });
+            }
+
             // Draw E hint
             if (InteractiveEnabled) 
             {
@@ -96,6 +105,7 @@ namespace Orion_Desktop
             {
                 if (InteractiveEnabled && !InterfaceActive)
                 {
+                    AudioCenter.PlaySound("button_click");
                     // Defines which interface to open
                     switch (OpenedInterface)
                     {

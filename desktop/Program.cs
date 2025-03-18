@@ -34,11 +34,15 @@ namespace Orion_Desktop
             Height = GetScreenHeight();
 
             // Open different services
+            AudioCenter.Init();
             Conceptor3D.Init();
             Conceptor2D.Init();
 
             // Load render texture
             LoadRender();
+
+            // Start music
+            AudioCenter.PlayMusic("ambient");
 
             EarthHologram.UpdatePlanet();
 
@@ -48,6 +52,9 @@ namespace Orion_Desktop
             DisableCursor();
             while (!WindowShouldClose())
             {
+                // Ambient sound
+                AudioCenter.UpdateMusic("ambient");
+
                 // Update functions
                 Conceptor3D.Update();
                 

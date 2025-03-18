@@ -10,7 +10,8 @@ in vec2 fragTexCoord;
 uniform sampler2D texture0;
 uniform float time;
 uniform vec3 viewPos;
-uniform bool closeup = true;
+
+uniform float closeUpIntensity; // Defines the mix between hologram color and texture-albedo color
 
 out vec4 pixelColor;
 
@@ -39,4 +40,6 @@ void main()
     hologramColor *= texture(texture0, uv + distortion).rgb; \
     
     pixelColor = vec4(hologramColor, texelColor.a);
+    // Mix between hologram and textures
+    pixelColor = mix(pixelColor, texelColor, closeUpIntensity);
 }

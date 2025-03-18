@@ -158,7 +158,6 @@ namespace Orion_Desktop
         internal static Shader PBRLightingShader;
         internal static Shader SkyboxShader;
         internal static Shader ScreenShader;
-        internal static Shader FarawayEarth;
         private static Shader CubemapShader;
 
         public static PBRLight[] Lights = new PBRLight[4];
@@ -185,9 +184,6 @@ namespace Orion_Desktop
             FixShader = LoadShader("assets/shaders/default.vs", "assets/shaders/hologram.fs"); // Earth hologram shader
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
             ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
-
-            // Faraway earth shader
-            FarawayEarth = LoadShader("assets/shaders/default.vs", "assets/shaders/farawayEarth.fs");
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");

@@ -42,6 +42,7 @@ namespace Orion_Desktop
 
             // Program loop
             //SetTargetFPS(60);
+            SetExitKey(KeyboardKey.Null);
             DisableCursor();
             while (!WindowShouldClose())
             {

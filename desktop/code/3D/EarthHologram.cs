@@ -19,6 +19,9 @@ namespace Orion_Desktop
         internal static Satellite Satellite; // Satellite object
 
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
+        internal static bool IsFocused;
+
+        internal static Vector3 BackupCameraPosition, BackupCameraTarget;
 
         private static double _holdTime;
         private static Vector2 _mouseOrigin;
@@ -38,6 +41,7 @@ namespace Orion_Desktop
             UpdateSatellite();
             // Create globe correction matrix
             UpdateTransform();
+            IsFocused = false;
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -67,7 +71,7 @@ namespace Orion_Desktop
             DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + CENTER, 0.06f, Color.White);
 
             // Draw current position
-            DrawSphere(OrionSim.ViewerPosition + CENTER, 0.02f, Color.Red);
+            //DrawSphere(OrionSim.ViewerPosition + CENTER, 0.02f, Color.Red);
 #if DEBUG
             //DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.SkyBlue);
 #endif
@@ -103,7 +107,19 @@ namespace Orion_Desktop
         /// <summary>Updates the interface of the hologram.</summary>
         internal static void UpdateInterface()
         {
-            if (IsMouseButtonDown(MouseButton.Left)) // Drag
+            // Update camera lerp
+            if (IsFocused) 
+            { 
+                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, (OrionSim.ViewerPosition * 1.08f)+ CENTER, GetFrameTime());
+                Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + CENTER, GetFrameTime());
+            }
+            else 
+            { 
+                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, BackupCameraPosition, GetFrameTime());
+                Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, BackupCameraTarget, GetFrameTime());
+            }
+
+            if (IsMouseButtonDown(MouseButton.Left) && !IsFocused) // Drag
             {
                 Vector2 mouse = GetMouseDelta() * 0.2f;
                 IYaw += mouse.X;
@@ -127,6 +143,9 @@ namespace Orion_Desktop
                         // Update UI components
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();
+                        // Update state
+                        IsFocused = true;
+                        BackupCameraPosition = Conceptor3D.View.PreviousPosition;
                     }
                 } 
                 _holdTime = 0;

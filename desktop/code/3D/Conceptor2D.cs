@@ -105,6 +105,8 @@ namespace Orion_Desktop
                             Ray dir = GetScreenToWorldRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
                             Vector3 pos = dir.Position + dir.Direction * 2.5f;
                             EarthHologram.CENTER_TO_BE = pos;
+                            EarthHologram.BackupCameraPosition = Conceptor3D.View.Camera.Position;
+                            EarthHologram.BackupCameraTarget = Conceptor3D.View.Camera.Target;
                             EnableCursor();
                             break;
                         case Interface.Terminal:
@@ -132,20 +134,32 @@ namespace Orion_Desktop
                     // Close only if no textbox's opened
                     if (!focus)
                     {
-                        InterfaceActive = false;
-                        if (OpenedInterface == Interface.Earth)
+                        if (!EarthHologram.IsFocused)
                         {
-                            EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
-                            EarthHologram.IPitchToBe = 0;
-                            EarthHologram.IYawToBe = 0;
+                            if (Raymath.Vector3Length(Conceptor3D.View.Camera.Position - EarthHologram.BackupCameraPosition) < 0.1f)
+                            {
+                                InterfaceActive = false;
+                                if (OpenedInterface == Interface.Earth)
+                                {
+                                    EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
+                                    EarthHologram.IPitchToBe = 0;
+                                    EarthHologram.IYawToBe = 0;
+                                }
+                                DisableCursor();
+                            }
                         }
-                        else if (OpenedInterface == Interface.Terminal)
+                        if (EarthHologram.IsFocused)
                         {
+                            EarthHologram.IsFocused = false;
+                        }
+                        if (OpenedInterface == Interface.Terminal)
+                        {
+                            InterfaceActive = false;
                             OrionSim.PositionToBe = OrionSim.OriginPosition;
                             OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
                             OrionSim.IPitchToBe = 0;
+                            DisableCursor();
                         }
-                        DisableCursor();
                     }
                 }
             }

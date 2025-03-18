@@ -171,6 +171,7 @@ namespace Orion_Desktop
         private static int ViewPosLoc;
         private static int CloseUpIntensityLoc1;
         private static int CloseUpIntensityLoc2;
+        private static int EarthPreviewLoc;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -187,6 +188,9 @@ namespace Orion_Desktop
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
             ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
             CloseUpIntensityLoc1 = GetShaderLocation(FixShader, "closeUpIntensity");
+            EarthPreviewLoc = GetShaderLocation(FixShader, "preview");
+            Texture2D tex = LoadTexture("assets/textures/earth_preview.png");
+            SetShaderValueTexture(FixShader, EarthPreviewLoc, tex);
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");

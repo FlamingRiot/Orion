@@ -27,9 +27,7 @@ namespace Orion_Desktop
             SetWindowState(ConfigFlags.ResizableWindow);
 
             MaximizeWindow();
-#if !DEBUG
-            ToggleFullscreen();
-#endif
+
             Width = GetScreenWidth();
             Height = GetScreenHeight();
 
@@ -98,8 +96,6 @@ namespace Orion_Desktop
 
                 // Draw 2D information
                 Conceptor2D.Draw();
-
-                DrawText(Conceptor2D.OpenedInterface.ToString(), 200, 200, 40, Color.Green);
 #if DEBUG
                 // Draw debug framerate
                 DrawFPS(10, 10);

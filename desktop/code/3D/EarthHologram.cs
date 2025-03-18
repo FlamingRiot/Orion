@@ -115,7 +115,7 @@ namespace Orion_Desktop
             // Update camera lerp
             if (IsFocused) 
             { 
-                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, (OrionSim.ViewerPosition * 1.08f) + CENTER, GetFrameTime() * Conceptor3D.LERP_SPEED);
+                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, (OrionSim.ViewerPosition * 1.25f) + CENTER, GetFrameTime() * Conceptor3D.LERP_SPEED);
                 Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + CENTER, GetFrameTime() * Conceptor3D.LERP_SPEED);
             }
             else 

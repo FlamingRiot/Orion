@@ -22,6 +22,7 @@ namespace Orion_Desktop
         internal static void Init()
         {
             LoadMaterials();
+            LoadModels();
             LoadMeshes();
         }
 
@@ -96,6 +97,14 @@ namespace Orion_Desktop
                 { ShapeType.HemiSphere, GenMeshHemiSphere(0.5f, 15, 15) },
                 { ShapeType.Knot, GenMeshKnot(0.5f, 1, 20, 20) }
             };
+        }
+
+        /// <summary>Loads the application's custom 3D models from .m3d files.</summary>
+        private static void LoadModels()
+        {
+            Model iss = LoadModel("assets/iss.m3d");
+            SetMaterialShader(ref iss, 0, ref Shaders.FixShader);
+            Models.Add("iss", iss);
         }
     }
 }

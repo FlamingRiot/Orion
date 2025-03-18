@@ -64,12 +64,12 @@ namespace Orion_Desktop
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeRotationMat);
 
             // Draw satellite point
-            DrawSphere(Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.1f) + CENTER, 0.02f, Color.Yellow);
+            DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + CENTER, 0.06f, Color.White);
 
             // Draw current position
             DrawSphere(OrionSim.ViewerPosition + CENTER, 0.02f, Color.Red);
 #if DEBUG
-            DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.Red);
+            //DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.SkyBlue);
 #endif
         }
 

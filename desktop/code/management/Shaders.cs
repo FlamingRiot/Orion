@@ -169,7 +169,8 @@ namespace Orion_Desktop
         private static int TimeLocGlobe;
         private static int TimeLocScreen;
         private static int ViewPosLoc;
-        private static int CloseUpIntensityLoc;
+        private static int CloseUpIntensityLoc1;
+        private static int CloseUpIntensityLoc2;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -185,7 +186,7 @@ namespace Orion_Desktop
             FixShader = LoadShader("assets/shaders/default.vs", "assets/shaders/hologram.fs"); // Earth hologram shader
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
             ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
-            CloseUpIntensityLoc = GetShaderLocation(FixShader, "closeUpIntensity");
+            CloseUpIntensityLoc1 = GetShaderLocation(FixShader, "closeUpIntensity");
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");
@@ -193,6 +194,7 @@ namespace Orion_Desktop
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
             BackRenderLoc = GetShaderLocation(PostProShader, "bRender");
+            CloseUpIntensityLoc2 = GetShaderLocation(FixShader, "closeUpIntensity");
 
             // PBR lighting shader
             PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
@@ -286,7 +288,8 @@ namespace Orion_Desktop
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)
             {
                 float interp = 1.0f - ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.CENTER - Conceptor3D.View.Camera.Position).Length() / ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.CENTER - EarthHologram.BackupCameraPosition).Length();
-                SetShaderValue(FixShader, CloseUpIntensityLoc, interp, ShaderUniformDataType.Float);
+                SetShaderValue(FixShader, CloseUpIntensityLoc1, interp, ShaderUniformDataType.Float);
+                SetShaderValue(PostProShader, CloseUpIntensityLoc2, interp, ShaderUniformDataType.Float);
             }
 
             SetShaderValue(ScreenShader, TimeLocScreen, time, ShaderUniformDataType.Float);

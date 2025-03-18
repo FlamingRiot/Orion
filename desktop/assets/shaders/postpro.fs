@@ -7,6 +7,7 @@ in vec2 fragTexCoord;
 
 uniform sampler2D texture0;
 uniform sampler2D bRender;
+uniform float closeUpIntensity; // Defines the mix between hologram color and texture-albedo color
 
 out vec4 pixelColor;
 
@@ -24,5 +25,5 @@ void main()
         pixelColor = baseColor;
     }
 
-    //pixelColor = maskColor;
+    pixelColor = mix(pixelColor, maskColor, closeUpIntensity);
 }

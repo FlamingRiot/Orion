@@ -87,11 +87,11 @@ namespace Orion_Desktop
             // Update action-ray detection
             Ray mouse = GetScreenToWorldRay(Conceptor2D.Size / 2, View.Camera);
             Conceptor2D.InteractiveEnabled = GetRayCollisionSphere(mouse, EarthHologram.CENTER, EarthHologram.HOLOGRAM_RADIUS).Hit;
-            if (Conceptor2D.InteractiveEnabled) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Earth;
+            if (Conceptor2D.InteractiveEnabled && IsKeyPressed(KeyboardKey.E)) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Earth;
             if (!Conceptor2D.InteractiveEnabled)
             {
                 Conceptor2D.InteractiveEnabled = GetRayCollisionMesh(mouse, Resources.Meshes["screen"], OrionSim.Transform).Hit;
-                if (Conceptor2D.InteractiveEnabled) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Terminal;
+                if (Conceptor2D.InteractiveEnabled && IsKeyPressed(KeyboardKey.E)) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Terminal;
             }
         }
 

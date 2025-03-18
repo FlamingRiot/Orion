@@ -105,7 +105,6 @@ namespace Orion_Desktop
                     // Read response
                     string body = await response.Content.ReadAsStringAsync();
                     JObject json = JObject.Parse(body);
-                    Console.WriteLine(json.ToString());
                 }
                 catch (Exception e)
                 {

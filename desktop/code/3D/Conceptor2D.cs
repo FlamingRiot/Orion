@@ -155,6 +155,7 @@ namespace Orion_Desktop
                                     EarthHologram.IPitchToBe = 0;
                                     EarthHologram.IYawToBe = 0;
                                 }
+                                OpenedInterface = Interface.None;
                                 DisableCursor();
                             }
                         }
@@ -169,6 +170,7 @@ namespace Orion_Desktop
                             OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
                             OrionSim.IPitchToBe = 0;
                             DisableCursor();
+                            OpenedInterface = Interface.None;
                         }
                     }
                 }

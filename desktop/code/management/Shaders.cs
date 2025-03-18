@@ -281,7 +281,14 @@ namespace Orion_Desktop
             // Update hologram-shaders time uniform
             double time = GetTime();
             SetShaderValue(FixShader, TimeLocGlobe, time, ShaderUniformDataType.Float);
-            //if (Conceptor2D.InterfaceActive) SetShaderValue(FixShader, CloseUpIntensityLoc, (Conceptor3D.View.Camera.Position - EarthHologram.BackupCameraPosition).Length(), ShaderUniformDataType.Float);
+
+            // Define interpolation value in normalized scope
+            if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)
+            {
+                float interp = 1.0f - ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.CENTER - Conceptor3D.View.Camera.Position).Length() / ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.CENTER - EarthHologram.BackupCameraPosition).Length();
+                SetShaderValue(FixShader, CloseUpIntensityLoc, interp, ShaderUniformDataType.Float);
+            }
+
             SetShaderValue(ScreenShader, TimeLocScreen, time, ShaderUniformDataType.Float);
 
             // Start post-processing shader

@@ -21,6 +21,8 @@ namespace Orion_Desktop
 
             // Set ambient volume
             SetMusicVolume("ambient", 0.5f);
+            // Start music
+            PlayMusic("ambient");
         }
 
         /// <summary>Plays a sound</summary>

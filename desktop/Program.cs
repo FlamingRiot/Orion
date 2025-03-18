@@ -41,10 +41,7 @@ namespace Orion_Desktop
             // Load render texture
             LoadRender();
 
-            // Start music
-            AudioCenter.PlayMusic("ambient");
-
-            EarthHologram.UpdatePlanet();
+            //EarthHologram.UpdatePlanet();
 
             // Program loop
             //SetTargetFPS(60);
@@ -101,6 +98,8 @@ namespace Orion_Desktop
 
                 // Draw 2D information
                 Conceptor2D.Draw();
+
+                DrawText(Conceptor2D.OpenedInterface.ToString(), 200, 200, 40, Color.Green);
 #if DEBUG
                 // Draw debug framerate
                 DrawFPS(10, 10);

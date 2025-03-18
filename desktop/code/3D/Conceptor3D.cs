@@ -118,7 +118,7 @@ namespace Orion_Desktop
             }
 
             // Update movement
-            if (movement.Length() > 0)
+            if (movement != Vector3.Zero)
             {
                 View.Camera.Position += Vector3.Normalize(movement) * GetFrameTime() * View3D.SPEED;
                 View.Camera.Target = Vector3.Add(View.Camera.Target, View.Camera.Position);
@@ -181,7 +181,7 @@ namespace Orion_Desktop
         /// <summary>Updates the circular constraint for the current 3D view.</summary>
         internal void UpdateCircularConstraint()
         {
-            float distance = (Camera.Position - EarthHologram.CENTER).Length();
+            float distance = (Camera.Position - EarthHologram.ORIGIN).Length();
             if (distance >= Conceptor3D.HUB_RADIUS)
             {
                 Camera.Position = PreviousPosition;

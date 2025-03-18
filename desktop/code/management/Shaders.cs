@@ -169,6 +169,7 @@ namespace Orion_Desktop
         private static int TimeLocGlobe;
         private static int TimeLocScreen;
         private static int ViewPosLoc;
+        private static int CloseUpIntensityLoc;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -184,6 +185,7 @@ namespace Orion_Desktop
             FixShader = LoadShader("assets/shaders/default.vs", "assets/shaders/hologram.fs"); // Earth hologram shader
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
             ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
+            CloseUpIntensityLoc = GetShaderLocation(FixShader, "closeUpIntensity");
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");
@@ -279,6 +281,7 @@ namespace Orion_Desktop
             // Update hologram-shaders time uniform
             double time = GetTime();
             SetShaderValue(FixShader, TimeLocGlobe, time, ShaderUniformDataType.Float);
+            //if (Conceptor2D.InterfaceActive) SetShaderValue(FixShader, CloseUpIntensityLoc, (Conceptor3D.View.Camera.Position - EarthHologram.BackupCameraPosition).Length(), ShaderUniformDataType.Float);
             SetShaderValue(ScreenShader, TimeLocScreen, time, ShaderUniformDataType.Float);
 
             // Start post-processing shader

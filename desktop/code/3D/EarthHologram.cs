@@ -51,6 +51,11 @@ namespace Orion_Desktop
             Satellite.RelativePosition = CelestialMaths.ComputeECEFTilted(Satellite.Latitude, Satellite.Longitude, IYaw);
         }
 
+        internal static async void UpdatePlanet()
+        {
+            await OnlineRequests.GetCurrentPlanet(AstralTarget.Mars);
+        }
+
         /// <summary>Draws the earth hologam.</summary>
         internal static void Draw()
         {
@@ -110,7 +115,7 @@ namespace Orion_Desktop
             // Update camera lerp
             if (IsFocused) 
             { 
-                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, (OrionSim.ViewerPosition * 1.08f)+ CENTER, GetFrameTime() * Conceptor3D.LERP_SPEED);
+                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, (OrionSim.ViewerPosition * 1.08f) + CENTER, GetFrameTime() * Conceptor3D.LERP_SPEED);
                 Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + CENTER, GetFrameTime() * Conceptor3D.LERP_SPEED);
             }
             else 
@@ -140,6 +145,7 @@ namespace Orion_Desktop
                     if (collision.Hit)
                     {
                         (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - CENTER) / HOLOGRAM_RADIUS, IYaw);
+                        OrionSim.UpdateViewPoint();
                         // Update UI components
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();

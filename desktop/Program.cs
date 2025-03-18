@@ -40,6 +40,8 @@ namespace Orion_Desktop
             // Load render texture
             LoadRender();
 
+            EarthHologram.UpdatePlanet();
+
             // Program loop
             //SetTargetFPS(60);
             SetExitKey(KeyboardKey.Null);

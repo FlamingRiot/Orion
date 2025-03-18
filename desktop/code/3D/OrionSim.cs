@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace Orion_Desktop
 {
-    /// <summary>Defines the currently targeted astral object.</summary>
+    /// <summary>Defines the currently targeted astral object. (With ids corresponding to the API's)</summary>
     internal enum AstralTarget
     {
         ISS,

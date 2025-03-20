@@ -25,5 +25,5 @@ void main()
         pixelColor = baseColor;
     }
 
-    pixelColor = mix(pixelColor, maskColor, closeUpIntensity);
+    pixelColor = mix(pixelColor, maskColor, closeUpIntensity + 0.05);
 }

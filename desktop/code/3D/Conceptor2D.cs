@@ -54,6 +54,8 @@ namespace Orion_Desktop
             Font = LoadFont("assets/textures/Ubuntu-Bold.ttf");
 
             ActionRec = new Rectangle(Width / 2 - ACTION_REC_SIZE, Height / 2 - ACTION_REC_SIZE, ACTION_REC_SIZE, ACTION_REC_SIZE);
+
+            DeactivateGui(TerminalGui); // Deactive cause not in the interface right off the bat
         }
 
         internal static Vector2 RetargetMousePosition(Rectangle source, Rectangle destination)
@@ -120,6 +122,9 @@ namespace Orion_Desktop
                             EnableCursor();
                             break;
                         case Interface.Terminal:
+
+                            ActivateGui(TerminalGui);
+                            
                             InterfaceActive = true;
                             Ray center = GetScreenToWorldRay(Size / 2, Conceptor3D.View.Camera);
                             pos = center.Position + center.Direction;
@@ -165,6 +170,8 @@ namespace Orion_Desktop
                         }
                         if (OpenedInterface == Interface.Terminal)
                         {
+                            DeactivateGui(TerminalGui);
+
                             InterfaceActive = false;
                             OrionSim.PositionToBe = OrionSim.OriginPosition;
                             OrionSim.IYawToBe = OrionSim.INCLINE_YAW;

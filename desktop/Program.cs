@@ -99,10 +99,7 @@ namespace Orion_Desktop
 
                 // Draw 2D information
                 Conceptor2D.Draw();
-#if DEBUG
-                // Draw debug framerate
-                DrawFPS(10, 10);
-#endif
+
                 // Close drawing context
                 EndDrawing();
             }

@@ -54,9 +54,9 @@ namespace Orion_Desktop
             BeginMode3D(View.Camera);
 
 #if DEBUG
-            DrawLine3D(-Vector3.UnitX * 100, Vector3.UnitX * 100, Color.Red); // X                
-            DrawLine3D(-Vector3.UnitY * 100, Vector3.UnitY * 100, Color.Green); // Y
-            DrawLine3D(-Vector3.UnitZ * 100, Vector3.UnitZ * 100, Color.Blue); // Z                
+            //DrawLine3D(-Vector3.UnitX * 100, Vector3.UnitX * 100, Color.Red); // X                
+            //DrawLine3D(-Vector3.UnitY * 100, Vector3.UnitY * 100, Color.Green); // Y
+            //DrawLine3D(-Vector3.UnitZ * 100, Vector3.UnitZ * 100, Color.Blue); // Z                
 #endif
             // Draw skybox
             Shaders.DrawSkybox(SkyboxMat);
@@ -75,9 +75,9 @@ namespace Orion_Desktop
             EndMode3D();
 
 #if DEBUG
-            // Debug text
-            DrawText(EarthHologram.IYaw.ToString(), 20, 40, 20, Color.Red);
-            DrawText((View.Yaw * RAD2DEG).ToString(), 20, 80, 20, Color.Red);
+            //// Debug text
+            //DrawText(EarthHologram.IYaw.ToString(), 20, 40, 20, Color.Red);
+            //DrawText((View.Yaw * RAD2DEG).ToString(), 20, 80, 20, Color.Red);
 #endif
         }
 

@@ -6,3 +6,4 @@ dotnet run
 ````
 Le logiciel se lance maintenant comme convenu et vous pouvez en profitez pleinement. Son fonctionnement vous est expliqué au point suivant.
 ## Logiciel
+Le logiciel fournit plusieurs fonctionnalités intéressantes. Premièrement, vous trouvez au centre de la plateforme circulaire un hologramme de la planète terre. Autour de celle-ci se trouve une représentation de la Station Spatiale Internationale qui se déplace en temps réel. 

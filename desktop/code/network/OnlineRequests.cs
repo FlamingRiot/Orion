@@ -63,6 +63,7 @@ namespace Orion_Desktop
 
                     EarthHologram.Satellite.UpdateSatellite(json);
                     EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEFTilted(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude, EarthHologram.IYaw) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
+                    EarthHologram.ComputeRelativeAltitude();
 
                     Conceptor2D.UpdateUI();
                 }

@@ -58,6 +58,7 @@ namespace Orion_Desktop
 
             // Draw scene
             objects.ForEach(x => x.Draw());
+
 #if DEBUG
             //// Collision detection debug draw calls
             //DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
@@ -140,6 +141,9 @@ namespace Orion_Desktop
             View.Yaw = CelestialMaths.ClampAngleRadianNegative(View.Yaw);
 
             View.Pitch = Math.Clamp(View.Pitch, -1.5f, 1.5f);
+
+            // Update bobbing
+            View.UpdateBobbing();
         }
     }
 
@@ -165,6 +169,11 @@ namespace Orion_Desktop
         
         internal Vector3 Tangent;
         internal Vector3 Segment;
+
+        // Bobbing variables
+        private const float bobbingSpeed = 4.0f;
+        private const float bobbingAmount = 0.0001f;
+        private float time = 0.0f;
 
         /// <summary>Yaw angle of the camera.</summary>
         internal float Yaw { get { return _yaw; } set { _yaw = value; UpdateView(); } }
@@ -205,6 +214,12 @@ namespace Orion_Desktop
             Camera.Target.Y = MathF.Sin(Pitch);
             Camera.Target.Z = MathF.Cos(Pitch) * MathF.Cos(Yaw);
             Camera.Target += Camera.Position;
+        }
+
+        internal void UpdateBobbing()
+        {
+            time += GetFrameTime() * bobbingSpeed;
+            Camera.Position.Y += MathF.Sin(time) * bobbingAmount;
         }
     }
 

@@ -124,7 +124,7 @@ namespace Orion_Desktop
                         case Interface.Terminal:
 
                             ActivateGui(TerminalGui);
-                            
+
                             InterfaceActive = true;
                             Ray center = GetScreenToWorldRay(Size / 2, Conceptor3D.View.Camera);
                             pos = center.Position + center.Direction;

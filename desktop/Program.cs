@@ -26,6 +26,9 @@ namespace Orion_Desktop
             InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), $"{APP_NAME} {APP_VERSION}");
             SetWindowState(ConfigFlags.ResizableWindow);
 
+            SetConfigFlags(ConfigFlags.VSyncHint);
+            SetConfigFlags(ConfigFlags.Msaa4xHint);
+
             MaximizeWindow();
 
             Width = GetScreenWidth();

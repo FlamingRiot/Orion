@@ -86,10 +86,6 @@ namespace Orion_Desktop
 
             
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
-
-            // Draw arrow
-            //Vector3 target = Vector3.Normalize(Vector3.Subtract(EarthHologram.Satellite.RelativePosition, ViewerPosition));
-            //DrawLine3D(Vector3.UnitY * 12, target * 2 + Vector3.UnitY * 12, Color.Red);
         }
 
         /// <summary>Draws the orion terminal screen to a render texture and applies it to a material.</summary>
@@ -112,6 +108,11 @@ namespace Orion_Desktop
 
             // Set material texture
             SetMaterialTexture(ref TerminalScreenMat, MaterialMapIndex.Diffuse, TerminalScreen.Texture);
+        }
+
+        internal static void ComputeDirection()
+        {
+            float alt = EarthHologram.Satellite.Altitude;
         }
 
         /// <summary>Moves the targeted astral object.</summary>

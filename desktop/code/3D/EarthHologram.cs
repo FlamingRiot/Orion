@@ -10,6 +10,7 @@ namespace Orion_Desktop
         // Constants
         internal const float HOLOGRAM_RADIUS = 0.8f;
         internal const float EARTH_TILT = 23.44f;
+        internal const float EARTH_RADIUS = 6378; // kilometers
 
         internal static Matrix4x4 GlobeRotationMat; // Earth globe rotation matrix
         internal static Vector3 ORIGIN; // unmodified center, ever
@@ -17,6 +18,8 @@ namespace Orion_Desktop
         internal static Vector3 CENTER; // current center
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite; // Satellite object
+
+        internal static float RelativeSatelliteAltitude;
 
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
         internal static bool IsFocused;
@@ -74,9 +77,10 @@ namespace Orion_Desktop
 
             // Draw satellite point
             DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + CENTER, 0.06f, Color.White);
+            //DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + RelativeSatelliteAltitude) + CENTER, 0.06f, Color.White);
 
             // Draw current position
-            //DrawSphere(OrionSim.ViewerPosition + CENTER, 0.02f, Color.Red);
+            DrawSphere(OrionSim.ViewerPosition + CENTER, 0.02f, Color.Red);
 #if DEBUG
             //DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.SkyBlue);
 #endif
@@ -107,6 +111,13 @@ namespace Orion_Desktop
                 
             // Update ECEF position of the viewpoint
             OrionSim.UpdateViewPoint(); // Update un-rotated pos
+        }
+
+        internal static void ComputeRelativeAltitude()
+        {
+            float alt = Satellite.Altitude;
+            float ratio = alt / EARTH_RADIUS;
+            RelativeSatelliteAltitude = HOLOGRAM_RADIUS * ratio;
         }
 
         /// <summary>Updates the interface of the hologram.</summary>

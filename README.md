@@ -6,6 +6,6 @@ bin/Release/net9.0/win-x64/publish/
 ````
 Si vous êtes sous linux, remplacez le répértoire *win-x64* par *linux-x64*. Vous avez maintenant accès à l'exécutable et le logiciel se lance comme convenu. Son fonctionnement vous est expliqué au point suivant.
 ## [Logiciel]
-Le logiciel fournit plusieurs fonctionnalités intéressantes. Premièrement, vous trouvez au centre de la plateforme circulaire un hologramme de la planète terre. Autour de celle-ci se trouve une représentation de la Station Spatiale Internationale qui se déplace en temps réel. 
+Le logiciel fournit plusieurs fonctionnalités intéressantes. Premièrement, vous trouvez au centre de la plateforme circulaire un hologramme de la planète terre. Autour de celle-ci se trouve une représentation de la Station Spatiale Internationale se déplaçant en temps réel dont vous pouvez apprécier le mouvement aussi longtemps que vous le souhaitez. Puis, sur le bord du cercle, vous pouvez apercevoir un terminal holographique. Celui-ci servira dans le futur à communiquer avec le robot physiquement présent à côté de l'ordinateur. Pour l'instant, vous avez la possibilité de modifier le point de vue de la simultion (utilisée plus tard pour le robot), voir les informations en temps réel de l'ISS ou encore changer de cible théorique pour le robot (arrivera également dans le futur avec le TPI). Bien entendu, tout ceci est encore inachevé, et le projet prendra réellement fin le 10 juin 2025. D'ici là, merci de votre patience. 
 
 [Logiciel]: CHANGELOG.md

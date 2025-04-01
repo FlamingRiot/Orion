@@ -23,7 +23,8 @@ namespace Orion_Desktop
     internal static class OrionSim
     {
         internal const float INCLINE_YAW = 40f; // Represents the terminal-screen's orientation (vertically)
-        internal static readonly Vector3 ArrowSource = new Vector3(-9.7f, 1.7f, 2.4f);
+        internal static readonly Vector3 ArrowSource = EarthHologram.CENTER + Vector3.UnitY * 2;
+        private static float _cageRadius;
 
         internal static float ViewerLatitude;
         internal static float ViewerLongitude;
@@ -72,6 +73,7 @@ namespace Orion_Desktop
             ScreenRelatedRender = new Rectangle(x, y, GetScreenWidth() - x * 2, GetScreenHeight() - y * 2);
 
             ComputeDirection();
+            _cageRadius = Raymath.Vector3Length(ArrowTarget);
         }
 
         /// <summary>Updates the viewer's position.</summary>
@@ -92,7 +94,9 @@ namespace Orion_Desktop
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
             // Draw Pointing-Arrow
             DrawSphere(ArrowSource, 0.03f, Color.White);
-            DrawLine3D(ArrowSource, ArrowTarget * 2 + ArrowSource, Color.Yellow);
+            DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
+            // Draw wired-cage
+            DrawSphereWires(ArrowSource, _cageRadius, 10, 10, new Color(100, 100, 100));
         }
 
         /// <summary>Draws the orion terminal screen to a render texture and applies it to a material.</summary>

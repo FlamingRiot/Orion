@@ -17,6 +17,14 @@ namespace Orion_Desktop
             Terminal
         }
 
+        /*
+         Directions: 
+         -X : South
+         +X : North
+         -Z : West
+         +Z : East
+         */
+
         internal const int ACTION_REC_SIZE = 30;
         internal const int SCREEN_RATIO = 1000;
 

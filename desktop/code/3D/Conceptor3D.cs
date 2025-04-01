@@ -146,9 +146,6 @@ namespace Orion_Desktop
             View.Yaw = CelestialMaths.ClampAngleRadianNegative(View.Yaw);
 
             View.Pitch = Math.Clamp(View.Pitch, -1.5f, 1.5f);
-
-            // Update bobbing
-            View.UpdateBobbing();
         }
     }
 

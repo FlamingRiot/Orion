@@ -22,18 +22,21 @@ namespace Orion_Desktop
     /// <summary>Represents the Orion robot simulation.</summary>
     internal static class OrionSim
     {
-        internal const float INCLINE_YAW = 40f;
+        internal const float INCLINE_YAW = 40f; // Represents the terminal-screen's orientation (vertically)
+        internal static readonly Vector3 ArrowSource = new Vector3(-9.7f, 1.7f, 2.4f);
 
         internal static float ViewerLatitude;
         internal static float ViewerLongitude;
+        internal static Vector3 ViewerPosition; // Current simulation viewpoint
+        internal static Vector3 ArrowTarget; // Defines the orientation of the arrow, relative to the horizontal plane
         internal static AstralTarget Target;
 
-        internal static Vector3 ViewerPosition;
-        internal static Vector3 OriginPosition = new Vector3(-10.1f, 1.7f, -0.16f);
-        internal static Vector3 TerminalPosition;
-        internal static Vector3 PositionToBe;
-        internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
+        internal static Vector3 OriginPosition = new Vector3(-10.1f, 1.7f, -0.16f); // Original position (never to be changed)
+        internal static Vector3 TerminalPosition; // Current position
+        internal static Vector3 PositionToBe; // Used for interpolation
+        internal static float IYaw, IPitch, IYawToBe, IPitchToBe; // Used for interpolation
 
+        // Render-related attributes
         internal static Rectangle ScreenRelatedRender;
         internal static Matrix4x4 Transform;
         private static RenderTexture2D TerminalScreen;
@@ -67,6 +70,8 @@ namespace Orion_Desktop
             float x = GetScreenWidth() / 17;
             float y = GetScreenHeight() / 17;
             ScreenRelatedRender = new Rectangle(x, y, GetScreenWidth() - x * 2, GetScreenHeight() - y * 2);
+
+            ComputeDirection();
         }
 
         /// <summary>Updates the viewer's position.</summary>
@@ -83,9 +88,11 @@ namespace Orion_Desktop
             IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             IPitch = Raymath.Lerp(IPitch, IPitchToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
-
             
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
+            // Draw Pointing-Arrow
+            DrawSphere(ArrowSource, 0.03f, Color.White);
+            DrawLine3D(ArrowSource, ArrowTarget * 2 + ArrowSource, Color.Yellow);
         }
 
         /// <summary>Draws the orion terminal screen to a render texture and applies it to a material.</summary>
@@ -112,7 +119,10 @@ namespace Orion_Desktop
 
         internal static void ComputeDirection()
         {
-            float alt = EarthHologram.Satellite.Altitude;
+            // Direction vector based on visual appearance
+            Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude) + EarthHologram.CENTER, ViewerPosition + EarthHologram.CENTER);
+            direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
+            ArrowTarget = Raymath.Vector3Normalize(direction);
         }
 
         /// <summary>Moves the targeted astral object.</summary>

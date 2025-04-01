@@ -1,20 +1,39 @@
 ## Orion Changelog
 
+# [beta-0.0.0]
+
+- feat: terminal-screen intended for robot-control and viewpoint modification 
+- feat: layered render used for alpha blending with holograms
+- feat: theoretical astral-target modification through terminal-screen
+- feat: viewpoint coordinates modification through terminal-screen
+- feat: new skybox texture
+- feat: light sound-design with ambient music
+- feat: better quality earth-globe texture
+- feat: earth-globe closeup when clicked on (later intended for map-tiling)
+##
+- fix: circular-border crossing when leaving/entering an interface
+- fix: unclamped camera rotation-angle causing ridiculously fast spins when entering the terminal's interface
+- fix: 'e' character causing interface closing when typing text through textboxes
+- fix: offset ground tiles
+- fix: default cursor causing offseting in terminal-screen
+- fix: updated RayGUI-cs version to avoid cursor-state bugs
+
 # [alpha-0.2.0]
 
-- Created the earth-globe's UX interface
-- Created the orion terminal's interface opening
-- Lerped interfaces opening/closing
-- Upgraded ECEF functions by adding rotation values + reverse ECEF
+- feat: earth-globe's UX interface
+- feat: orion terminal's interface opening
+- feat: lerped interfaces' opening/closing actions
+- feat: upgraded ECEF functions by adding rotation values + reverse ECEF
 
 # [alpha-0.1.0]
 
-- An earth globe stands in the middle of the room
-- The ISS revolves around the globe in real-time
-- Uses a Uniray-designed environement 
-- PBR lighting brightens up the scene
+- feat: an earth-globe stands in the middle of the circular platform
+- feat: the ISS revolves around the globe in real-time
+- feat: implemented a Uniray-designed environment
+- feat: PBR-based materials and lighting
 
 ---
 
+[beta-0.0.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/beta-0.0.0
 [alpha-0.2.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/alpha-0.2.0
 [alpha-0.1.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/alpha-0.1.0

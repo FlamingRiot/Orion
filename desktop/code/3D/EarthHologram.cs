@@ -19,9 +19,10 @@ namespace Orion_Desktop
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static Satellite Satellite; // Satellite object
 
-        internal static float RelativeSatelliteAltitude;
-
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
+        internal static float RelativeSatelliteAltitude;
+        internal static float VerticalAngle;
+
         internal static bool IsFocused;
 
         internal static Vector3 BackupCameraPosition, BackupCameraTarget;
@@ -163,6 +164,9 @@ namespace Orion_Desktop
                         // Update state
                         IsFocused = true;
                         BackupCameraPosition = Conceptor3D.View.PreviousPosition;
+
+                        // Compute vertical-axis angle
+                        VerticalAngle = MathF.Acos(Raymath.Vector3DotProduct(Vector3.UnitY, OrionSim.ViewerPosition) / (Vector3.UnitY.Length() * OrionSim.ViewerPosition.Length())) * RAD2DEG;
                     }
                 } 
                 _holdTime = 0;

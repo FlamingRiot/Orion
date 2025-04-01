@@ -69,9 +69,9 @@ namespace Orion_Desktop
         /// <summary>Displays 2D information to the screen.</summary>
         internal static void Draw()
         {
+            // Update action sounds
             if (IsMouseButtonPressed(MouseButton.Left))
             {
-                // Update action sounds
                 TerminalGui.ForEach(x =>
                 {
                     if (Hover(x)) AudioCenter.PlaySound("button_click");

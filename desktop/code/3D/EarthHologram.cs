@@ -80,7 +80,7 @@ namespace Orion_Desktop
             //DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + RelativeSatelliteAltitude) + CENTER, 0.06f, Color.White);
 
             // Draw current position
-            DrawSphere(OrionSim.ViewerPosition + CENTER, 0.02f, Color.Red);
+            DrawSphere(OrionSim.ViewerPosition + CENTER, 0.01f, Color.Red);
 #if DEBUG
             //DrawLine3D(CENTER, Satellite.RelativePosition + CENTER, Color.SkyBlue);
 #endif

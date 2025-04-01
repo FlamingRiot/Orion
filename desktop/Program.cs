@@ -29,6 +29,8 @@ namespace Orion_Desktop
             SetConfigFlags(ConfigFlags.VSyncHint);
             SetConfigFlags(ConfigFlags.Msaa4xHint);
 
+            SetWindowIcon(LoadImage("assets/logo.png"));
+
             MaximizeWindow();
 
             Width = GetScreenWidth();

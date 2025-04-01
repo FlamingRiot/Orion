@@ -77,7 +77,7 @@ namespace Orion_Desktop
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeRotationMat);
 
             // Draw satellite point
-            DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.02f) + CENTER, 0.06f, Color.White);
+            DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + CENTER, 0.06f, Color.White);
             //DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + RelativeSatelliteAltitude) + CENTER, 0.06f, Color.White);
 
             // Draw current position

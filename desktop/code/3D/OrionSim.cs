@@ -63,7 +63,6 @@ namespace Orion_Desktop
             TerminalPosition = OriginPosition;
             PositionToBe = OriginPosition;
 
-            Target = AstralTarget.Mars;
             string? targetName = Enum.GetName(Target);
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
 

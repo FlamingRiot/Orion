@@ -36,7 +36,7 @@ namespace Orion_Desktop
 
             // Init center tables
             EarthHologram.Init(); // Connect to earth hologram
-            View.Camera.Target = EarthHologram.CENTER;
+            View.Camera.Target = EarthHologram.GlobeCenter;
 
             Shaders.Init(); // Load program shaders
             OrionSim.Init(0, 0); // Start Orion robot simulation
@@ -92,7 +92,7 @@ namespace Orion_Desktop
 
             // Update action-ray detection
             Ray mouse = GetScreenToWorldRay(Conceptor2D.Size / 2, View.Camera);
-            Conceptor2D.InteractiveEnabled = GetRayCollisionSphere(mouse, EarthHologram.CENTER, EarthHologram.HOLOGRAM_RADIUS).Hit;
+            Conceptor2D.InteractiveEnabled = GetRayCollisionSphere(mouse, EarthHologram.GlobeCenter, EarthHologram.HOLOGRAM_RADIUS).Hit;
             if (Conceptor2D.InteractiveEnabled && IsKeyPressed(KeyboardKey.E)) Conceptor2D.OpenedInterface = Conceptor2D.Interface.Earth;
             if (!Conceptor2D.InteractiveEnabled)
             {
@@ -192,12 +192,12 @@ namespace Orion_Desktop
         /// <summary>Updates the circular constraint for the current 3D view.</summary>
         internal void UpdateCircularConstraint()
         {
-            float distance = (Camera.Position - EarthHologram.ORIGIN).Length();
+            float distance = (Camera.Position - EarthHologram.GlobeOrigin).Length();
             if (distance >= Conceptor3D.HUB_RADIUS)
             {
                 Camera.Position = PreviousPosition;
                 // Calculate circle tangent on collision point (previous position.)
-                Segment = PreviousPosition - EarthHologram.CENTER;
+                Segment = PreviousPosition - EarthHologram.GlobeCenter;
                 Tangent = new Vector3(-Segment.Z, 0, Segment.X);
                 // Calcualte constraint value
                 Constraint.ComputeConstraint(Camera.Target, Tangent);

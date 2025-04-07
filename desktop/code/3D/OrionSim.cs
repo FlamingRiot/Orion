@@ -23,8 +23,8 @@ namespace Orion_Desktop
     internal static class OrionSim
     {
         internal const float INCLINE_YAW = 40f; // Represents the terminal-screen's orientation (vertically)
-        internal static readonly Vector3 ArrowSource = EarthHologram.CENTER + Vector3.UnitY * 2;
-        private static float _cageRadius;
+
+        internal static readonly Vector3 ArrowSource = EarthHologram.GlobeCenter + Vector3.UnitY * 2; // Defines the origin of the 3D pointing-arrow
 
         internal static float ViewerLatitude;
         internal static float ViewerLongitude;
@@ -71,8 +71,7 @@ namespace Orion_Desktop
             float y = GetScreenHeight() / 17;
             ScreenRelatedRender = new Rectangle(x, y, GetScreenWidth() - x * 2, GetScreenHeight() - y * 2);
 
-            ComputeDirection();
-            _cageRadius = Raymath.Vector3Length(ArrowTarget);
+            ComputeArrowDirection();
         }
 
         /// <summary>Updates the viewer's position.</summary>
@@ -83,6 +82,7 @@ namespace Orion_Desktop
             ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
         }
 
+        /// <summary>Draws the terminal screen along with the 3D pointing arrow.</summary>
         internal static void Draw()
         {
             TerminalPosition = Raymath.Vector3Lerp(TerminalPosition, PositionToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
@@ -94,11 +94,9 @@ namespace Orion_Desktop
             // Draw Pointing-Arrow
             DrawSphere(ArrowSource, 0.03f, Color.White);
             DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
-            // Draw wired-cage
-            DrawSphereWires(ArrowSource, _cageRadius, 10, 10, new Color(100, 100, 100));
         }
 
-        /// <summary>Draws the orion terminal screen to a render texture and applies it to a material.</summary>
+        /// <summary>Draws the orion terminal screen to a render-texture and applies it to a material.</summary>
         internal static void DrawTerminalScreen()
         {
             // Open texture-mode
@@ -120,16 +118,17 @@ namespace Orion_Desktop
             SetMaterialTexture(ref TerminalScreenMat, MaterialMapIndex.Diffuse, TerminalScreen.Texture);
         }
 
-        internal static void ComputeDirection()
+        /// <summary>Computes the direction of the 3D pointing arrow.</summary>
+        internal static void ComputeArrowDirection()
         {
             // Direction vector based on visual appearance
-            Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude) + EarthHologram.CENTER, ViewerPosition + EarthHologram.CENTER);
+            Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude) + EarthHologram.GlobeCenter, ViewerPosition + EarthHologram.GlobeCenter);
             direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(-ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
             ArrowTarget = Raymath.Vector3Normalize(direction);
         }
 
-        /// <summary>Moves the targeted astral object.</summary>
-        /// <param name="delta">Index delta.</param>
+        /// <summary>Moves the targeted astral object to the right or left.</summary>
+        /// <param name="delta">Index delta (-1 or 1).</param>
         internal static void SwitchTarget(int delta)
         {
             int current = (int)Target;
@@ -154,7 +153,7 @@ namespace Orion_Desktop
             ((Textbox)Conceptor2D.TerminalGui["nameTxb"]).Text = $"{targetName}";
         }
 
-        /// <summary>Parses a value to potentially update the orion target.</summary>
+        /// <summary>Parses a value to potentially update the orion target (resets the textbox if no matching found).</summary>
         /// <param name="args">Arguments passed from the textbox.</param>
         /// <param name="value">Textbox value.</param>
         internal static void VerifiyTargetEntry(string[] args, string value)
@@ -176,7 +175,7 @@ namespace Orion_Desktop
         }
 
         /// <summary>Updates the transform of the hologram screen.</summary>
-        internal static void UpdateTransform()
+        private static void UpdateTransform()
         {
             Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
             Transform *= Raymath.MatrixRotateY(IPitch / RAD2DEG);

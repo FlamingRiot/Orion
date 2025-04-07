@@ -229,8 +229,8 @@ namespace Orion_Desktop
             EmissiveColorLoc = GetShaderLocation(PBRLightingShader, "emissiveColor");
             TextureTilingLoc = GetShaderLocation(PBRLightingShader, "tiling");
             // Create main light source
-            Lights[0] = PBRLights.CreateLight(0, PBRLightType.Point, EarthHologram.CENTER, Vector3.Zero, new Color(35, 110, 232, 255), 10, PBRLightingShader);
-            Lights[1] = PBRLights.CreateLight(1, PBRLightType.Point, EarthHologram.CENTER + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
+            Lights[0] = PBRLights.CreateLight(0, PBRLightType.Point, EarthHologram.GlobeCenter, Vector3.Zero, new Color(35, 110, 232, 255), 10, PBRLightingShader);
+            Lights[1] = PBRLights.CreateLight(1, PBRLightType.Point, EarthHologram.GlobeCenter + Vector3.UnitY * 6, Vector3.Zero, Color.White, 50, PBRLightingShader);
             //Lights[2] = PbrLights.CreateLight(2, PbrLightType.Point, new Vector3(-7f, 3f, -0.1f), Vector3.Zero, new Color(8, 181, 255, 255), 50, PBRLightingShader);
             // Set PBR shader used maps
             int usage = 1;
@@ -291,8 +291,8 @@ namespace Orion_Desktop
             // Define interpolation value in normalized scope
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)
             {
-                float l1 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.CENTER - Conceptor3D.View.Camera.Position).Length();
-                float l2 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.CENTER - EarthHologram.BackupCameraPosition).Length();
+                float l1 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - Conceptor3D.View.Camera.Position).Length();
+                float l2 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - EarthHologram.BackupCameraPosition).Length();
                 float interp = 1.0f - l1 / l2;
                 SetShaderValue(FixShader, CloseUpIntensityLoc1, interp, ShaderUniformDataType.Float);
                 SetShaderValue(PostProShader, CloseUpIntensityLoc2, interp, ShaderUniformDataType.Float);

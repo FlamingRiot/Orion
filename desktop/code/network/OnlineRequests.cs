@@ -63,9 +63,9 @@ namespace Orion_Desktop
 
                     EarthHologram.Satellite.UpdateSatellite(json);
                     EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEFTilted(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude, EarthHologram.IYaw) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
-                    EarthHologram.ComputeRelativeAltitude(); // Compute what the distance from the earth-globe should be
+                    EarthHologram.ComputeRelativeAltitude(); // Compute what the distance from the earth-globe should be (used for accuracy in calculations)
 
-                    OrionSim.ComputeDirection(); // Computes the direction used for arrow rendering
+                    OrionSim.ComputeArrowDirection(); // Computes the direction used for the 3D pointing-arrow
 
                     Conceptor2D.UpdateUI();
                 }

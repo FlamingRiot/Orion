@@ -124,7 +124,7 @@ namespace Orion_Desktop
                             // Define 3D post based current camera pos
                             Ray dir = GetScreenToWorldRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
                             Vector3 pos = dir.Position + dir.Direction * 2.5f;
-                            EarthHologram.CENTER_TO_BE = pos;
+                            EarthHologram.GlobeCenterToBe = pos;
                             EarthHologram.BackupCameraPosition = Conceptor3D.View.Camera.Position;
                             EarthHologram.BackupCameraTarget = Conceptor3D.View.Camera.Target;
                             EnableCursor();
@@ -164,7 +164,7 @@ namespace Orion_Desktop
                                 InterfaceActive = false;
                                 if (OpenedInterface == Interface.Earth)
                                 {
-                                    EarthHologram.CENTER_TO_BE = EarthHologram.ORIGIN;
+                                    EarthHologram.GlobeCenterToBe = EarthHologram.GlobeOrigin;
                                     EarthHologram.IPitchToBe = 0;
                                     EarthHologram.IYawToBe = 0;
                                 }

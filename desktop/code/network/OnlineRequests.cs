@@ -13,6 +13,7 @@ namespace Orion_Desktop
     internal static class OnlineRequests
     {
         public const int REQUEST_INTERVAL = 2;
+        public const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
 
         private static Stopwatch? timer;
         private static int _timeLastCheck = -1;
@@ -131,7 +132,7 @@ namespace Orion_Desktop
         /// <param name="column">Tile column.</param>
         /// <param name="zoom">Zoom level.</param>
         /// <returns>Whatever <see cref="Task"/> is.</returns>
-        internal static async Task DownloadTile(int zoom)
+        internal static async Task DownloadTileset(int zoom)
         {
             int _downloadWithCount = 0;
             int _downloadHeightCount = 0;
@@ -162,7 +163,7 @@ namespace Orion_Desktop
                             _downloadWithCount++;
                         }
                     }
-                    catch  
+                    catch
                     {
                         if (_downloadWithCount == 0)
                         {
@@ -179,5 +180,87 @@ namespace Orion_Desktop
                 }
             }
         }
+        //internal static async Task DownloadTileset(int zoom)
+        //{
+        //    int maxConcurrentDownloads = 4;
+        //    using SemaphoreSlim semaphore = new SemaphoreSlim(maxConcurrentDownloads);
+
+        //    int y = 0;
+        //    bool isLoadingDone = false;
+        //    int widthMax = 0;
+        //    int heightMax = 0;
+
+        //    string dirPath = $"{TilingManager.CACHE_DIRECTORY}{TilingManager.MAP_CONFIG}_{zoom}/";
+        //    if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+
+        //    while (!isLoadingDone)
+        //    {
+        //        List<Task<bool>> tasks = new List<Task<bool>>();
+        //        int x = 0;
+        //        bool atLeastOneSuccess = false;
+
+        //        while (true)
+        //        {
+        //            await semaphore.WaitAsync();
+        //            int tileX = x;
+        //            int tileY = y;
+
+        //            string imgName = $"{TilingManager.MAP_CONFIG}_{zoom}_{tileY}_{tileX}.png";
+        //            string filePath = $"{dirPath}{imgName}";
+
+        //            if (File.Exists(filePath))
+        //            {
+        //                x++;
+        //                semaphore.Release();
+        //                continue;
+        //            }
+
+        //            tasks.Add(Task.Run(async () =>
+        //            {
+        //                try
+        //                {
+        //                    using HttpClient client = new HttpClient();
+        //                    string url = $"https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{TilingManager.MAP_CONFIG}/default/2013-07-09/250m/{zoom}/{tileY}/{tileX}.jpg";
+
+        //                    HttpResponseMessage response = await client.GetAsync(url);
+        //                    response.EnsureSuccessStatusCode();
+        //                    byte[] data = await response.Content.ReadAsByteArrayAsync();
+        //                    await File.WriteAllBytesAsync(filePath, data);
+
+        //                    return true;
+        //                }
+        //                catch
+        //                {
+        //                    return false;
+        //                }
+        //                finally
+        //                {
+        //                    semaphore.Release();
+        //                }
+        //            }));
+
+        //            x++;
+
+        //            // Pour éviter de lancer trop de tâches (genre 10'000 tiles d’un coup)
+        //            if (tasks.Count >= 32) break;
+        //        }
+
+        //        bool[] results = await Task.WhenAll(tasks);
+        //        atLeastOneSuccess = results.Any(success => success);
+
+        //        if (!atLeastOneSuccess)
+        //        {
+        //            isLoadingDone = true;
+        //            TilingManager.Configs[zoom] = new Vector2(widthMax - 1, heightMax - 1);
+        //            TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, zoom);
+        //        }
+        //        else
+        //        {
+        //            widthMax = Math.Max(widthMax, x);
+        //            heightMax++;
+        //            y++;
+        //        }
+        //    }
+        //}
     }
 }

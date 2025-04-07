@@ -62,7 +62,7 @@ namespace Orion_Desktop
             // Create cache directory
             Directory.CreateDirectory(TilingManager.CACHE_DIRECTORY);
 
-            Task download = OnlineRequests.DownloadTileset(4);
+            Task download = OnlineRequests.DownloadTileset(3);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -161,6 +161,8 @@ namespace Orion_Desktop
 
                         // Compute vertical-axis angle
                         VerticalAngle = MathF.Acos(Raymath.Vector3DotProduct(Vector3.UnitY, OrionSim.ViewerPosition) / (Vector3.UnitY.Length() * OrionSim.ViewerPosition.Length())) * RAD2DEG;
+
+                        TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, 3);
                     }
                 } 
                 _holdTime = 0;
@@ -219,14 +221,22 @@ namespace Orion_Desktop
 
         internal static Vector2 ConvertCoordinatesToTiles(float lat, float lon, int zoomLevel)
         {
+            // Define maximums
             int latMax = 180;
             int lonMax = 360;
 
+            // Adapt
+            lat += latMax / 2;
+            lon += lonMax / 2;
 
+            // Retrieve zoom-level values
             Vector2 position = new Vector2(0);
             Configs.TryGetValue(zoomLevel, out position);
 
-            Console.WriteLine(Configs[zoomLevel].ToString());
+            position.X = lat / latMax * position.X;
+            position.Y = lon / lonMax * position.Y;
+
+            Console.WriteLine(position.ToString());
 
             return position;
         }

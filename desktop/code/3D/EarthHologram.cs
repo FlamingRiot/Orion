@@ -57,6 +57,11 @@ namespace Orion_Desktop
             // Create globe correction matrix
             UpdateTransform();
             IsFocused = false;
+
+            // Create cache directory
+            Directory.CreateDirectory(TilingManager.CACHE_DIRECTORY);
+
+            Task download = OnlineRequests.DownloadTile(5);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -106,6 +111,7 @@ namespace Orion_Desktop
         /// <summary>Updates the interface of the hologram.</summary>
         internal static void UpdateInterface()
         {
+            TilingManager.DrawMapManager();
             // Update camera lerp
             if (IsFocused) 
             {
@@ -116,7 +122,6 @@ namespace Orion_Desktop
                 /*-----------------------------------------------------------------
                  Map-Tiling classes, functions and variables. 
                  ------------------------------------------------------------------*/
-                TilingManager.DrawMapManager();
             }
             else 
             { 
@@ -199,20 +204,18 @@ namespace Orion_Desktop
         // Constants
         internal const string CACHE_DIRECTORY = "cache/";
         internal const string MAP_CONFIG = $"MODIS_Terra_CorrectedReflectance_TrueColor";
+        internal const int WIDTH_MAX = 9;
+        internal const int HEIGHT_MAX = 5;
 
         // Attributes
         internal static int ZoomLevel = 5;
 
-        private static int _downloadWithCount = 0;
-        private static int _downloadHeightCount = 0;
-        private static int _downloadZoomLevel = 4;
         private static List<MapTile> Tiles = new List<MapTile>();
 
         /// <summary>Draws the Map-tiling (Required context: 2D).</summary>
         internal static void DrawMapManager()
         {
             Tiles.ForEach(t => t.Draw());
-            Task download = OnlineRequests.DownloadTile(_downloadWithCount, _downloadHeightCount, ZoomLevel);
         }
     }
 

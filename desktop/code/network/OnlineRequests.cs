@@ -131,24 +131,49 @@ namespace Orion_Desktop
         /// <param name="column">Tile column.</param>
         /// <param name="zoom">Zoom level.</param>
         /// <returns>Whatever <see cref="Task"/> is.</returns>
-        internal static async Task DownloadTile(int row, int column, int zoom)
+        internal static async Task DownloadTile(int zoom)
         {
-            using HttpClient client = new HttpClient();
-            try
+            int _downloadWithCount = 0;
+            int _downloadHeightCount = 0;
+            bool _isLoadingDone = false;
+
+            // Create directory if not already exists
+            string dirPath = $"{TilingManager.CACHE_DIRECTORY}{TilingManager.MAP_CONFIG}_{zoom}/";
+            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+
+            // Update loading
+            while (!_isLoadingDone)
             {
-                string imgName = $"{TilingManager.MAP_CONFIG}_{zoom}_{row}_{column}.png";
-                if (!File.Exists($"{TilingManager.CACHE_DIRECTORY}{imgName}"))
+                // Update download location
+                if (_downloadWithCount > TilingManager.WIDTH_MAX)
                 {
-                    string url = $"https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{TilingManager.MAP_CONFIG}/default/2013-07-09/250m/{zoom}/{row}/{column}.jpg";
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-                    byte[] data = await response.Content.ReadAsByteArrayAsync(); // Read stream
-                    File.WriteAllBytes($"{TilingManager.CACHE_DIRECTORY}{imgName}", data); // Write img to cache
+                    _downloadWithCount = 0;
+                    _downloadHeightCount++;
                 }
-            }
-            catch (Exception err)
-            {
-                Console.WriteLine(err);
+                _downloadWithCount++;
+
+                // Stop current zoom-level loading
+                if (_downloadWithCount > TilingManager.WIDTH_MAX && _downloadHeightCount > TilingManager.HEIGHT_MAX) _isLoadingDone = true;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    try
+                    {
+                        string imgName = $"{TilingManager.MAP_CONFIG}_{zoom}_{_downloadHeightCount}_{_downloadWithCount}.png";
+                        if (!File.Exists($"{dirPath}{imgName}"))
+                        {
+                            string url = $"https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{TilingManager.MAP_CONFIG}/default/2013-07-09/250m/{zoom}/{_downloadHeightCount}/{_downloadWithCount}.jpg";
+                            HttpResponseMessage response = await client.GetAsync(url);
+                            response.EnsureSuccessStatusCode();
+                            byte[] data = await response.Content.ReadAsByteArrayAsync(); // Read stream
+                            File.WriteAllBytes($"{dirPath}{imgName}", data); // Write img to cache
+                        }
+                    }
+                    catch (Exception ex) 
+                    { 
+                        Console.WriteLine(ex.Message);
+                    }
+                }
             }
         }
     }

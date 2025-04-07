@@ -17,7 +17,7 @@ namespace Orion_Desktop
         private static Stopwatch? timer;
         private static int _timeLastCheck = -1;
 
-        /// <summary>Starts connexion timer.</summary>
+        /// <summary>Starts connexion timer (used for API max-request).</summary>
         internal static void StartConnexion()
         {
             if (timer is null)
@@ -26,6 +26,10 @@ namespace Orion_Desktop
                 timer.Start();
             }
         }
+
+        /*-----------------------------------------------------------------
+        Satellite and planets data-retrieving functions
+        ------------------------------------------------------------------*/
 
         /// <summary>Retrieves satellite informations from the API.</summary>
         /// <returns>Async Task</returns>
@@ -116,6 +120,36 @@ namespace Orion_Desktop
             }
 
             return Vector3.Zero;
+        }
+
+        /*-----------------------------------------------------------------
+        Map-Tiles data-retrieving functions
+        ------------------------------------------------------------------*/
+
+        /// <summary>Retrieves data from a Map-tiling endpoint, for a selected tile config.</summary>
+        /// <param name="row">Tile row.</param>
+        /// <param name="column">Tile column.</param>
+        /// <param name="zoom">Zoom level.</param>
+        /// <returns>Whatever <see cref="Task"/> is.</returns>
+        internal static async Task DownloadTile(int row, int column, int zoom)
+        {
+            using HttpClient client = new HttpClient();
+            try
+            {
+                string imgName = $"{TilingManager.MAP_CONFIG}_{zoom}_{row}_{column}.png";
+                if (!File.Exists($"{TilingManager.CACHE_DIRECTORY}{imgName}"))
+                {
+                    string url = $"https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{TilingManager.MAP_CONFIG}/default/2013-07-09/250m/{zoom}/{row}/{column}.jpg";
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+                    byte[] data = await response.Content.ReadAsByteArrayAsync(); // Read stream
+                    File.WriteAllBytes($"{TilingManager.CACHE_DIRECTORY}{imgName}", data); // Write img to cache
+                }
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err);
+            }
         }
     }
 }

@@ -4,6 +4,10 @@ using static Raylib_cs.Raylib;
 
 namespace Orion_Desktop
 {
+    /*-----------------------------------------------------------------
+     3D earth-globe class, functions and variables. 
+     ------------------------------------------------------------------*/
+
     /// <summary>Represents the static class of the earth hologram.</summary>
     internal static class EarthHologram
     {
@@ -104,9 +108,15 @@ namespace Orion_Desktop
         {
             // Update camera lerp
             if (IsFocused) 
-            { 
-                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, (OrionSim.ViewerPosition * 1.25f) + GlobeCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            {
+                Vector3 targetPosition = OrionSim.ViewerPosition * 1.25f + GlobeCenter;
+                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, targetPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
                 Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + GlobeCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
+
+                /*-----------------------------------------------------------------
+                 Map-Tiling classes, functions and variables. 
+                 ------------------------------------------------------------------*/
+                TilingManager.DrawMapManager();
             }
             else 
             { 
@@ -176,6 +186,65 @@ namespace Orion_Desktop
 
             // Update ECEF position of the viewpoint
             OrionSim.UpdateViewPoint(); // Update un-rotated pos
+        }
+    }
+
+    /*-----------------------------------------------------------------
+     Map-Tiling classes, functions and variables. 
+     ------------------------------------------------------------------*/
+
+    /// <summary>Represents the 2D map-tiling managing class.</summary>
+    internal static class TilingManager
+    {
+        // Constants
+        internal const string CACHE_DIRECTORY = "cache/";
+        internal const string MAP_CONFIG = $"MODIS_Terra_CorrectedReflectance_TrueColor";
+
+        // Attributes
+        internal static int ZoomLevel = 5;
+
+        private static int _downloadWithCount = 0;
+        private static int _downloadHeightCount = 0;
+        private static int _downloadZoomLevel = 4;
+        private static List<MapTile> Tiles = new List<MapTile>();
+
+        /// <summary>Draws the Map-tiling (Required context: 2D).</summary>
+        internal static void DrawMapManager()
+        {
+            Tiles.ForEach(t => t.Draw());
+            Task download = OnlineRequests.DownloadTile(_downloadWithCount, _downloadHeightCount, ZoomLevel);
+        }
+    }
+
+    /// <summary>Represents a single map-tile used for 2D rendering in <see cref="TilingManager"/>.</summary>
+    internal class MapTile
+    {
+        // Constants
+        internal const int TILE_SIZE = 128;
+
+        // Rectangles used for tile rendering
+        private static Rectangle _source = new Rectangle(0, 0, 512, 512);
+        private Rectangle _target;
+
+        // Attributes
+        public int Row;
+        public int Column;
+        public Texture2D Texture;
+
+        /// <summary>Creates an instance of <see cref="MapTile"/>.</summary>
+        /// <param name="row">Map row.</param>
+        /// <param name="column">Map column.</param>
+        internal MapTile(int row, int column)
+        {
+            Row = row;
+            Column = column;
+            _target = new Rectangle(TILE_SIZE * column, TILE_SIZE * row, TILE_SIZE, TILE_SIZE);
+        }
+
+        /// <summary>Draws a single map-tile according to its relative position.</summary>
+        internal void Draw()
+        {
+            DrawTexturePro(Texture, _source, _target, Vector2.Zero, 0, Color.White);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
@@ -61,7 +62,7 @@ namespace Orion_Desktop
             // Create cache directory
             Directory.CreateDirectory(TilingManager.CACHE_DIRECTORY);
 
-            Task download = OnlineRequests.DownloadTile(5);
+            Task download = OnlineRequests.DownloadTile(4);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -204,11 +205,9 @@ namespace Orion_Desktop
         // Constants
         internal const string CACHE_DIRECTORY = "cache/";
         internal const string MAP_CONFIG = $"MODIS_Terra_CorrectedReflectance_TrueColor";
-        internal const int WIDTH_MAX = 9;
-        internal const int HEIGHT_MAX = 5;
 
-        // Attributes
-        internal static int ZoomLevel = 5;
+        // Tile Levels to be updated during background loading
+        internal static Dictionary<int, Vector2> Configs = new Dictionary<int, Vector2>();
 
         private static List<MapTile> Tiles = new List<MapTile>();
 
@@ -216,6 +215,20 @@ namespace Orion_Desktop
         internal static void DrawMapManager()
         {
             Tiles.ForEach(t => t.Draw());
+        }
+
+        internal static Vector2 ConvertCoordinatesToTiles(float lat, float lon, int zoomLevel)
+        {
+            int latMax = 180;
+            int lonMax = 360;
+
+
+            Vector2 position = new Vector2(0);
+            Configs.TryGetValue(zoomLevel, out position);
+
+            Console.WriteLine(Configs[zoomLevel].ToString());
+
+            return position;
         }
     }
 

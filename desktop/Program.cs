@@ -36,7 +36,7 @@ namespace Orion_Desktop
             Width = GetScreenWidth();
             Height = GetScreenHeight();
 
-            // Open different services
+            // Open different services (Call-order matters here)
             AudioCenter.Init();
             Conceptor3D.Init();
             Conceptor2D.Init();

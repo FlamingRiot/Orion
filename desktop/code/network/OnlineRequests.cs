@@ -123,7 +123,7 @@ namespace Orion_Desktop
         }
 
         /*-----------------------------------------------------------------
-        Map-Tiles data-retrieving functions
+          Map-Tiles data-retrieving functions
         ------------------------------------------------------------------*/
 
         /// <summary>Retrieves data from a Map-tiling endpoint, for a selected tile config.</summary>
@@ -137,6 +137,8 @@ namespace Orion_Desktop
             int _downloadHeightCount = 0;
             bool _isLoadingDone = false;
 
+            int _widthMax = 0, _heightMax = 0;
+
             // Create directory if not already exists
             string dirPath = $"{TilingManager.CACHE_DIRECTORY}{TilingManager.MAP_CONFIG}_{zoom}/";
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
@@ -144,17 +146,6 @@ namespace Orion_Desktop
             // Update loading
             while (!_isLoadingDone)
             {
-                // Update download location
-                if (_downloadWithCount > TilingManager.WIDTH_MAX)
-                {
-                    _downloadWithCount = 0;
-                    _downloadHeightCount++;
-                }
-                _downloadWithCount++;
-
-                // Stop current zoom-level loading
-                if (_downloadWithCount > TilingManager.WIDTH_MAX && _downloadHeightCount > TilingManager.HEIGHT_MAX) _isLoadingDone = true;
-
                 using (HttpClient client = new HttpClient())
                 {
                     try
@@ -167,11 +158,23 @@ namespace Orion_Desktop
                             response.EnsureSuccessStatusCode();
                             byte[] data = await response.Content.ReadAsByteArrayAsync(); // Read stream
                             File.WriteAllBytes($"{dirPath}{imgName}", data); // Write img to cache
+
+                            _downloadWithCount++;
                         }
                     }
-                    catch (Exception ex) 
-                    { 
-                        Console.WriteLine(ex.Message);
+                    catch  
+                    {
+                        if (_downloadWithCount == 0)
+                        {
+                            _isLoadingDone = true;
+                            TilingManager.Configs[zoom] = new Vector2(_widthMax - 1, _heightMax - 1);
+                            TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, zoom);
+                        }
+
+                        _downloadHeightCount++;
+                        _heightMax++;
+                        _widthMax = _downloadWithCount;
+                        _downloadWithCount = 0;
                     }
                 }
             }

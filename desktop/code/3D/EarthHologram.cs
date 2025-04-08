@@ -236,8 +236,6 @@ namespace Orion_Desktop
             position.X = lat / latMax * position.X;
             position.Y = lon / lonMax * position.Y;
 
-            Console.WriteLine(position.ToString());
-
             return position;
         }
     }

@@ -166,6 +166,7 @@ namespace Orion_Desktop
         private static int EmissiveColorLoc;
         private static int TextureTilingLoc;
         private static int BackRenderLoc;
+        private static int CompassRenderLoc;
         private static int TimeLocGlobe;
         private static int TimeLocScreen;
         private static int ViewPosLoc;
@@ -198,7 +199,8 @@ namespace Orion_Desktop
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
             BackRenderLoc = GetShaderLocation(PostProShader, "bRender");
-            CloseUpIntensityLoc2 = GetShaderLocation(FixShader, "closeUpIntensity");
+            CompassRenderLoc = GetShaderLocation(PostProShader, "cRender");
+            CloseUpIntensityLoc2 = GetShaderLocation(PostProShader, "closeUpIntensity");
 
             // PBR lighting shader
             PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
@@ -305,6 +307,9 @@ namespace Orion_Desktop
 
             // Update background render
             SetShaderValueTexture(PostProShader, BackRenderLoc, Program.Render.Texture);
+            // Update compass render 
+            SetShaderValueTexture(PostProShader, CompassRenderLoc, Conceptor2D.CompassRenderTexture.Texture);
+            // Update Drawcall
             DrawTexturePro(Program.HologramRender.Texture, Program.SourceRender, Program.DestinationRender, Vector2.Zero, 0, Color.White);
 
             // Close post-processing shader

@@ -61,9 +61,10 @@ namespace Orion_Desktop
             LoadGUI(LoadFont("assets/textures/SpaceMono-Bold.ttf"));
             ConstructUI();
 
-            // Load compass render texure and render rectangles
-            CompassDestinationRectangle = new Rectangle(Width / 4, 20, Width / 2, 50);
-            CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width, (int)CompassDestinationRectangle.Height);
+            // Load compass render-texure and render-rectangles
+            int compassUpscaling = 4;
+            CompassDestinationRectangle = new Rectangle(0, 0, Width, Height);
+            CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width / compassUpscaling, (int)CompassDestinationRectangle.Height / compassUpscaling);
             CompassSourceRectangle = new Rectangle(0, 0, CompassRenderTexture.Texture.Width, -CompassRenderTexture.Texture.Height);
 
             OpenedInterface = Interface.None; // Defines the opened interface
@@ -89,9 +90,9 @@ namespace Orion_Desktop
         {
             BeginTextureMode(CompassRenderTexture);
 
-            ClearBackground(Color.White);
+            ClearBackground(Color.Black);
 
-            DrawText("Here will be the compass", 310, 8, 30, Color.Black);
+            DrawText("Here will be the compass", 175, 2, 5, Color.LightGray);
 
             EndTextureMode();
         }
@@ -103,9 +104,6 @@ namespace Orion_Desktop
 
             // Draw compass at the top of the screen
             DrawCompass();
-
-            // Draw compass render-texture
-            DrawTexturePro(CompassRenderTexture.Texture, CompassSourceRectangle, CompassDestinationRectangle, Vector2.Zero, 0, Color.White);
 
             // Draw E hint
             if (InteractiveEnabled) 

@@ -3,6 +3,7 @@ using Raylib_cs;
 using RayGUI_cs;
 using static RayGUI_cs.RayGUI;
 using System.Numerics;
+using System.Security.AccessControl;
 
 namespace Orion_Desktop
 {
@@ -92,12 +93,15 @@ namespace Orion_Desktop
             ClearBackground(Color.Black);
 
             // Measure text
-            string txt = $"|  0  |  15  |  30  |  45  |  60  |  75  |  90  |  105  |  120  |  135  |  150  |  165  |  180  " +
-                $"|  195  |  210  |  225  |  240  |  255  |  270  |  295  |  310  |  325  |  340  |  355"; // Placeholder
-            //string txt = $"45  |  60  |  75  |  {(int)(-1 * Conceptor3D.View.Yaw * RAD2DEG)}  |  105  |  120  |  135"; // Placeholder
-            Vector2 txtSize = MeasureTextEx(Font, txt, 30, 1);
+            string txt = $"325  |  340  |  355  |  S  |  15  |  30  |  45  |  60  |  75  |  E  |  105  |  120  |  135  |  150  |  165  |  N  " +
+                $"|  195  |  210  |  225  |  240  |  255  |  W  |  295  |  310  |  325  |  340  |  355  |  S  |  15  |  30  |";
+            Vector2 txtSize = MeasureTextEx(Font, txt, 30, 1); // The width is equivalent to 360° as a rotation angle
+            float angle = Conceptor3D.View.Yaw * RAD2DEG * -1; // [0° to 360°]
+            float ratio = (txtSize.X + 112) / 360f;
+            float center = Width / 2 - 300;
             // Draw text
-            DrawTextPro(RayGUI.Font, txt, new Vector2(Width / 2 - txtSize.X / 2 + Conceptor3D.View.Yaw * RAD2DEG * 5, 20), Vector2.Zero, 0, 30, 1, Color.White);
+            DrawTextPro(RayGUI.Font, txt, new Vector2(center - angle * ratio, 20), Vector2.Zero, 0, 30, 1, Color.White);
+            //DrawTextPro(RayGUI.Font, txt, new Vector2(Width / 2 - txtSize.X / 2, 20), Vector2.Zero, 0, 30, 1, Color.White);
 
             EndTextureMode();
         }
@@ -106,6 +110,9 @@ namespace Orion_Desktop
         internal static void Draw()
         {
             Update();
+
+            float angle = Conceptor3D.View.Yaw * RAD2DEG * -1; // [0° to 360°]
+            DrawText(angle.ToString(), 20, 20, 20, Color.Green);
 
             // Draw compass at the top of the screen
             DrawCompass();

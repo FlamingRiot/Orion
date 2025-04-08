@@ -62,9 +62,9 @@ namespace Orion_Desktop
             ConstructUI();
 
             // Load compass render texure and render rectangles
-            CompassDestinationRectangle = new Rectangle(Width / 4, 30, Width / 2, 80);
+            CompassDestinationRectangle = new Rectangle(Width / 4, 20, Width / 2, 50);
             CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width, (int)CompassDestinationRectangle.Height);
-            CompassSourceRectangle = new Rectangle(0, 0, CompassRenderTexture.Texture.Width, CompassRenderTexture.Texture.Height);
+            CompassSourceRectangle = new Rectangle(0, 0, CompassRenderTexture.Texture.Width, -CompassRenderTexture.Texture.Height);
 
             OpenedInterface = Interface.None; // Defines the opened interface
 
@@ -84,10 +84,28 @@ namespace Orion_Desktop
             return new Vector2(newX, newY);
         }
 
+        /// <summary>Draws the compass at the top of the screen. (Context: Drawing or no Drawing).</summary>
+        private static void DrawCompass()
+        {
+            BeginTextureMode(CompassRenderTexture);
+
+            ClearBackground(Color.White);
+
+            DrawText("Here will be the compass", 310, 8, 30, Color.Black);
+
+            EndTextureMode();
+        }
+
         /// <summary>Displays 2D information to the screen.</summary>
         internal static void Draw()
         {
             Update();
+
+            // Draw compass at the top of the screen
+            DrawCompass();
+
+            // Draw compass render-texture
+            DrawTexturePro(CompassRenderTexture.Texture, CompassSourceRectangle, CompassDestinationRectangle, Vector2.Zero, 0, Color.White);
 
             // Draw E hint
             if (InteractiveEnabled) 
@@ -115,6 +133,7 @@ namespace Orion_Desktop
             }
         }
 
+        /// <summary>Updates most of the actions of the 2D conceptor.</summary>
         private static void Update()
         {
             // Update action sounds

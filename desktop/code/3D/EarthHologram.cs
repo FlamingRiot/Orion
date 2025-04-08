@@ -62,7 +62,7 @@ namespace Orion_Desktop
             // Create cache directory
             Directory.CreateDirectory(TilingManager.CACHE_DIRECTORY);
 
-            Task download = OnlineRequests.DownloadTileset(3);
+            //Task download = OnlineRequests.DownloadTileset(3);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>

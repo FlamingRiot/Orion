@@ -9,6 +9,7 @@ uniform float closeUpIntensity; // Defines the mix between hologram color and te
 uniform sampler2D texture0;
 uniform sampler2D bRender;
 uniform sampler2D cRender;
+uniform vec2 resolution; // Screen resolution
 
 out vec4 pixelColor;
 
@@ -29,6 +30,11 @@ void main()
     pixelColor = mix(pixelColor, maskColor, closeUpIntensity + 0.05);
 
     if (compassColor.rgb != vec3(0)){
+        // Apply horizontal fading
+        float distToCenter = abs(fragTexCoord.x - 0.5) * 2.0; // [0.0 to 1.0]
+        float fade = 0.4 - distToCenter;
+        compassColor *= fade*3.15;
+
         pixelColor = mix(pixelColor, compassColor, compassColor.r);
     }
 }

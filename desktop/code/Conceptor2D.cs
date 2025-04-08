@@ -94,8 +94,8 @@ namespace Orion_Desktop
             // Measure text
             string txt = "45  |  60  |  75  |  N  |  105  |  120  |  135"; // Placeholder
             Vector2 txtSize = MeasureTextEx(Font, txt, 30, 1);
-
-            DrawTextPro(RayGUI.Font, txt, new Vector2(Width / 2 - txtSize.X / 2, 20), Vector2.Zero, 0, 30, 1, Color.LightGray);
+            // Draw text
+            DrawTextPro(RayGUI.Font, txt, new Vector2(Width / 2 - txtSize.X / 2, 20), Vector2.Zero, 0, 30, 1, Color.White);
 
             EndTextureMode();
         }

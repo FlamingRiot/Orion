@@ -8,7 +8,7 @@ namespace Orion_Desktop
     {
         // Constants
         public const string APP_NAME = "Orion";
-        public const string APP_VERSION = "beta-0.0.0";
+        public const string APP_VERSION = "beta-0.1.0";
 
         internal static RenderTexture2D Render;
         internal static RenderTexture2D HologramRender;

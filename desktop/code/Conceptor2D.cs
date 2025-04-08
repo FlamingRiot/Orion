@@ -43,6 +43,11 @@ namespace Orion_Desktop
         // Gui menu
         internal static GuiContainer TerminalGui = new GuiContainer();
 
+        // Compass Render-textures and rectangles
+        internal static RenderTexture2D CompassRenderTexture;
+        private static Rectangle CompassDestinationRectangle;
+        private static Rectangle CompassSourceRectangle;
+
         /// <summary>Opens the 2D conceptor and loads its parameters.</summary>
         internal static void Init()
         {
@@ -55,7 +60,12 @@ namespace Orion_Desktop
             TerminalGui = new GuiContainer(new Color(0, 225, 255), new Color(0, 190, 190));
             LoadGUI(LoadFont("assets/textures/SpaceMono-Bold.ttf"));
             ConstructUI();
-    
+
+            // Load compass render texure and render rectangles
+            CompassDestinationRectangle = new Rectangle(Width / 4, 30, Width / 2, 80);
+            CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width, (int)CompassDestinationRectangle.Height);
+            CompassSourceRectangle = new Rectangle(0, 0, CompassRenderTexture.Texture.Width, CompassRenderTexture.Texture.Height);
+
             OpenedInterface = Interface.None; // Defines the opened interface
 
             // Load font
@@ -77,14 +87,7 @@ namespace Orion_Desktop
         /// <summary>Displays 2D information to the screen.</summary>
         internal static void Draw()
         {
-            // Update action sounds
-            if (IsMouseButtonPressed(MouseButton.Left))
-            {
-                TerminalGui.ForEach(x =>
-                {
-                    if (Hover(x)) AudioCenter.PlaySound("button_click");
-                });
-            }
+            Update();
 
             // Draw E hint
             if (InteractiveEnabled) 
@@ -109,6 +112,18 @@ namespace Orion_Desktop
                         DrawRectangle((int)mouse.X, (int)mouse.Y, 7, 7, Color.White);
                         break;
                 }
+            }
+        }
+
+        private static void Update()
+        {
+            // Update action sounds
+            if (IsMouseButtonPressed(MouseButton.Left))
+            {
+                TerminalGui.ForEach(x =>
+                {
+                    if (Hover(x)) AudioCenter.PlaySound("button_click");
+                });
             }
 
             if (IsKeyPressed(KeyboardKey.E))

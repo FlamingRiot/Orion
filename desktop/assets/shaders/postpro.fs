@@ -31,7 +31,7 @@ void main()
 
     if (compassColor.rgb != vec3(0)){
         // Apply horizontal fading
-        float distToCenter = abs(fragTexCoord.x - 0.5) * 2.0; // [0.0 to 1.0]
+        float distToCenter = clamp(abs(fragTexCoord.x - 0.5) * 2.0, 0.0, 0.4); // [0.0 to 1.0]
         float fade = 0.4 - distToCenter;
         compassColor *= fade*3.15;
 

@@ -92,10 +92,12 @@ namespace Orion_Desktop
             ClearBackground(Color.Black);
 
             // Measure text
-            string txt = "45  |  60  |  75  |  N  |  105  |  120  |  135"; // Placeholder
+            string txt = $"|  0  |  15  |  30  |  45  |  60  |  75  |  90  |  105  |  120  |  135  |  150  |  165  |  180  " +
+                $"|  195  |  210  |  225  |  240  |  255  |  270  |  295  |  310  |  325  |  340  |  355"; // Placeholder
+            //string txt = $"45  |  60  |  75  |  {(int)(-1 * Conceptor3D.View.Yaw * RAD2DEG)}  |  105  |  120  |  135"; // Placeholder
             Vector2 txtSize = MeasureTextEx(Font, txt, 30, 1);
             // Draw text
-            DrawTextPro(RayGUI.Font, txt, new Vector2(Width / 2 - txtSize.X / 2, 20), Vector2.Zero, 0, 30, 1, Color.White);
+            DrawTextPro(RayGUI.Font, txt, new Vector2(Width / 2 - txtSize.X / 2 + Conceptor3D.View.Yaw * RAD2DEG * 5, 20), Vector2.Zero, 0, 30, 1, Color.White);
 
             EndTextureMode();
         }

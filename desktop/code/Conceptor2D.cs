@@ -210,10 +210,10 @@ namespace Orion_Desktop
         /// <summary>Constructs the UI of the Orion Terminal.</summary>
         internal static void ConstructUI()
         {
-            SetDefaultFontSize(64);
+            TerminalGui.SetDefaultFontSize(64);
 
             // Static fields
-            Button leftButton = new Button( 800, 800, 50, 50, "<");
+            Button leftButton = new Button(800, 800, 50, 50, "<");
             leftButton.Event = SwitchTargetLeft;
             TerminalGui.Add("leftButton", leftButton);
             Button rightButton = new Button(1300, 800, 50, 50, ">");
@@ -253,9 +253,8 @@ namespace Orion_Desktop
             txbCurrentLon.OnEntry = UpdateLongitude;
             TerminalGui.Add("txbCurrentLon", txbCurrentLon);
 
-            TerminalGui.SetRoundness(0.25f);
+            TerminalGui.SetDefaultRoundness(0.25f);
         }
-
         /// <summary>Updates the UI components based on real-time values from the retrievement point.</summary>
         internal static void UpdateUI()
         {

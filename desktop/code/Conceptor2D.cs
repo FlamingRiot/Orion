@@ -62,9 +62,8 @@ namespace Orion_Desktop
             ConstructUI();
 
             // Load compass render-texure and render-rectangles
-            int compassUpscaling = 4;
             CompassDestinationRectangle = new Rectangle(0, 0, Width, Height);
-            CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width / compassUpscaling, (int)CompassDestinationRectangle.Height / compassUpscaling);
+            CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width, (int)CompassDestinationRectangle.Height);
             CompassSourceRectangle = new Rectangle(0, 0, CompassRenderTexture.Texture.Width, -CompassRenderTexture.Texture.Height);
 
             OpenedInterface = Interface.None; // Defines the opened interface
@@ -92,8 +91,11 @@ namespace Orion_Desktop
 
             ClearBackground(Color.Black);
 
-            //DrawTextPro("Here will be the compass", 175, 2, 5, Color.LightGray);
-            DrawTextPro(RayGUI.Font, "Here will be the compasss", new Vector2(175, 2), Vector2.Zero, 0, 10, 1, Color.White);
+            // Measure text
+            string txt = "45  |  60  |  75  |  N  |  105  |  120  |  135"; // Placeholder
+            Vector2 txtSize = MeasureTextEx(Font, txt, 30, 1);
+
+            DrawTextPro(RayGUI.Font, txt, new Vector2(Width / 2 - txtSize.X / 2, 20), Vector2.Zero, 0, 30, 1, Color.LightGray);
 
             EndTextureMode();
         }

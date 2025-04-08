@@ -92,7 +92,8 @@ namespace Orion_Desktop
 
             ClearBackground(Color.Black);
 
-            DrawText("Here will be the compass", 175, 2, 5, Color.LightGray);
+            //DrawTextPro("Here will be the compass", 175, 2, 5, Color.LightGray);
+            DrawTextPro(RayGUI.Font, "Here will be the compasss", new Vector2(175, 2), Vector2.Zero, 0, 10, 1, Color.White);
 
             EndTextureMode();
         }

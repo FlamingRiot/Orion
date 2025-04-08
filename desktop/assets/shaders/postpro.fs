@@ -29,6 +29,6 @@ void main()
     pixelColor = mix(pixelColor, maskColor, closeUpIntensity + 0.05);
 
     if (compassColor.rgb != vec3(0)){
-        pixelColor = compassColor;
+        pixelColor = mix(pixelColor, compassColor, compassColor.r);
     }
 }

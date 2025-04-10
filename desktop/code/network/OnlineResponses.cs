@@ -64,8 +64,47 @@ namespace Orion_Desktop
                Planet response information based on API. 
     -------------------------------------------------------------------*/
 
+    /// <summary>Represents an entry of planet information.</summary>
     internal class PlanetCacheEntry
     {
-        public AstralTarget Name;
+        internal const string PLANET_CACHE_FILE = $"{OnlineRequests.CACHE_DIRECTORY}/Orion-Desktop.planets.json";
+
+        internal AstralTarget Name;
+        internal readonly string Raw;
+
+        internal float Altitude;
+        internal float Azimuth;
+
+        /// <summary>Creates an instance of <see cref="PlanetCacheEntry"/> by deserializing a <see cref="JObject"/>.</summary>
+        /// <param name="json">JSON Object to parse.</param>
+        /// <param name="write">Defines whether or not the newly created planet entry should be written in cache.</param>
+        internal PlanetCacheEntry(JObject json, bool write)
+        {
+            // Store raw
+            Raw = json.ToString();
+
+            // Get Type name
+            Name = (AstralTarget)Enum.Parse(typeof(AstralTarget), (string)json["data"]["table"]["rows"][0]["entry"]["name"]);
+            // Get degrees for Alt/Az
+            Altitude = (float)json["data"]["table"]["rows"][0]["cells"][0]["position"]["horizontal"]["altitude"]["degrees"];
+            Azimuth = (float)json["data"]["table"]["rows"][0]["cells"][0]["position"]["horizontal"]["azimuth"]["degrees"];
+
+            // Add or replace cache entry in already existing ones
+            if (write)
+            {
+                string text = "";
+                // Update data in RAM
+                OnlineRequests.PlanetCacheEntries.ForEach(entry =>
+                {
+                    if (entry.Name == this.Name) text += this.Raw + ','; // Replace old with new
+                    else text += entry.Raw + ','; // Write previous one
+                });
+
+                // Write data to cache
+                StreamWriter stream = new StreamWriter(PLANET_CACHE_FILE, false);
+                stream.Write(text);
+                stream.Close();
+            }
+        }
     }
 }

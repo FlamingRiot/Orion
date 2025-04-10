@@ -57,11 +57,6 @@ namespace Orion_Desktop
             // Create globe correction matrix
             UpdateTransform();
             IsFocused = false;
-
-            // Create cache directory
-            Directory.CreateDirectory(TilingManager.CACHE_DIRECTORY);
-
-            //Task download = OnlineRequests.DownloadTileset(3);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -200,7 +195,6 @@ namespace Orion_Desktop
     internal static class TilingManager
     {
         // Constants
-        internal const string CACHE_DIRECTORY = "cache/";
         internal const string MAP_CONFIG = $"MODIS_Terra_CorrectedReflectance_TrueColor";
 
         // Tile Levels to be updated during background loading

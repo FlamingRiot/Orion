@@ -4,10 +4,8 @@
 #pragma warning disable CS8601
 
 using System.Diagnostics;
-using System.Linq.Expressions;
 using System.Numerics;
 using System.Text;
-using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 
 namespace Orion_Desktop
@@ -15,9 +13,11 @@ namespace Orion_Desktop
     /// <summary>The static class used for sendind HTTP requests.</summary>
     internal static class OnlineRequests
     {
-        public const int REQUEST_INTERVAL = 2;
-        public const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
+        internal const int REQUEST_INTERVAL = 2;
+        internal const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
+        internal const string CACHE_DIRECTORY = "cache/";
 
+        internal static List<PlanetCacheEntry> PlanetCacheEntries = new List<PlanetCacheEntry>();
         private static Stopwatch? timer;
         private static int _timeLastCheck = -1;
 
@@ -28,14 +28,43 @@ namespace Orion_Desktop
             "e15233a0fac4d30e4385ce39a8b140cd73363ba9e2ab90c71a66492e9e8a4b78807ab2c6be" +
             "f12a4a74198e04d9904b6c965a22a2667f3f1cccb1";
 
-        /// <summary>Starts connexion timer (used for API max-request).</summary>
+        /// <summary>Starts connexion timer (used for API max-request and caching files).</summary>
         internal static void StartConnexion()
         {
+            // Start max-request timer
             if (timer is null)
             {
                 timer = new Stopwatch();
                 timer.Start();
             }
+            // Create caching directory if not already exists
+            if (!Directory.Exists(CACHE_DIRECTORY)) Directory.CreateDirectory(CACHE_DIRECTORY);
+            
+            // Create planet caching file if not already exists
+            if (!File.Exists(PlanetCacheEntry.PLANET_CACHE_FILE))
+            {
+                FileStream stream = File.Create(PlanetCacheEntry.PLANET_CACHE_FILE);
+                // Close stream
+                stream.Close();
+            }
+
+            // Retrieve cached data for planets
+            StreamReader cacheStream = new StreamReader(PlanetCacheEntry.PLANET_CACHE_FILE);
+            string cache = cacheStream.ReadToEnd();
+            cacheStream.Close();
+            if (cache != "")
+            {
+                string[] jsons = cache.Split(',');
+                for (int i = 0; i < jsons.Length; i++)
+                {
+                    PlanetCacheEntries.Add(new PlanetCacheEntry(JObject.Parse(jsons[i]), false));
+                }
+            }
+
+            // Send debug
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"ORION: {PlanetCacheEntries.Count} planet info cached");
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         /*-----------------------------------------------------------------
@@ -108,6 +137,8 @@ namespace Orion_Desktop
 
                     // Parse data
                     JObject json = JObject.Parse(response);
+                    PlanetCacheEntry entry = new PlanetCacheEntry(json, true); // This will retrieve the correct data
+
                 }
                 catch (Exception e)
                 {
@@ -134,7 +165,7 @@ namespace Orion_Desktop
             int _widthMax = 0, _heightMax = 0;
 
             // Create directory if not already exists
-            string dirPath = $"{TilingManager.CACHE_DIRECTORY}{TilingManager.MAP_CONFIG}_{zoom}/";
+            string dirPath = $"{CACHE_DIRECTORY}{TilingManager.MAP_CONFIG}_{zoom}/";
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
 
             // Update loading

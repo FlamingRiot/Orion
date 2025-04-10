@@ -47,8 +47,8 @@ namespace Orion_Desktop
 
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"ORION: PBR Material loaded successfully");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"ORION: {mapFolder.Split('/').Last()} PBR Material loaded successfully");
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
     }
 

@@ -110,9 +110,6 @@ namespace Orion_Desktop
         {
             Update();
 
-            float angle = Conceptor3D.View.Yaw * RAD2DEG * -1; // [0° to 360°]
-            DrawText(angle.ToString(), 20, 20, 20, Color.Green);
-
             // Draw compass at the top of the screen
             DrawCompass();
 

@@ -54,7 +54,7 @@ namespace Orion_Desktop
             cacheStream.Close();
             if (cache != "")
             {
-                string[] jsons = cache.Split(',');
+                string[] jsons = cache.Split(PlanetCacheEntry.SEPARATOR);
                 for (int i = 0; i < jsons.Length; i++)
                 {
                     PlanetCacheEntries.Add(new PlanetCacheEntry(JObject.Parse(jsons[i]), false));
@@ -130,7 +130,7 @@ namespace Orion_Desktop
                     string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ASTRONOMY_API_ID}:{ASTRONOMY_API_SECRET}"));
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
 
-                    string url = "https://api.astronomyapi.com/api/v2/bodies/positions/mars?latitude=46.2&longitude=6.1&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
+                    string url = "https://api.astronomyapi.com/api/v2/bodies/positions/uranus?latitude=46.2&longitude=6.1&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
                     HttpResponseMessage msg = await client.GetAsync(url);
                     msg.EnsureSuccessStatusCode(); // Abort if no response, thus offline
                     response = await msg.Content.ReadAsStringAsync();
@@ -138,7 +138,6 @@ namespace Orion_Desktop
                     // Parse data
                     JObject json = JObject.Parse(response);
                     PlanetCacheEntry entry = new PlanetCacheEntry(json, true); // This will retrieve the correct data
-
                 }
                 catch (Exception e)
                 {

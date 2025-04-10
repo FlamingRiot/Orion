@@ -68,6 +68,7 @@ namespace Orion_Desktop
     internal class PlanetCacheEntry
     {
         internal const string PLANET_CACHE_FILE = $"{OnlineRequests.CACHE_DIRECTORY}/Orion-Desktop.planets.json";
+        internal const char SEPARATOR = '#';
 
         internal AstralTarget Name;
         internal readonly string Raw;
@@ -94,11 +95,12 @@ namespace Orion_Desktop
             {
                 string text = "";
                 // Update data in RAM
-                OnlineRequests.PlanetCacheEntries.ForEach(entry =>
+                foreach (PlanetCacheEntry entry in OnlineRequests.PlanetCacheEntries)
                 {
-                    if (entry.Name == this.Name) text += this.Raw + ','; // Replace old with new
-                    else text += entry.Raw + ','; // Write previous one
-                });
+                    if (entry.Name == this.Name) continue; // Skip old one
+                    else text += entry.Raw + SEPARATOR;
+                }
+                text += this.Raw;
 
                 // Write data to cache
                 StreamWriter stream = new StreamWriter(PLANET_CACHE_FILE, false);

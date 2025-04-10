@@ -122,9 +122,21 @@ namespace Orion_Desktop
         {
             // Check if not already cached (and up to date), prevents from sending too much API request
             bool exists = false;
+            // Get current date (for data renewal)
+            DateTime now = DateTime.Now;
+            string date = $"{now.Month.ToString().PadLeft(2, '0')}/{now.Day.ToString().PadLeft(2, '0')}/{now.Year}";
+
+            // Check for existence
             PlanetCacheEntries.ForEach(entry =>
             {
-                if (entry.Name == target) exists = true;
+                if (entry.Name == target) 
+                {
+                    // Check for date
+                    if (entry.Date == date)
+                    {
+                        exists = true; 
+                    }
+                }
             });
 
             if (target != AstralTarget.ISS && !exists) // Ignore for ISS and if not already exists in cache

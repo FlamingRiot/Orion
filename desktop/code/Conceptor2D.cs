@@ -93,11 +93,11 @@ namespace Orion_Desktop
             ClearBackground(Color.Black);
 
             // Measure text
-            string txt = $"315  |  330  |  345  |  S  |  15  |  30  |  45  |  60  |  75  |  E  |  105  |  120  |  135  |  150  |  165  |  N  " +
-                $"|  195  |  210  |  225  |  240  |  255  |  W  |  285  |  300  |  315  |  330  |  345  |  S  |  15  |  30  |";
+            string txt = $"45  |  60  |  75  |  E  |  105  |  120  |  135  |  150  |  165  |  S  |  195  |  210  |  225  |  240  |  255  |  W  " +
+                $"|  285  |  300  |  315  |  330  |  345  |  N  |  15  |  30  |  45  |  60  |  75  |  E  |  105  |  120  |";
             Vector2 txtSize = MeasureTextEx(Font, txt, 30, 1); // The width is equivalent to 360° as a rotation angle
             float angle = Conceptor3D.View.Yaw * RAD2DEG * -1; // [0° to 360°]
-            float ratio = (txtSize.X + 112) / 360f; // Constant offset of 112 (Thankfully does not rely on display size)
+            float ratio = (txtSize.X + 128) / 360f; // Constant offset of 128 (Thankfully does not rely on display size)
             float center = Width / 2 - 300; // Constant offset of -300 (Thankfully does not rely on display size)
             // Draw text
             DrawTextPro(RayGUI.Font, txt, new Vector2(center - angle * ratio, 20), Vector2.Zero, 0, 30, 1, Color.White);

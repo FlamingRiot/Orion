@@ -47,7 +47,6 @@ namespace Orion_Desktop
         // Compass Render-textures and rectangles
         internal static RenderTexture2D CompassRenderTexture;
         private static Rectangle CompassDestinationRectangle;
-        private static Rectangle CompassSourceRectangle;
 
         /// <summary>Opens the 2D conceptor and loads its parameters.</summary>
         internal static void Init()
@@ -65,7 +64,6 @@ namespace Orion_Desktop
             // Load compass render-texure and render-rectangles
             CompassDestinationRectangle = new Rectangle(0, 0, Width, Height);
             CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width, (int)CompassDestinationRectangle.Height);
-            CompassSourceRectangle = new Rectangle(0, 0, CompassRenderTexture.Texture.Width, -CompassRenderTexture.Texture.Height);
 
             OpenedInterface = Interface.None; // Defines the opened interface
 
@@ -280,12 +278,22 @@ namespace Orion_Desktop
 
             TerminalGui.SetDefaultRoundness(0.25f);
         }
+
         /// <summary>Updates the UI components based on real-time values from the retrievement point.</summary>
         internal static void UpdateUI()
         {
-            ((Label)TerminalGui["lblLat"]).Text = $"Latitude : {EarthHologram.Satellite.Latitude}";
-            ((Label)TerminalGui["lblLong"]).Text = $"Longitude : {EarthHologram.Satellite.Longitude}";
-            ((Label)TerminalGui["lblDistance"]).Text = $"Distance from Earth : {EarthHologram.Satellite.Altitude} km";
+            if (OrionSim.Target == AstralTarget.ISS)
+            {
+                ((Label)TerminalGui["lblLat"]).Text = $"Latitude : {EarthHologram.Satellite.Latitude}";
+                ((Label)TerminalGui["lblLong"]).Text = $"Longitude : {EarthHologram.Satellite.Longitude}";
+                ((Label)TerminalGui["lblDistance"]).Text = $"Distance from Earth : {EarthHologram.Satellite.Altitude} Km";
+            }
+            else
+            {
+                ((Label)TerminalGui["lblLat"]).Text = $"Altitude : {EarthHologram.CurrentPlanet.Altitude}";
+                ((Label)TerminalGui["lblLong"]).Text = $"Azimuth : {EarthHologram.CurrentPlanet.Azimuth}";
+                ((Label)TerminalGui["lblDistance"]).Text = $"Distance from Earth : {EarthHologram.CurrentPlanet.Distance} AU";
+            }
         }
     }
 }

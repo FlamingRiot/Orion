@@ -138,7 +138,8 @@ namespace Orion_Desktop
                     string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ASTRONOMY_API_ID}:{ASTRONOMY_API_SECRET}"));
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
 
-                    string url = $"https://api.astronomyapi.com/api/v2/bodies/positions/{id}?latitude=46.2&longitude=6.1&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
+                    // For now, constant view altitude
+                    string url = $"https://api.astronomyapi.com/api/v2/bodies/positions/{id}?latitude={OrionSim.ViewerLatitude}&longitude={OrionSim.ViewerLongitude}&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
                     HttpResponseMessage msg = await client.GetAsync(url);
                     msg.EnsureSuccessStatusCode(); // Abort if no response, thus offline
                     response = await msg.Content.ReadAsStringAsync();

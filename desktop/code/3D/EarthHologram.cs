@@ -28,6 +28,9 @@ namespace Orion_Desktop
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
         internal static SatelliteInfo Satellite = new SatelliteInfo(); // Satellite object
 
+        // Planet attributes
+        internal static PlanetCacheEntry CurrentPlanet = new PlanetCacheEntry();
+
         // Variables used for precise calculations on the 3D pointing-arrow.
         internal static float RelativeSatelliteAltitude;
         internal static float VerticalAngle;
@@ -70,6 +73,13 @@ namespace Orion_Desktop
         internal static async void UpdatePlanet(AstralTarget target)
         {
             await OnlineRequests.UpdateCurrentPlanet(target);
+            // !! The following lines only get executed when the potential API request is done (immedialty if none is send)
+            // Find current info based on newly selected target
+            OnlineRequests.PlanetCacheEntries.ForEach(entry => 
+            {
+                if (entry.Name == target) CurrentPlanet = entry;
+            });
+            Conceptor2D.UpdateUI(); // Update UI components with new information
         }
 
         /// <summary>Draws the earth hologam.</summary>

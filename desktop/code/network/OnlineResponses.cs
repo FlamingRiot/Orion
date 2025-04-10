@@ -75,6 +75,7 @@ namespace Orion_Desktop
 
         internal float Altitude;
         internal float Azimuth;
+        internal float Distance;
 
         /// <summary>Creates an instance of <see cref="PlanetCacheEntry"/> by deserializing a <see cref="JObject"/>.</summary>
         /// <param name="json">JSON Object to parse.</param>
@@ -89,6 +90,7 @@ namespace Orion_Desktop
             // Get degrees for Alt/Az
             Altitude = (float)json["data"]["table"]["rows"][0]["cells"][0]["position"]["horizontal"]["altitude"]["degrees"];
             Azimuth = (float)json["data"]["table"]["rows"][0]["cells"][0]["position"]["horizontal"]["azimuth"]["degrees"];
+            Distance = (float)json["data"]["table"]["rows"][0]["cells"][0]["distance"]["fromEarth"]["au"]; // As astronomical units
 
             // Add or replace cache entry in already existing ones
             if (write)
@@ -107,6 +109,12 @@ namespace Orion_Desktop
                 stream.Write(text);
                 stream.Close();
             }
+        }
+
+        /// <summary>Creates an empty instance of <see cref="PlanetCacheEntry"/>.</summary>
+        internal PlanetCacheEntry()
+        {
+            Raw = "";
         }
     }
 }

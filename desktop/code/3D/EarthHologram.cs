@@ -26,7 +26,7 @@ namespace Orion_Desktop
 
         // Mini-Satellite attributes 
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
-        internal static Satellite Satellite; // Satellite object
+        internal static SatelliteInfo Satellite = new SatelliteInfo(); // Satellite object
 
         // Variables used for precise calculations on the 3D pointing-arrow.
         internal static float RelativeSatelliteAltitude;
@@ -51,7 +51,6 @@ namespace Orion_Desktop
             IPitch = 0;
             // Create standby position
             SatellitePoints.Add((GlobeCenter + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
-            Satellite = new Satellite();
             // Start by sending information request to the API
             OnlineRequests.StartConnexion();
             UpdateSatellite();
@@ -75,7 +74,7 @@ namespace Orion_Desktop
         /// <summary>Updates a planet object by retrieving data from API.</summary>
         internal static async void UpdatePlanet()
         {
-            await OnlineRequests.GetCurrentPlanet(AstralTarget.Mars);
+            await OnlineRequests.UpdateCurrentPlanet(AstralTarget.Mars);
         }
 
         /// <summary>Draws the earth hologam.</summary>
@@ -119,10 +118,6 @@ namespace Orion_Desktop
                 Vector3 targetPosition = OrionSim.ViewerPosition * 1.25f + GlobeCenter;
                 Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, targetPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
                 Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + GlobeCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
-
-                /*-----------------------------------------------------------------
-                 Map-Tiling classes, functions and variables. 
-                 ------------------------------------------------------------------*/
             }
             else 
             { 

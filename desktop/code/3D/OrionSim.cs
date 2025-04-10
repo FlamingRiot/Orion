@@ -2,6 +2,7 @@
 using static Raylib_cs.Raylib;
 using RayGUI_cs;
 using System.Numerics;
+using Newtonsoft.Json.Serialization;
 
 namespace Orion_Desktop
 {
@@ -151,6 +152,8 @@ namespace Orion_Desktop
             Conceptor2D.ConstructUI();
             // Set textbox text
             ((Textbox)Conceptor2D.TerminalGui["nameTxb"]).Text = $"{targetName}";
+            // Update API target
+            EarthHologram.UpdatePlanet();
         }
 
         /// <summary>Parses a value to potentially update the orion target (resets the textbox if no matching found).</summary>

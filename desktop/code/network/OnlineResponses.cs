@@ -5,10 +5,13 @@
 
 using System.Numerics;
 using Newtonsoft.Json.Linq;
-using Raylib_cs;
 
 namespace Orion_Desktop
 {
+    /*-----------------------------------------------------------------
+               Satellite response information based on API. 
+    -------------------------------------------------------------------*/
+
     /// <summary>Defines the visibility of a satellite.</summary>
     internal enum SatelliteVisibility
     {
@@ -25,7 +28,7 @@ namespace Orion_Desktop
     }
 
     /// <summary>Represents an instance of a <see cref="Satellite"/> object.</summary>
-    internal struct Satellite
+    internal class SatelliteInfo
     {
         // API informations
         public string Name;
@@ -39,7 +42,7 @@ namespace Orion_Desktop
         public SatelliteUnits Units;
         public Vector3 RelativePosition;
 
-        public Satellite() { Name = ""; }
+        public SatelliteInfo() { Name = ""; }
 
         /// <summary>Updates the values of the satellite based on a new json object.</summary>
         /// <param name="json">Json object to use.</param>
@@ -55,5 +58,14 @@ namespace Orion_Desktop
             Footprint = (float)json["footprint"];
             Timestamp = (long)json["timestamp"];
         }
+    }
+
+    /*-----------------------------------------------------------------
+               Planet response information based on API. 
+    -------------------------------------------------------------------*/
+
+    internal class PlanetCacheEntry
+    {
+        public AstralTarget Name;
     }
 }

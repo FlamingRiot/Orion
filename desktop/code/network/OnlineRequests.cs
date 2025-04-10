@@ -4,7 +4,10 @@
 #pragma warning disable CS8601
 
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Numerics;
+using System.Text;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 
 namespace Orion_Desktop
@@ -17,6 +20,13 @@ namespace Orion_Desktop
 
         private static Stopwatch? timer;
         private static int _timeLastCheck = -1;
+
+        // AstronomyAPI credentials
+        private const string ASTRONOMY_API_ID = "c15d51ed-bd48-4af8-94a8-5eccb4953332";
+        private const string ASTRONOMY_API_SECRET = "a6df73d2e471d7761be374b76640fc22fa" +
+            "6b86ce14215166a9a3a6456e318f51ccf2a6f6b242799f504d76af0a8ff62f39338770a5a7" +
+            "e15233a0fac4d30e4385ce39a8b140cd73363ba9e2ab90c71a66492e9e8a4b78807ab2c6be" +
+            "f12a4a74198e04d9904b6c965a22a2667f3f1cccb1";
 
         /// <summary>Starts connexion timer (used for API max-request).</summary>
         internal static void StartConnexion()
@@ -32,9 +42,9 @@ namespace Orion_Desktop
         Satellite and planets data-retrieving functions
         ------------------------------------------------------------------*/
 
-        /// <summary>Retrieves satellite informations from the API.</summary>
+        /// <summary>Retrieves satellite informations from the API and computes them.</summary>
         /// <returns>Async Task</returns>
-        internal static async Task GetCurrentSatellite()
+        private static async Task GetCurrentSatellite()
         {
             using (HttpClient client = new HttpClient()) 
             {
@@ -48,23 +58,6 @@ namespace Orion_Desktop
                     // Read response
                     string body = await response.Content.ReadAsStringAsync();
                     JObject json = JObject.Parse(body);
-
-                    // JSON Template from API
-                    //{
-                    //    "name": "iss",
-                    //    "id": 25544,
-                    //    "latitude": 50.11496269845,
-                    //    "longitude": 118.07900427317,
-                    //    "altitude": 408.05526028199,
-                    //    "velocity": 27635.971970874,
-                    //    "visibility": "daylight",
-                    //    "footprint": 4446.1877699772,
-                    //    "timestamp": 1364069476,
-                    //    "daynum": 2456375.3411574,
-                    //    "solar_lat": 1.3327003598631,
-                    //    "solar_lon": 238.78610691196,
-                    //    "units": "kilometers"
-                    //}
 
                     EarthHologram.Satellite.UpdateSatellite(json);
                     EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEFTilted(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude, EarthHologram.IYaw) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
@@ -81,7 +74,7 @@ namespace Orion_Desktop
             }
         }
 
-        /// <summary>Updates the current satellite based on API.</summary>
+        /// <summary>Updates the current satellite based on API and computes its data.</summary>
         /// <returns>dunno.</returns>
         internal async static Task UpdateCurrentSatellite()
         {
@@ -93,34 +86,34 @@ namespace Orion_Desktop
             }
         }
 
-        internal async static Task<Vector3> GetCurrentPlanet(AstralTarget target)
+        /// <summary>Updates data for a given planet.</summary>
+        /// <param name="target">Given target planet.</param>
+        /// <returns>Async task.</returns>
+        internal async static Task UpdateCurrentPlanet(AstralTarget target)
         {
-            //string url = $"https://ssd.jpl.nasa.gov/api/horizons.api?" +
-            //    $"format=text&COMMAND='499'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&" +
-            //    $"EPHEM_TYPE='OBSERVER'&CENTER='500@399'&START_TIME='2006-01-01'&" +
-            //    $"STOP_TIME='2006-01-20'&STEP_SIZE='1%20d'&QUANTITIES='1,9,20,23,24,29'";
-            //string url = $"https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND='499'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='coord@399'&SITE_COORD='6.1,46.2,0.375'&START_TIME='2025-03-18'&STOP_TIME='2025-03-19'&STEP_SIZE='1h'&QUANTITIES='4'";
-            string url = $"https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND='499'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='coord@399'&SITE_COORD='6.1,46.2,0.375'&START_TIME='2025-03-18'&STOP_TIME='2025-03-19'&STEP_SIZE='1h'&QUANTITIES='1,4,20,31'";
-
-            // Try fetching, abort otherwise and debug error
-            using (HttpClient client = new HttpClient())
+            if (target != AstralTarget.ISS) // Ignore for ISS, other method chosen
             {
+                string response = "";
+                // Send API request for given astral
                 try
                 {
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode(); // Abort if no response
+                    HttpClient client = new HttpClient();
+                    string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ASTRONOMY_API_ID}:{ASTRONOMY_API_SECRET}"));
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
 
-                    // Read response
-                    string body = await response.Content.ReadAsStringAsync();
-                    JObject json = JObject.Parse(body);
+                    string url = "https://api.astronomyapi.com/api/v2/bodies/positions/mars?latitude=46.2&longitude=6.1&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
+                    HttpResponseMessage msg = await client.GetAsync(url);
+                    msg.EnsureSuccessStatusCode(); // Abort if no response, thus offline
+                    response = await msg.Content.ReadAsStringAsync();
+
+                    // Parse data
+                    JObject json = JObject.Parse(response);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
-
-            return Vector3.Zero;
         }
 
         /*-----------------------------------------------------------------

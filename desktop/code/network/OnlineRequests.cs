@@ -150,8 +150,21 @@ namespace Orion_Desktop
                     string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ASTRONOMY_API_ID}:{ASTRONOMY_API_SECRET}"));
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
 
-                    // For now, constant view altitude
-                    string url = $"https://api.astronomyapi.com/api/v2/bodies/positions/{id}?latitude={OrionSim.ViewerLatitude}&longitude={OrionSim.ViewerLongitude}&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
+                    /* 
+                     * Data modes:
+                     * Relative:
+                     * ID
+                     * Latitude
+                     * Longitude
+                     * Date
+                     * 
+                     * Fixed:
+                     * Altitude
+                     */
+                    string url = $"https://api.astronomyapi.com/api/v2/bodies/positions/{id}?latitude={OrionSim.ViewerLatitude}&longitude={OrionSim.ViewerLongitude}" +
+                        $"&elevation=400&from_date={now.Year}-{now.Month.ToString().PadLeft(2, '0')}-{now.Day.ToString().PadLeft(2, '0')}&to_date={now.Year}-{now.Month.ToString().PadLeft(2, '0')}-" +
+                        $"{now.Day.ToString().PadLeft(2, '0')}&time=12:00:00";
+                   
                     HttpResponseMessage msg = await client.GetAsync(url);
                     msg.EnsureSuccessStatusCode(); // Abort if no response, thus offline
                     response = await msg.Content.ReadAsStringAsync();

@@ -120,9 +120,17 @@ namespace Orion_Desktop
         /// <returns>Async task.</returns>
         internal async static Task UpdateCurrentPlanet(AstralTarget target)
         {
-            if (target != AstralTarget.ISS) // Ignore for ISS, other method chosen
+            // Check if not already cached (and up to date), prevents from sending too much API request
+            bool exists = false;
+            PlanetCacheEntries.ForEach(entry =>
+            {
+                if (entry.Name == target) exists = true;
+            });
+
+            if (target != AstralTarget.ISS && !exists) // Ignore for ISS and if not already exists in cache
             {
                 string response = "";
+                string id = Enum.GetName(target);
                 // Send API request for given astral
                 try
                 {
@@ -130,7 +138,7 @@ namespace Orion_Desktop
                     string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ASTRONOMY_API_ID}:{ASTRONOMY_API_SECRET}"));
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
 
-                    string url = "https://api.astronomyapi.com/api/v2/bodies/positions/uranus?latitude=46.2&longitude=6.1&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
+                    string url = $"https://api.astronomyapi.com/api/v2/bodies/positions/{id}?latitude=46.2&longitude=6.1&elevation=400&from_date=2025-04-10&to_date=2025-04-10&time=12:00:00";
                     HttpResponseMessage msg = await client.GetAsync(url);
                     msg.EnsureSuccessStatusCode(); // Abort if no response, thus offline
                     response = await msg.Content.ReadAsStringAsync();
@@ -138,6 +146,7 @@ namespace Orion_Desktop
                     // Parse data
                     JObject json = JObject.Parse(response);
                     PlanetCacheEntry entry = new PlanetCacheEntry(json, true); // This will retrieve the correct data
+                    PlanetCacheEntries.Add(entry);
                 }
                 catch (Exception e)
                 {

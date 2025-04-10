@@ -67,9 +67,9 @@ namespace Orion_Desktop
         }
 
         /// <summary>Updates a planet object by retrieving data from API.</summary>
-        internal static async void UpdatePlanet()
+        internal static async void UpdatePlanet(AstralTarget target)
         {
-            await OnlineRequests.UpdateCurrentPlanet(AstralTarget.Mars);
+            await OnlineRequests.UpdateCurrentPlanet(target);
         }
 
         /// <summary>Draws the earth hologam.</summary>

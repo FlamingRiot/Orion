@@ -152,7 +152,7 @@ namespace Orion_Desktop
             // Set textbox text
             ((Textbox)Conceptor2D.TerminalGui["nameTxb"]).Text = $"{targetName}";
             // Update API target
-            EarthHologram.UpdatePlanet();
+            EarthHologram.UpdatePlanet(Target);
         }
 
         /// <summary>Parses a value to potentially update the orion target (resets the textbox if no matching found).</summary>

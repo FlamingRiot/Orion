@@ -169,6 +169,8 @@ namespace Orion_Desktop
                 // Udate components
                 Conceptor2D.TerminalGui.Clear();
                 Conceptor2D.ConstructUI();
+                // Update API target
+                EarthHologram.UpdatePlanet(Target);
             }
             else
             {

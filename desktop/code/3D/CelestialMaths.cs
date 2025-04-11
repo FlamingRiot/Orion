@@ -131,6 +131,22 @@ namespace Orion_Desktop
             return (latitude, longitude);
         }
 
+        /// <summary>Computes a 3D vector for an horizontal coordinates, given as an azimuth and an altitude.</summary>
+        /// <param name="azimuth">Azimuth coordinate (degrees).</param>
+        /// <param name="altitude">Altitude coordinate (degrees).</param>
+        /// <returns></returns>
+        internal static Vector3 ComputeHorizontalCoordinates(float azimuth, float altitude)
+        {
+            float aziRad = azimuth * Raylib.DEG2RAD;
+            float altRad = altitude * Raylib.DEG2RAD;
+
+            float x = MathF.Cos(altRad) * MathF.Sin(aziRad);
+            float y = MathF.Sin(altRad);
+            float z = MathF.Cos(altRad) * MathF.Cos(aziRad);
+
+            return new Vector3(x, y, z);
+        }
+
         /// <summary>Clamps an angle (radians) to rotate around negative radian to 0.</summary>
         /// <param name="radians">Angle in radians.</param>
         /// <returns>Clamped angle</returns>

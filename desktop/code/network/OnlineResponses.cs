@@ -78,6 +78,8 @@ namespace Orion_Desktop
         internal float Distance;
         internal string Date;
 
+        internal Vector3 NormalizedPosition;
+
         /// <summary>Creates an instance of <see cref="PlanetCacheEntry"/> by deserializing a <see cref="JObject"/>.</summary>
         /// <param name="json">JSON Object to parse.</param>
         /// <param name="write">Defines whether or not the newly created planet entry should be written in cache.</param>
@@ -95,6 +97,9 @@ namespace Orion_Desktop
             Date = (string)json["data"]["table"]["rows"][0]["cells"][0]["date"];
             Date = Date.Split(' ')[0];
             Date ??= ""; // F*ck Microsoft
+
+            // Compute data
+            NormalizedPosition = CelestialMaths.ComputeHorizontalCoordinates(Azimuth, Altitude);
 
             // Add or replace cache entry in already existing ones
             if (write)

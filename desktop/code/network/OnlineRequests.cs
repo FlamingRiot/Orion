@@ -13,7 +13,7 @@ namespace Orion_Desktop
     /// <summary>The static class used for sendind HTTP requests.</summary>
     internal static class OnlineRequests
     {
-        internal const int REQUEST_INTERVAL = 2;
+        internal const int REQUEST_INTERVAL = 1;
         internal const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
         internal const string CACHE_DIRECTORY = "cache/";
 

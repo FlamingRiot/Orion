@@ -140,9 +140,11 @@ namespace Orion_Desktop
             float aziRad = azimuth * Raylib.DEG2RAD;
             float altRad = altitude * Raylib.DEG2RAD;
 
-            float x = MathF.Cos(altRad) * MathF.Sin(aziRad);
+            //float x = MathF.Cos(altRad) * MathF.Sin(aziRad);
             float y = MathF.Sin(altRad);
-            float z = MathF.Cos(altRad) * MathF.Cos(aziRad);
+            //float z = MathF.Cos(altRad) * MathF.Cos(aziRad);
+            float x = MathF.Cos(aziRad);
+            float z = MathF.Sin(aziRad);
 
             return new Vector3(x, y, z);
         }

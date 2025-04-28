@@ -16,6 +16,7 @@ namespace Orion_Desktop
         internal const int REQUEST_INTERVAL = 1;
         internal const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
         internal const string CACHE_DIRECTORY = "cache/";
+        internal const string PLANET_LOC_TIME = "12:00:00";
 
         internal static List<PlanetCacheEntry> PlanetCacheEntries = new List<PlanetCacheEntry>();
         private static Stopwatch? timer;
@@ -163,7 +164,7 @@ namespace Orion_Desktop
                      */
                     string url = $"https://api.astronomyapi.com/api/v2/bodies/positions/{id}?latitude={OrionSim.ViewerLatitude}&longitude={OrionSim.ViewerLongitude}" +
                         $"&elevation=400&from_date={now.Year}-{now.Month.ToString().PadLeft(2, '0')}-{now.Day.ToString().PadLeft(2, '0')}&to_date={now.Year}-{now.Month.ToString().PadLeft(2, '0')}-" +
-                        $"{now.Day.ToString().PadLeft(2, '0')}&time=12:00:00";
+                        $"{now.Day.ToString().PadLeft(2, '0')}&time={PLANET_LOC_TIME}";
                    
                     HttpResponseMessage msg = await client.GetAsync(url);
                     msg.EnsureSuccessStatusCode(); // Abort if no response, thus offline

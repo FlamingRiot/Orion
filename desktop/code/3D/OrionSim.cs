@@ -75,8 +75,6 @@ namespace Orion_Desktop
         }
 
         /// <summary>Updates the viewer's position.</summary>
-        /// <param name="lat">New latitude.</param>
-        /// <param name="lon">New longitude.</param>
         internal static void UpdateViewPoint()
         {
             ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;

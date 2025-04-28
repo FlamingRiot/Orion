@@ -78,7 +78,7 @@ namespace Orion_Desktop
         internal static void UpdateViewPoint()
         {
             ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
-            EarthHologram.ComputePointVerticalAngle();
+            EarthHologram.ComputeViewPointOffsetAngle();
             ComputeArrowDirection();
         }
 
@@ -129,6 +129,7 @@ namespace Orion_Desktop
             {
                 Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude), ViewerPosition);
                 direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(-ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
+                direction.Z *= -1; // Revert Z axis (longitude values are reversed compared to the chosen system)
                 ArrowTarget = Raymath.Vector3Normalize(direction);
             }
             else

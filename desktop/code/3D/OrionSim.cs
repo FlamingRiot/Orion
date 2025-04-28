@@ -125,7 +125,7 @@ namespace Orion_Desktop
             // Direction vector based on visual appearance
             if (Target == AstralTarget.ISS) 
             {
-                Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude) + EarthHologram.GlobeCenter, ViewerPosition + EarthHologram.GlobeCenter);
+                Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude), ViewerPosition);
                 direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(-ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
                 ArrowTarget = Raymath.Vector3Normalize(direction);
             }

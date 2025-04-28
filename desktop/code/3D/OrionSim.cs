@@ -78,6 +78,8 @@ namespace Orion_Desktop
         internal static void UpdateViewPoint()
         {
             ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
+            EarthHologram.ComputePointVerticalAngle();
+            ComputeArrowDirection();
         }
 
         /// <summary>Draws the terminal screen along with the 3D pointing arrow.</summary>

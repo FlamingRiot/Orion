@@ -160,13 +160,19 @@ namespace Orion_Desktop
                         BackupCameraPosition = Conceptor3D.View.PreviousPosition;
 
                         // Compute vertical-axis angle
-                        VerticalAngle = MathF.Acos(Raymath.Vector3DotProduct(Vector3.UnitY, OrionSim.ViewerPosition) / (Vector3.UnitY.Length() * OrionSim.ViewerPosition.Length())) * RAD2DEG;
+                        ComputePointVerticalAngle();
 
                         TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, 3);
                     }
                 } 
                 _holdTime = 0;
             }
+        }
+
+        /// <summary>Computes the vertical-axis angle according to the observer's point.</summary>
+        internal static void ComputePointVerticalAngle()
+        {
+            VerticalAngle = MathF.Acos(Raymath.Vector3DotProduct(Vector3.UnitY, OrionSim.ViewerPosition) / (Vector3.UnitY.Length() * OrionSim.ViewerPosition.Length())) * RAD2DEG;
         }
 
         /// <summary>Updates the earth hologram matrix</summary>

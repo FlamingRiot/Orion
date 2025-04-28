@@ -94,7 +94,7 @@ namespace Orion_Desktop
             DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
 
             // Planet Debug
-            if (Target != AstralTarget.ISS) DrawSphere(ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition, 0.02f, Color.Red);
+            if (Target != AstralTarget.ISS) DrawSphere(ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition * 30, 1f, Color.Red);
         }
 
         /// <summary>Draws the orion terminal screen to a render-texture and applies it to a material.</summary>
@@ -123,9 +123,16 @@ namespace Orion_Desktop
         internal static void ComputeArrowDirection()
         {
             // Direction vector based on visual appearance
-            Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude) + EarthHologram.GlobeCenter, ViewerPosition + EarthHologram.GlobeCenter);
-            direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(-ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
-            ArrowTarget = Raymath.Vector3Normalize(direction);
+            if (Target == AstralTarget.ISS) 
+            {
+                Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude) + EarthHologram.GlobeCenter, ViewerPosition + EarthHologram.GlobeCenter);
+                direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(-ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
+                ArrowTarget = Raymath.Vector3Normalize(direction);
+            }
+            else
+            {
+                ArrowTarget = EarthHologram.CurrentPlanet.NormalizedPosition;
+            }
         }
 
         /// <summary>Moves the targeted astral object to the right or left.</summary>

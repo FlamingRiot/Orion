@@ -174,6 +174,8 @@ namespace Orion_Desktop
                     JObject json = JObject.Parse(response);
                     PlanetCacheEntry entry = new PlanetCacheEntry(json, true); // This will retrieve the correct data
                     PlanetCacheEntries.Add(entry);
+
+                    OrionSim.ComputeArrowDirection();
                 }
                 catch (Exception e)
                 {

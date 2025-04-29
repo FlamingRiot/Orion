@@ -56,9 +56,6 @@ namespace Orion_Desktop
             // Draw skybox
             Shaders.DrawSkybox(SkyboxMat);
 
-            // Planet Debug
-            if (OrionSim.Target != AstralTarget.ISS) DrawSphere(OrionSim.ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition * 30, 1f, Color.Red);
-
             // Draw scene
             objects.ForEach(x => x.Draw());
 

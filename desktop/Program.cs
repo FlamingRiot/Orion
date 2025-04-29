@@ -57,10 +57,10 @@ namespace Orion_Desktop
 
                 // Update functions
                 Conceptor3D.Update();
-                
+
                 // Start rendering to texture
                 BeginTextureMode(Render);
-                
+
                 // Define default background color
                 ClearBackground(Color.White);
 
@@ -101,6 +101,8 @@ namespace Orion_Desktop
 
                 // Draw 2D information
                 Conceptor2D.Draw();
+
+                DrawFPS(10, 10);
 
                 // Close drawing context
                 EndDrawing();

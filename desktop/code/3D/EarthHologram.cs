@@ -107,12 +107,11 @@ namespace Orion_Desktop
             // Draw current position
             DrawSphere(OrionSim.ViewerPosition + GlobeCenter, 0.01f, Color.Red);
 #if DEBUG
-            // Used for fixed north calculations
-            // Calculate directions
+            // North-West offseting calculations visualization
             Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(GlobeNorth, OrionSim.ViewerPosition));
             Vector3 localNorth = Raymath.Vector3CrossProduct(OrionSim.ViewerPosition, west);
 
-            DrawLine3D(GlobeCenter, GlobeCenter + GlobeNorth * 5, Color.Red);
+            DrawLine3D(GlobeCenter, GlobeCenter + GlobeNorth * 3, Color.Red);
             DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter +  localNorth, Color.Red);  
             DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter - west, Color.Red);
 #endif

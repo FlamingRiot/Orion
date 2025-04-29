@@ -75,7 +75,7 @@ namespace Orion_Desktop
 
                 ClearBackground(Color.Black);
 
-                // re open 3d mode
+                // Re-open 3d mode
                 BeginMode3D(Conceptor3D.View.Camera);
 
                 // Earth hologram drawing

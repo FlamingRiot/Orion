@@ -53,32 +53,16 @@ namespace Orion_Desktop
         {
             BeginMode3D(View.Camera);
 
-#if DEBUG
-            //DrawLine3D(-Vector3.UnitX * 100, Vector3.UnitX * 100, Color.Red); // X                
-            //DrawLine3D(-Vector3.UnitY * 100, Vector3.UnitY * 100, Color.Green); // Y
-            //DrawLine3D(-Vector3.UnitZ * 100, Vector3.UnitZ * 100, Color.Blue); // Z                
-#endif
             // Draw skybox
             Shaders.DrawSkybox(SkyboxMat);
+
+            // Planet Debug
+            if (OrionSim.Target != AstralTarget.ISS) DrawSphere(OrionSim.ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition * 30, 1f, Color.Red);
 
             // Draw scene
             objects.ForEach(x => x.Draw());
 
-#if DEBUG
-            //// Collision detection debug draw calls
-            //DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
-            //DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
-            //DrawLine3D(EarthHologram.CENTER, View.PreviousPosition - Vector3.UnitY * 0.5f, Color.Red);
-            //DrawLine3D(View.Tangent * -10, View.Tangent * 10, Color.Red);
-            //DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
-#endif
             EndMode3D();
-
-#if DEBUG
-            //// Debug text
-            //DrawText(EarthHologram.IYaw.ToString(), 20, 40, 20, Color.Red);
-            //DrawText((View.Yaw * RAD2DEG).ToString(), 20, 80, 20, Color.Red);
-#endif
         }
 
         /// <summary>Updates the 3D conceptor.</summary>

@@ -95,7 +95,7 @@ namespace Orion_Desktop
             // Update satellite
             UpdateSatellite();
 
-            // Draw earth hologram box
+            // Draw earth hologram
             DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeRotationMat);
 
             // Draw satellite point

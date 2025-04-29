@@ -94,9 +94,6 @@ namespace Orion_Desktop
             // Draw Pointing-Arrow
             DrawSphere(ArrowSource, 0.03f, Color.White);
             DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
-
-            // Planet Debug
-            if (Target != AstralTarget.ISS) DrawSphere(ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition * 30, 1f, Color.Red);
         }
 
         /// <summary>Draws the orion terminal screen to a render-texture and applies it to a material.</summary>

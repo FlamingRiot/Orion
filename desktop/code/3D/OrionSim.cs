@@ -137,7 +137,7 @@ namespace Orion_Desktop
                 float northComponent = Raymath.Vector3DotProduct(direction, north);
                 float upComponent = Raymath.Vector3DotProduct(direction, ViewerPosition);
 
-                Vector3 local = new Vector3(westComponent, upComponent, -northComponent);
+                Vector3 local = new Vector3(northComponent, upComponent, westComponent);
                 ArrowTarget = Raymath.Vector3Normalize(local);
             }
             else

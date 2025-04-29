@@ -17,7 +17,8 @@ namespace Orion_Desktop
         Uranus,
         Neptune,
         Pluto,
-        Sun
+        Sun,
+        Moon
     }
 
     /// <summary>Represents the Orion robot simulation.</summary>

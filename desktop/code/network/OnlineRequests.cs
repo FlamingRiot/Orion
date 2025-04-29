@@ -16,7 +16,7 @@ namespace Orion_Desktop
         internal const int REQUEST_INTERVAL = 1;
         internal const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
         internal const string CACHE_DIRECTORY = "cache/";
-        internal const string PLANET_LOC_TIME = "14:11:00";
+        internal const string PLANET_LOC_TIME = "12:00:00";
 
         internal static List<PlanetCacheEntry> PlanetCacheEntries = new List<PlanetCacheEntry>();
         private static Stopwatch? timer;

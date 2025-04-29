@@ -109,11 +109,6 @@ namespace Orion_Desktop
 #if DEBUG
             // Used for fixed north calculations
             // Calculate directions
-            //Vector3 east = Raymath.Vector3Normalize(Raymath.Vector3CrossProduct(Vector3.UnitY, OrionSim.ViewerPosition)); // approximation correcte sauf aux pôles
-            //Vector3 northPole = Raymath.Vector3CrossProduct(OrionSim.ViewerPosition, east);
-            //Vector3 localNorth = Raymath.Vector3Subtract(northPole, Raymath.Vector3Scale(OrionSim.ViewerPosition, Raymath.Vector3DotProduct(OrionSim.ViewerPosition, northPole)));
-
-            //Vector3 northPole = Raymath.Vector3Transform(Vector3.UnitY, GlobeRotationTransform);
             Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(GlobeNorth, OrionSim.ViewerPosition));
             Vector3 localNorth = Raymath.Vector3CrossProduct(OrionSim.ViewerPosition, west);
 

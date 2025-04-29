@@ -91,6 +91,7 @@ namespace Orion_Desktop
             UpdateTransform();
             
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
+
             // Draw Pointing-Arrow
             DrawSphere(ArrowSource, 0.03f, Color.White);
             DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
@@ -124,10 +125,21 @@ namespace Orion_Desktop
             // Direction vector based on visual appearance
             if (Target == AstralTarget.ISS) 
             {
+                // This right here is one of the most mind-fucking thing i've ever done in programming - but hey, it works
+                Vector3 east = Raymath.Vector3Normalize(Raymath.Vector3CrossProduct(Vector3.UnitY, ViewerPosition)); // approximation correcte sauf aux pôles
+                Vector3 northPole = Raymath.Vector3CrossProduct(ViewerPosition, east);
+                Vector3 localNorth = Raymath.Vector3Subtract(northPole, Raymath.Vector3Scale(ViewerPosition, Raymath.Vector3DotProduct(ViewerPosition, northPole)));
+
                 Vector3 direction = Raymath.Vector3Subtract(EarthHologram.Satellite.RelativePosition * (EarthHologram.HOLOGRAM_RADIUS + EarthHologram.RelativeSatelliteAltitude), ViewerPosition);
-                direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(-ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
-                direction.Z *= -1; // Revert Z axis (longitude values are reversed compared to the chosen system)
-                ArrowTarget = Raymath.Vector3Normalize(direction);
+
+                // Project on local base
+                float westComponent = Raymath.Vector3DotProduct(direction, east);
+                float northComponent = Raymath.Vector3DotProduct(direction, localNorth);
+                float upComponent = Raymath.Vector3DotProduct(direction, ViewerPosition);
+
+                //direction = Raymath.Vector3RotateByAxisAngle(direction, new Vector3(-ViewerPosition.Z, 0, ViewerPosition.X), EarthHologram.VerticalAngle * DEG2RAD);
+                Vector3 local = new Vector3(westComponent, upComponent, -northComponent);
+                ArrowTarget = Raymath.Vector3Normalize(local);
             }
             else
             {

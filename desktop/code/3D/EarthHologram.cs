@@ -18,10 +18,11 @@ namespace Orion_Desktop
         internal const float EARTH_RADIUS = 6378; // kilometers
 
         // Earth globe attributes
-        internal static Matrix4x4 GlobeRotationMat; // Earth globe rotation matrix
+        internal static Matrix4x4 GlobeTransform; // Earth globe rotation matrix
         internal static Vector3 GlobeOrigin; // unmodified center, ever
         internal static Vector3 GlobeCenterToBe; // Used for interface interpolation
         internal static Vector3 GlobeCenter; // current center
+        internal static Vector3 GlobeNorth; // Used for rotation and calculations
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
 
         // Mini-Satellite attributes 
@@ -60,6 +61,8 @@ namespace Orion_Desktop
             // Create globe correction matrix
             UpdateTransform();
             IsFocused = false;
+            // Calculate globe north (never changes)
+            GlobeNorth = Raymath.Vector3RotateByAxisAngle(Vector3.UnitY, Vector3.UnitZ, EARTH_TILT * DEG2RAD);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -96,13 +99,28 @@ namespace Orion_Desktop
             UpdateSatellite();
 
             // Draw earth hologram
-            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeRotationMat);
+            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeTransform);
 
             // Draw satellite point
             DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + GlobeCenter, 0.06f, Color.White);
 
             // Draw current position
             DrawSphere(OrionSim.ViewerPosition + GlobeCenter, 0.01f, Color.Red);
+#if DEBUG
+            // Used for fixed north calculations
+            // Calculate directions
+            //Vector3 east = Raymath.Vector3Normalize(Raymath.Vector3CrossProduct(Vector3.UnitY, OrionSim.ViewerPosition)); // approximation correcte sauf aux pôles
+            //Vector3 northPole = Raymath.Vector3CrossProduct(OrionSim.ViewerPosition, east);
+            //Vector3 localNorth = Raymath.Vector3Subtract(northPole, Raymath.Vector3Scale(OrionSim.ViewerPosition, Raymath.Vector3DotProduct(OrionSim.ViewerPosition, northPole)));
+
+            //Vector3 northPole = Raymath.Vector3Transform(Vector3.UnitY, GlobeRotationTransform);
+            Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(GlobeNorth, OrionSim.ViewerPosition));
+            Vector3 localNorth = Raymath.Vector3CrossProduct(OrionSim.ViewerPosition, west);
+
+            DrawLine3D(GlobeCenter, GlobeCenter + GlobeNorth * 5, Color.Red);
+            DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter +  localNorth, Color.Red);  
+            DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter - west, Color.Red);
+#endif
         }
 
         /// <summary>Computes the relative altitude of the ISS used for calculations.</summary>
@@ -182,7 +200,8 @@ namespace Orion_Desktop
             if (!Conceptor2D.InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, IYaw) / RAD2DEG);
             else
             {
-                rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
+                //rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
+                rm = Raymath.MatrixRotate(GlobeNorth, IYaw / RAD2DEG);
 
                 // Compute X/Z axis weights
                 Vector3 cam = new Vector3(Conceptor3D.View.Camera.Position.X, 0, Conceptor3D.View.Camera.Position.Z) -
@@ -191,12 +210,12 @@ namespace Orion_Desktop
                 float xWeight = Raymath.Vector3DotProduct(Vector3.UnitZ, Vector3.Normalize(cam));
                 float zWeight = Raymath.Vector3DotProduct(Vector3.UnitX, Vector3.Normalize(cam));
                 // Create weighted matrix
-                rm *= Raymath.MatrixRotateXYZ(new Vector3(IPitch * xWeight + 90, EARTH_TILT, IPitch * zWeight) / RAD2DEG);
+                rm *= Raymath.MatrixRotateXYZ(new Vector3(IPitch * xWeight + 90, EARTH_TILT, IPitch * zWeight) * DEG2RAD);
             }
             Matrix4x4 sm = Raymath.MatrixScale(1, 1, 1);
             Matrix4x4 pm = Raymath.MatrixTranslate(GlobeCenter.X, GlobeCenter.Y, GlobeCenter.Z);
             // Multiply matrices
-            GlobeRotationMat = pm * sm * rm;
+            GlobeTransform = pm * sm * rm;
 
             // Update ECEF position of the viewpoint
             OrionSim.UpdateViewPoint(); // Update un-rotated pos

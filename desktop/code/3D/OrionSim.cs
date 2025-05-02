@@ -39,6 +39,9 @@ namespace Orion_Desktop
         internal static Vector3 PositionToBe; // Used for interpolation
         internal static float IYaw, IPitch, IYawToBe, IPitchToBe; // Used for interpolation
 
+        // Orion Robot Angles
+        internal static float RobotYaw, RobotPitch;
+
         // Render-related attributes
         internal static Rectangle ScreenRelatedRender;
         internal static Matrix4x4 Transform;
@@ -97,6 +100,8 @@ namespace Orion_Desktop
             // Draw Pointing-Arrow
             DrawSphere(ArrowSource, 0.03f, Color.White);
             DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
+
+            DrawModel(Resources.Models["arrow"], Vector3.Zero, 3, Color.White);
         }
 
         /// <summary>Draws the orion terminal screen to a render-texture and applies it to a material.</summary>
@@ -141,11 +146,22 @@ namespace Orion_Desktop
 
                 Vector3 local = new Vector3(northComponent, upComponent, westComponent);
                 ArrowTarget = Raymath.Vector3Normalize(local);
+
+                // Calculate angles used for physical and virtual display
+                Vector3 arrow = Vector3.Normalize(ArrowTarget - ArrowSource);
+                RobotYaw = Raymath.Vector2Angle(new Vector2(arrow.X, arrow.Y), Vector2.UnitY) * RAD2DEG;
+                RobotPitch = Raymath.Vector2Angle(new Vector2(arrow.X, arrow.Z), Vector2.UnitX) * RAD2DEG;
             }
             else
             {
                 ArrowTarget = EarthHologram.CurrentPlanet.NormalizedPosition;
+                RobotPitch = EarthHologram.CurrentPlanet.Azimuth;
+                RobotYaw = 90 - EarthHologram.CurrentPlanet.Altitude;
             }
+
+            // Adapt arrow
+            Matrix4x4 rotationY = Raymath.MatrixRotateX(RobotYaw * DEG2RAD);
+            Matrix4x4 rotationX = Raymath.MatrixRotateY(RobotPitch * DEG2RAD);
         }
 
         /// <summary>Moves the targeted astral object to the right or left.</summary>

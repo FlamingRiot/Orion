@@ -104,6 +104,9 @@ namespace Orion_Desktop
 
                 DrawFPS(10, 10);
 
+                DrawText(OrionSim.RobotYaw.ToString(), 10, 40, 20, Color.Green);
+                DrawText(OrionSim.RobotPitch.ToString(), 10, 80, 20, Color.Green);
+
                 // Close drawing context
                 EndDrawing();
             }

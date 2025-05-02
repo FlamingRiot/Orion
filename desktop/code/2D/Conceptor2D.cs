@@ -121,8 +121,9 @@ namespace Orion_Desktop
                 {
                     Vector2 screenPos = GetWorldToScreen(target, Conceptor3D.View.Camera);
                     string? name = Enum.GetName(typeof(AstralTarget), OrionSim.Target);
-                    DrawTextEx(RayGUI.Font, name, screenPos - Vector2.UnitY * 15, 20, 1, Color.Red);
-                    DrawTextEx(RayGUI.Font, "o", screenPos + Vector2.UnitX * (MeasureTextEx(RayGUI.Font, name, 20, 1).X / 2) - Vector2.UnitX * 4, 20, 1, Color.Red);
+                    float txtLength = (MeasureTextEx(RayGUI.Font, name, 20, 1).X / 2);
+                    DrawTextEx(RayGUI.Font, name, screenPos - Vector2.UnitY * 26 - new Vector2(txtLength, 0), 20, 1, Color.Red);
+                    DrawTextEx(RayGUI.Font, "o", screenPos + Vector2.UnitX * txtLength - Vector2.UnitX * 4 - new Vector2(txtLength, 0) - Vector2.UnitY * 11, 20, 1, Color.Red);
                 }
             }
 

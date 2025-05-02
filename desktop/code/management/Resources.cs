@@ -105,6 +105,11 @@ namespace Orion_Desktop
             Model iss = LoadModel("assets/iss.m3d");
             SetMaterialShader(ref iss, 0, ref Shaders.FixShader);
             Models.Add("iss", iss);
+
+            Model arrow = LoadModel("assets/arrow.m3d");
+            Texture2D mat = LoadTexture("assets/textures/arrow_Image_0.png");
+            SetMaterialTexture(ref arrow, 0, MaterialMapIndex.Diffuse, ref mat);
+            Models.Add("arrow", arrow);
         }
     }
 }

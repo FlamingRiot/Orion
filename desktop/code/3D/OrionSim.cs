@@ -101,7 +101,7 @@ namespace Orion_Desktop
             DrawSphere(ArrowSource, 0.03f, Color.White);
             DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
 
-            DrawModel(Resources.Models["arrow"], Vector3.Zero, 3, Color.White);
+            DrawModel(Resources.Arrow, Vector3.Zero, 1, Color.White);
         }
 
         /// <summary>Draws the orion terminal screen to a render-texture and applies it to a material.</summary>
@@ -155,13 +155,16 @@ namespace Orion_Desktop
             else
             {
                 ArrowTarget = EarthHologram.CurrentPlanet.NormalizedPosition;
-                RobotPitch = EarthHologram.CurrentPlanet.Azimuth;
-                RobotYaw = 90 - EarthHologram.CurrentPlanet.Altitude;
+                RobotPitch = 270 - EarthHologram.CurrentPlanet.Azimuth; // 270° correction to correspond the chosen system for the app
+                RobotYaw = 90 - EarthHologram.CurrentPlanet.Altitude; // 90° correction to correspond the chosen system for the app
             }
 
             // Adapt arrow
-            Matrix4x4 rotationY = Raymath.MatrixRotateX(RobotYaw * DEG2RAD);
-            Matrix4x4 rotationX = Raymath.MatrixRotateY(RobotPitch * DEG2RAD);
+            Matrix4x4 rotation = Raymath.MatrixRotateY(RobotPitch * DEG2RAD);
+            rotation *= Raymath.MatrixRotateX(-RobotYaw * DEG2RAD);
+            Matrix4x4 position = Raymath.MatrixTranslate(ArrowSource.X, ArrowSource.Y, ArrowSource.Z);
+            Matrix4x4 scale = Raymath.MatrixScale(3f, 3f, 3f);
+            Resources.SetArrowTransform(position * scale * rotation);
         }
 
         /// <summary>Moves the targeted astral object to the right or left.</summary>

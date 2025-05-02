@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using System.Numerics;
 using Uniray;
 using static Raylib_cs.Raylib;
 
@@ -7,10 +8,10 @@ namespace Orion_Desktop
     /// <summary>Represents the GPU-loaded resources dictionary of the program.</summary>
     internal static class Resources
     {
-        // Internal resources
         internal static Dictionary<string, Material> Materials = new Dictionary<string, Material>();
         internal static Dictionary<string, Mesh> Meshes = new Dictionary<string, Mesh>();
         internal static Dictionary<ShapeType, Mesh> ShapeMeshes = new Dictionary<ShapeType, Mesh>();
+        internal static Model Arrow;
 
         internal static Texture2D TargetPreview;
 
@@ -106,10 +107,16 @@ namespace Orion_Desktop
             SetMaterialShader(ref iss, 0, ref Shaders.FixShader);
             Models.Add("iss", iss);
 
-            Model arrow = LoadModel("assets/arrow.m3d");
+            Arrow = LoadModel("assets/arrow.m3d");
             Texture2D mat = LoadTexture("assets/textures/arrow_Image_0.png");
-            SetMaterialTexture(ref arrow, 0, MaterialMapIndex.Diffuse, ref mat);
-            Models.Add("arrow", arrow);
+            SetMaterialTexture(ref Arrow, 0, MaterialMapIndex.Diffuse, ref mat);
+        }
+
+        /// <summary>Sets the transform matrix for the arrow model.</summary>
+        /// <param name="transform">Transform to set.</param>
+        internal static void SetArrowTransform(Matrix4x4 transform)
+        {
+            Arrow.Transform = transform;
         }
     }
 }

@@ -114,10 +114,16 @@ namespace Orion_Desktop
             // Planet preview
             if (OrionSim.Target != AstralTarget.ISS)
             {
-                Vector2 screenPos = GetWorldToScreen(OrionSim.ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition * 300, Conceptor3D.View.Camera);
-                string? name = Enum.GetName(typeof(AstralTarget), OrionSim.Target);
-                DrawTextEx(RayGUI.Font, name, screenPos - Vector2.UnitY * 15, 20, 1, Color.Red);
-                DrawTextEx(RayGUI.Font, "o", screenPos + Vector2.UnitX * (MeasureTextEx(RayGUI.Font, name, 20, 1).X / 2) - Vector2.UnitX * 4, 20, 1, Color.Red);
+                Vector3 target = OrionSim.ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition * 300;
+                float dot = Raymath.Vector3DotProduct(target, GetCameraForward(ref Conceptor3D.View.Camera));
+
+                if (dot > 0) // Check if behind camera or not
+                {
+                    Vector2 screenPos = GetWorldToScreen(target, Conceptor3D.View.Camera);
+                    string? name = Enum.GetName(typeof(AstralTarget), OrionSim.Target);
+                    DrawTextEx(RayGUI.Font, name, screenPos - Vector2.UnitY * 15, 20, 1, Color.Red);
+                    DrawTextEx(RayGUI.Font, "o", screenPos + Vector2.UnitX * (MeasureTextEx(RayGUI.Font, name, 20, 1).X / 2) - Vector2.UnitX * 4, 20, 1, Color.Red);
+                }
             }
 
             // Draw E hint

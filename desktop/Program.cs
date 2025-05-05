@@ -103,6 +103,7 @@ namespace Orion_Desktop
                 Conceptor2D.Draw();
 #if DEBUG
                 DrawFPS(10, 10);
+                DrawText(OrionSim.RobotYaw.ToString(), 10, 40, 20, Color.DarkGreen);
 #endif
                 // Close drawing context
                 EndDrawing();

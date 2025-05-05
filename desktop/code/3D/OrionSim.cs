@@ -148,14 +148,15 @@ namespace Orion_Desktop
                 ArrowTarget = Raymath.Vector3Normalize(local);
 
                 // Calculate angles used for physical and virtual display
-                Vector3 arrow = Vector3.Normalize(ArrowTarget - ArrowSource);
-                RobotYaw = Raymath.Vector2Angle(new Vector2(arrow.X, arrow.Y), Vector2.UnitY) * RAD2DEG;
-                RobotPitch = 90 - Raymath.Vector2Angle(new Vector2(arrow.X, arrow.Z), Vector2.UnitX) * RAD2DEG;
+                Vector3 arrow = Vector3.Normalize(ArrowTarget);
+
+                RobotYaw = 90 - MathF.Asin(arrow.Y) * RAD2DEG;
+                RobotPitch = 0;
             }
             else
             {
                 ArrowTarget = EarthHologram.CurrentPlanet.NormalizedPosition;
-                RobotPitch = 270 - EarthHologram.CurrentPlanet.Azimuth; // 90° correction to correspond the chosen system for the app
+                RobotPitch = 270 - EarthHologram.CurrentPlanet.Azimuth; // 270° correction to correspond the chosen system for the app
                 RobotYaw = 90 - EarthHologram.CurrentPlanet.Altitude; // Invert the vertical system 
             }
 

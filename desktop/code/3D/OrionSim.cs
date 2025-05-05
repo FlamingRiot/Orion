@@ -151,7 +151,9 @@ namespace Orion_Desktop
                 Vector3 arrow = Vector3.Normalize(ArrowTarget);
 
                 RobotYaw = 90 - MathF.Asin(arrow.Y) * RAD2DEG;
-                RobotPitch = 0;
+                RobotPitch = MathF.Atan2(arrow.X, arrow.Z) * RAD2DEG;
+                // Tweak pitch
+                RobotPitch = (RobotPitch + 360 + 180) % 360; // 180° correction to correspond the chosen system for the app
             }
             else
             {

@@ -98,7 +98,7 @@ namespace Orion_Desktop
             float ratio = (txtSize.X + 128) / 360f; // Constant offset of 128 (Thankfully does not rely on display size)
             float center = Width / 2 - 300; // Constant offset of -300 (Thankfully does not rely on display size)
             // Draw text
-            DrawTextPro(RayGUI.Font, txt, new Vector2(center - angle * ratio, 20), Vector2.Zero, 0, 30, 1, Color.White);
+            DrawTextPro(RayGUI.Font, txt, new Vector2(center - angle * ratio, 20), Vector2.Zero, 0, 30, 1, new Color(199, 235, 255));
 
             EndTextureMode();
         }

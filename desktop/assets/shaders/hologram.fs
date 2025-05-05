@@ -42,5 +42,5 @@ void main()
     
     pixelColor = vec4(hologramColor, texelColor.a);
     // Mix between hologram and textures
-    pixelColor = mix(pixelColor, texture(texture0, uv), closeUpIntensity);
+    pixelColor = mix(pixelColor, texture(preview, uv), closeUpIntensity);
 }

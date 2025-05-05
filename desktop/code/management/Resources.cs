@@ -64,7 +64,7 @@ namespace Orion_Desktop
         /// <summary>Loads the application's materials and configures them.</summary>
         private static void LoadMaterials()
         {
-            Texture2D earthTex = LoadTexture("assets/textures/earth.png");
+            Texture2D earthTex = LoadTexture("assets/textures/earth_preview.png");
 
             // Earth mat (texture-hologram)
             Material earthMat = LoadMaterialDefault();

@@ -160,6 +160,8 @@ namespace Orion_Desktop
         internal static Shader ScreenShader;
         private static Shader CubemapShader;
 
+        private static Texture2D test;
+
         public static PBRLight[] Lights = new PBRLight[4];
 
         private static int EmissivePowerLoc;
@@ -189,9 +191,15 @@ namespace Orion_Desktop
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
             ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
             CloseUpIntensityLoc1 = GetShaderLocation(FixShader, "closeUpIntensity");
+            
+            // Setup preview texture (Activate texture slot for the shader)
             EarthPreviewLoc = GetShaderLocation(FixShader, "preview");
-            Texture2D tex = LoadTexture("assets/textures/earth_preview.png");
-            SetShaderValueTexture(FixShader, EarthPreviewLoc, tex);
+            test = LoadTexture("assets/textures/earth.png");
+            Rlgl.ActiveTextureSlot(10);
+            Rlgl.EnableTexture(test.Id);
+            Rlgl.ActiveTextureSlot(0);
+
+            SetShaderValue(FixShader, EarthPreviewLoc, 10, ShaderUniformDataType.Int);
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");

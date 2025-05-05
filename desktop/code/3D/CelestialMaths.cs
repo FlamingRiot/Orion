@@ -137,14 +137,12 @@ namespace Orion_Desktop
         /// <returns></returns>
         internal static Vector3 ComputeHorizontalCoordinates(float azimuth, float altitude)
         {
-            float aziRad = azimuth * Raylib.DEG2RAD;
+            float aziRad = (90 - azimuth) * Raylib.DEG2RAD; // 90° correction to correspond the chosen system for the app
             float altRad = altitude * Raylib.DEG2RAD;
 
-            //float x = MathF.Cos(altRad) * MathF.Sin(aziRad);
             float y = MathF.Sin(altRad);
-            //float z = MathF.Cos(altRad) * MathF.Cos(aziRad);
-            float x = MathF.Cos(aziRad);
-            float z = MathF.Sin(aziRad);
+            float x = MathF.Cos(altRad) * MathF.Sin(aziRad);
+            float z = MathF.Cos(aziRad) * MathF.Cos(altRad);
 
             return new Vector3(x, y, z);
         }

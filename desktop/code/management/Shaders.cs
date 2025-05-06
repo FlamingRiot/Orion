@@ -177,6 +177,7 @@ namespace Orion_Desktop
         private static int CloseUpIntensityLoc2;
         private static int EarthPreviewLoc;
         private static int TimeViewpointLoc;
+        private static int CloseUpIntensityLoc3;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -263,6 +264,7 @@ namespace Orion_Desktop
             // Viewpoint shader
             ViewpointShader = LoadShader("assets/shaders/viewpoint.vs", "assets/shaders/viewpoint.fs");
             TimeViewpointLoc = GetShaderLocation(ViewpointShader, "time");
+            CloseUpIntensityLoc3 = GetShaderLocation(ViewpointShader, "closeUpIntensity");
         }
 
         /// <summary>Updates the environement's PBR lighting.</summary>
@@ -313,6 +315,7 @@ namespace Orion_Desktop
                 float interp = 1.0f - l1 / l2;
                 SetShaderValue(FixShader, CloseUpIntensityLoc1, interp, ShaderUniformDataType.Float);
                 SetShaderValue(PostProShader, CloseUpIntensityLoc2, interp, ShaderUniformDataType.Float);
+                SetShaderValue(ViewpointShader, CloseUpIntensityLoc3, interp, ShaderUniformDataType.Float);
             }
 
             SetShaderValue(ScreenShader, TimeLocScreen, time, ShaderUniformDataType.Float);

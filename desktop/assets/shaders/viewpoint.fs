@@ -6,6 +6,7 @@ in vec2 fragTexCoord;
 
 uniform sampler2D texture0;
 uniform float time;
+uniform float closeUpIntensity;
 uniform float TAU = 6.283185307;
 
 out vec4 pixelColor;
@@ -20,6 +21,5 @@ void main()
     float t = cos((radialDistance - time * 0.2) * TAU * 5) * 0.5 + 0.5;
     t *= (1-radialDistance) * 2;
 
-    //pixelColor = vec4(1.0, 0.0, 0.0, 0.3);
-    pixelColor = mix(vec4(0.0), vec4(1.0, 0.0, 0.0, 0.65), t);
+    pixelColor = mix(vec4(0.0), vec4(mix(1.0, 0.0, closeUpIntensity), 0.0, 0.0, mix(0.65, -0.1, closeUpIntensity)), t);
 }

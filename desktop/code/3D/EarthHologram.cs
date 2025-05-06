@@ -101,7 +101,6 @@ namespace Orion_Desktop
             DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + GlobeCenter, 0.06f, Color.White);
 
             // Draw current position
-            DrawSphere(OrionSim.ViewerPosition + GlobeCenter, 0.01f, new Color(0, 0, 0, 90));
             DrawMesh(Resources.Meshes["viewpoint"], Resources.Materials["viewpoint"], ViewpointTransform);
 #if DEBUG
             // North-West offseting calculations visualization

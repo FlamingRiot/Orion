@@ -17,8 +17,7 @@ void main()
     vec2 uvsCentered = fragTexCoord * 2 - vec2(1);
     float radialDistance = length(uvsCentered);
 
-    float xOffset = cos(fragTexCoord.y * TAU * 8) * 0.01;
-    float t = cos((radialDistance + xOffset - time * 0.2) * TAU * 5) * 0.5 + 0.5;
+    float t = cos((radialDistance - time * 0.2) * TAU * 5) * 0.5 + 0.5;
     t *= (1-radialDistance) * 2;
 
     //pixelColor = vec4(1.0, 0.0, 0.0, 0.3);

@@ -23,8 +23,7 @@ void main()
 	vec2 uvsCentered = fragTexCoord * 2 - vec2(1);
 	float radialDistance = length(uvsCentered);
 
-	float xOffset = cos(vertexTexCoord.y * TAU * 8) * 0.01;
-    float t = cos((radialDistance + xOffset - time * 0.2) * TAU * 5);
+    float t = cos((radialDistance - time * 0.2) * TAU * 5);
     t *= (1-radialDistance);
 	
 

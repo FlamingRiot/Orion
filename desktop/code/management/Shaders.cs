@@ -158,6 +158,7 @@ namespace Orion_Desktop
         internal static Shader PBRLightingShader;
         internal static Shader SkyboxShader;
         internal static Shader ScreenShader;
+        internal static Shader ViewpointShader;
         private static Shader CubemapShader;
 
         private static Texture2D test;
@@ -175,6 +176,7 @@ namespace Orion_Desktop
         private static int CloseUpIntensityLoc1;
         private static int CloseUpIntensityLoc2;
         private static int EarthPreviewLoc;
+        private static int TimeViewpointLoc;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -258,6 +260,9 @@ namespace Orion_Desktop
             CubemapShader = LoadShader("assets/shaders/cubemap.vs", "assets/shaders/cubemap.fs");
             SetShaderValue(CubemapShader, GetShaderLocation(CubemapShader, "equirectangularMap"), 0, ShaderUniformDataType.Int);
 
+            // Viewpoint shader
+            ViewpointShader = LoadShader("assets/shaders/viewpoint.vs", "assets/shaders/viewpoint.fs");
+            TimeViewpointLoc = GetShaderLocation(ViewpointShader, "time");
         }
 
         /// <summary>Updates the environement's PBR lighting.</summary>
@@ -297,6 +302,8 @@ namespace Orion_Desktop
             // Update hologram-shaders time uniform
             double time = GetTime();
             SetShaderValue(FixShader, TimeLocGlobe, time, ShaderUniformDataType.Float);
+
+            SetShaderValue(ViewpointShader, TimeViewpointLoc, (float)time, ShaderUniformDataType.Float);
 
             // Define interpolation value in normalized scope
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)

@@ -2,6 +2,7 @@
 using static Raylib_cs.Raylib;
 using RayGUI_cs;
 using System.Numerics;
+using System.Security.AccessControl;
 
 namespace Orion_Desktop
 {
@@ -89,6 +90,7 @@ namespace Orion_Desktop
         {
             ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.Yaw) * EarthHologram.HOLOGRAM_RADIUS;
             ComputeArrowDirection();
+            ComputeViewpointTransform();
         }
 
         /// <summary>Draws the terminal screen along with the 3D pointing arrow.</summary>
@@ -162,12 +164,26 @@ namespace Orion_Desktop
                 RobotYaw = 90 - EarthHologram.CurrentPlanet.Altitude; // Invert the vertical system 
             }
 
-            // Adapt arrow
+            // Calculate arrow transform
             Matrix4x4 rotation = Raymath.MatrixRotateY(RobotPitch * DEG2RAD);
             rotation *= Raymath.MatrixRotateX(-RobotYaw * DEG2RAD);
             Matrix4x4 position = Raymath.MatrixTranslate(ARROW_SOURCE.X, ARROW_SOURCE.Y, ARROW_SOURCE.Z);
             Matrix4x4 scale = Raymath.MatrixScale(3f, 3f, 3f);
             Resources.SetArrowTransform(position * scale * rotation);
+        }
+
+        /// <summary>Computes the transform matrix based on the user's viewpoint.</summary>
+        internal static void ComputeViewpointTransform()
+        {
+            // Calculate angles (based on horizontal coordinates formulas)
+            float yaw =  90 - MathF.Asin(ViewerPosition.Y) * RAD2DEG;
+            float pitch = MathF.Atan2(ViewerPosition.X, ViewerPosition.Z) * RAD2DEG;
+            // Compute matrix
+            Matrix4x4 rotationMat = Raymath.MatrixRotateY(pitch * DEG2RAD);
+            rotationMat *= Raymath.MatrixRotateX(yaw * DEG2RAD);
+            Vector3 position = EarthHologram.GlobeCenter + ViewerPosition;
+            Matrix4x4 positionMat = Raymath.MatrixTranslate(position.X, position.Y, position.Z);
+            EarthHologram.ViewpointTransform = positionMat * rotationMat;
         }
 
         /// <summary>Moves the targeted astral object to the right or left.</summary>

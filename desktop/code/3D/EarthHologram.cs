@@ -19,7 +19,8 @@ namespace Orion_Desktop
         internal static readonly Vector3 GLOBE_NORTH = Raymath.Vector3RotateByAxisAngle(Vector3.UnitY, Vector3.UnitZ, EARTH_TILT * DEG2RAD); // Used for rotation and calculations
 
         // Earth globe attributes
-        internal static Matrix4x4 GlobeTransform; // Earth globe rotation matrix
+        internal static Matrix4x4 ViewpointTransform; // Viewpoint ping transform matrix
+        internal static Matrix4x4 GlobeTransform; // Earth globe transform matrix
         internal static Vector3 GlobeCenter; // current center
         internal static float Yaw, Pitch; // Rotation angles of the globe
 
@@ -100,7 +101,8 @@ namespace Orion_Desktop
             DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + GlobeCenter, 0.06f, Color.White);
 
             // Draw current position
-            DrawSphere(OrionSim.ViewerPosition + GlobeCenter, 0.01f, Color.Red);
+            DrawSphere(OrionSim.ViewerPosition + GlobeCenter, 0.01f, new Color(0, 0, 0, 90));
+            DrawMesh(Resources.Meshes["viewpoint"], Resources.Materials["viewpoint"], ViewpointTransform);
 #if DEBUG
             // North-West offseting calculations visualization
             Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(GLOBE_NORTH, OrionSim.ViewerPosition));

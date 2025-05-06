@@ -71,6 +71,10 @@ namespace Orion_Desktop
             SetMaterialTexture(ref earthMat, MaterialMapIndex.Diffuse, earthTex);
             earthMat.Shader = Shaders.FixShader;
             Materials.Add("earth", earthMat);
+            // Viewpoint material
+            Material def = LoadMaterialDefault();
+            def.Shader = Shaders.ViewpointShader;
+            Materials.Add("viewpoint", def);
 
             // Load PBRs
             PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim"));
@@ -98,6 +102,8 @@ namespace Orion_Desktop
                 { ShapeType.HemiSphere, GenMeshHemiSphere(0.5f, 15, 15) },
                 { ShapeType.Knot, GenMeshKnot(0.5f, 1, 20, 20) }
             };
+
+            Meshes.Add("viewpoint", GenMeshPlane(0.2f, 0.2f, 100, 100));
         }
 
         /// <summary>Loads the application's custom 3D models from .m3d files.</summary>

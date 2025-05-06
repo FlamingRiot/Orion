@@ -60,6 +60,8 @@ namespace Orion_Desktop
             
             // Start by sending information request to the API
             OnlineRequests.StartConnexion();
+
+            OnlineRequests.DownloadTileset(4);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -103,15 +105,6 @@ namespace Orion_Desktop
 
             // Draw current position
             DrawMesh(Resources.Meshes["viewpoint"], Resources.Materials["viewpoint"], ViewpointTransform);
-#if DEBUG
-            // North-West offseting calculations visualization
-            Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(GLOBE_NORTH, OrionSim.ViewerPosition));
-            Vector3 localNorth = Raymath.Vector3CrossProduct(OrionSim.ViewerPosition, west);
-
-            DrawLine3D(GlobeCenter, GlobeCenter + GLOBE_NORTH * 3, Color.Red);
-            DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter +  localNorth, Color.Red);  
-            DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter - west, Color.Red);
-#endif
         }
 
         /// <summary>Computes the relative altitude of the ISS used for calculations.</summary>
@@ -125,13 +118,12 @@ namespace Orion_Desktop
         /// <summary>Updates the interface of the hologram.</summary>
         internal static void UpdateInterface()
         {
-            TilingManager.DrawMapManager();
             // Update camera lerp
             Conceptor3D.View.Camera.Up = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Up, Interpolators.CameraUp, GetFrameTime() * Conceptor3D.LERP_SPEED);
 
             if (IsFocused) 
             {
-                Vector3 targetPosition = OrionSim.ViewerPosition * 1.25f + GlobeCenter;
+                Vector3 targetPosition = OrionSim.ViewerPosition * 1.15f + GlobeCenter;
                 Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, targetPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
                 Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + GlobeCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
             }
@@ -170,8 +162,6 @@ namespace Orion_Desktop
                         IsFocused = true;
                         Interpolators.CameraPosition = Conceptor3D.View.PreviousPosition;
                         Interpolators.CameraUp = GLOBE_NORTH;
-
-                        TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, 3);
                     }
                 } 
                 _holdTime = 0;
@@ -204,80 +194,6 @@ namespace Orion_Desktop
 
             // Update ECEF position of the viewpoint
             OrionSim.UpdateViewPoint(); // Update un-rotated pos
-        }
-    }
-
-    /*-----------------------------------------------------------------
-     Map-Tiling classes, functions and variables. 
-     ------------------------------------------------------------------*/
-    /// <summary>Represents the 2D map-tiling managing class.</summary>
-    internal static class TilingManager
-    {
-        // Constants
-        internal const string MAP_CONFIG = $"MODIS_Terra_CorrectedReflectance_TrueColor";
-
-        // Tile Levels to be updated during background loading
-        internal static Dictionary<int, Vector2> Configs = new Dictionary<int, Vector2>();
-
-        private static List<MapTile> Tiles = new List<MapTile>();
-
-        /// <summary>Draws the Map-tiling (Required context: 2D).</summary>
-        internal static void DrawMapManager()
-        {
-            Tiles.ForEach(t => t.Draw());
-        }
-
-        internal static Vector2 ConvertCoordinatesToTiles(float lat, float lon, int zoomLevel)
-        {
-            // Define maximums
-            int latMax = 180;
-            int lonMax = 360;
-
-            // Adapt
-            lat += latMax / 2;
-            lon += lonMax / 2;
-
-            // Retrieve zoom-level values
-            Vector2 position = new Vector2(0);
-            Configs.TryGetValue(zoomLevel, out position);
-
-            position.X = lat / latMax * position.X;
-            position.Y = lon / lonMax * position.Y;
-
-            return position;
-        }
-    }
-
-    /// <summary>Represents a single map-tile used for 2D rendering in <see cref="TilingManager"/>.</summary>
-    internal class MapTile
-    {
-        // Constants
-        internal const int TILE_SIZE = 128;
-
-        // Rectangles used for tile rendering
-        private static Rectangle _source = new Rectangle(0, 0, 512, 512);
-        private Rectangle _target;
-
-        // Attributes
-        public int Row;
-        public int Column;
-        public Texture2D Texture;
-
-        /// <summary>Creates an instance of <see cref="MapTile"/>.</summary>
-        /// <param name="row">Map row.</param>
-        /// <param name="column">Map column.</param>
-        internal MapTile(int row, int column)
-        {
-            Row = row;
-            Column = column;
-            _target = new Rectangle(TILE_SIZE * column, TILE_SIZE * row, TILE_SIZE, TILE_SIZE);
-            Texture = new Texture2D();
-        }
-
-        /// <summary>Draws a single map-tile according to its relative position.</summary>
-        internal void Draw()
-        {
-            DrawTexturePro(Texture, _source, _target, Vector2.Zero, 0, Color.White);
         }
     }
 }

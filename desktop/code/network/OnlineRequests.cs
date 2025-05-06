@@ -13,12 +13,16 @@ namespace Orion_Desktop
     /// <summary>The static class used for sendind HTTP requests.</summary>
     internal static class OnlineRequests
     {
+        // Constants
         internal const int REQUEST_INTERVAL = 1;
         internal const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
         internal const string CACHE_DIRECTORY = "cache/";
         internal const string PLANET_LOC_TIME = "12:00:00";
 
+        // Attributes
         internal static List<PlanetCacheEntry> PlanetCacheEntries = new List<PlanetCacheEntry>();
+
+        // Private attributes
         private static Stopwatch? timer;
         private static int _timeLastCheck = -1;
 
@@ -28,6 +32,9 @@ namespace Orion_Desktop
             "6b86ce14215166a9a3a6456e318f51ccf2a6f6b242799f504d76af0a8ff62f39338770a5a7" +
             "e15233a0fac4d30e4385ce39a8b140cd73363ba9e2ab90c71a66492e9e8a4b78807ab2c6be" +
             "f12a4a74198e04d9904b6c965a22a2667f3f1cccb1";
+
+        // OpenstreetMap credentials
+        private const string OPENSTREETMAP_API_ID = "dXnJUwdYY9Q8KeAV80P2";
 
         /// <summary>Starts connexion timer (used for API max-request and caching files).</summary>
         internal static void StartConnexion()
@@ -193,8 +200,6 @@ namespace Orion_Desktop
         ------------------------------------------------------------------*/
 
         /// <summary>Retrieves data from a Map-tiling endpoint, for a selected tile config.</summary>
-        /// <param name="row">Tile row.</param>
-        /// <param name="column">Tile column.</param>
         /// <param name="zoom">Zoom level.</param>
         /// <returns>Whatever <see cref="Task"/> is.</returns>
         internal static async Task DownloadTileset(int zoom)
@@ -216,10 +221,10 @@ namespace Orion_Desktop
                 {
                     try
                     {
-                        string imgName = $"{TilingManager.MAP_CONFIG}_{zoom}_{_downloadHeightCount}_{_downloadWithCount}.png";
+                        string imgName = $"{TilingManager.MAP_CONFIG}_{_downloadHeightCount}_{_downloadWithCount}_{zoom}.png";
                         if (!File.Exists($"{dirPath}{imgName}"))
                         {
-                            string url = $"https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{TilingManager.MAP_CONFIG}/default/2013-07-09/250m/{zoom}/{_downloadHeightCount}/{_downloadWithCount}.jpg";
+                            string url = $"https://api.maptiler.com/maps/{TilingManager.MAP_CONFIG}/{MapTile.TILE_SIZE}/{zoom}/{_downloadHeightCount}/{_downloadWithCount}.jpg?key={OPENSTREETMAP_API_ID}";
                             HttpResponseMessage response = await client.GetAsync(url);
                             response.EnsureSuccessStatusCode();
                             byte[] data = await response.Content.ReadAsByteArrayAsync(); // Read stream

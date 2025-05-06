@@ -50,6 +50,7 @@ namespace Orion_Desktop
 
             // Set interpolators
             Interpolators.EarthCenter = GlobeCenter;
+            Interpolators.CameraUp = Vector3.UnitY;
             
             // Create standby position for the station (until some data is retrieved from the API)
             SatellitePoints.Add((GlobeCenter + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
@@ -126,6 +127,8 @@ namespace Orion_Desktop
         {
             TilingManager.DrawMapManager();
             // Update camera lerp
+            Conceptor3D.View.Camera.Up = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Up, Interpolators.CameraUp, GetFrameTime() * Conceptor3D.LERP_SPEED);
+
             if (IsFocused) 
             {
                 Vector3 targetPosition = OrionSim.ViewerPosition * 1.25f + GlobeCenter;
@@ -166,6 +169,7 @@ namespace Orion_Desktop
                         // Update state
                         IsFocused = true;
                         Interpolators.CameraPosition = Conceptor3D.View.PreviousPosition;
+                        Interpolators.CameraUp = GLOBE_NORTH;
 
                         TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, 3);
                     }

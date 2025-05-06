@@ -13,6 +13,7 @@ namespace Orion_Desktop
         // Camera interpolators
         internal static Vector3 CameraPosition;
         internal static Vector3 CameraTarget;
+        internal static Vector3 CameraUp;
 
         // Orion terminal interpolators
         internal static Vector3 TerminalCenter;

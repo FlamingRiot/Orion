@@ -234,6 +234,7 @@ namespace Orion_Desktop
                         if (EarthHologram.IsFocused)
                         {
                             EarthHologram.IsFocused = false;
+                            Interpolators.CameraUp = Vector3.UnitY;
                         }
                         if (OpenedInterface == Interface.Terminal)
                         {

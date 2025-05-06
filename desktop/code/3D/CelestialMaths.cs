@@ -33,7 +33,7 @@ namespace Orion_Desktop
             float y = MathF.Cos(latRad) * MathF.Sin(longRad);
             float z = MathF.Sin(latRad);
 
-            Matrix4x4 rotation = Raymath.MatrixRotate(Raymath.Vector3RotateByAxisAngle(EarthHologram.GlobeNorth, Vector3.UnitX, 90 * Raylib.DEG2RAD), -globeYaw / Raylib.RAD2DEG);
+            Matrix4x4 rotation = Raymath.MatrixRotate(Raymath.Vector3RotateByAxisAngle(EarthHologram.GLOBE_NORTH, Vector3.UnitX, 90 * Raylib.DEG2RAD), -globeYaw / Raylib.RAD2DEG);
             rotation *= Raymath.MatrixRotateY(-EarthHologram.EARTH_TILT / Raylib.RAD2DEG);
 
             float newX = rotation.M11 * x + rotation.M12 * y + rotation.M13 * z;
@@ -100,7 +100,7 @@ namespace Orion_Desktop
         {
             // Compute inverse-rotation matrices
             Matrix4x4 inverseRotation = Raymath.MatrixRotateY(EarthHologram.EARTH_TILT / Raylib.RAD2DEG);
-            inverseRotation *= Raymath.MatrixRotate(Raymath.Vector3RotateByAxisAngle(EarthHologram.GlobeNorth, Vector3.UnitX, 90 * Raylib.DEG2RAD), globeYaw / Raylib.RAD2DEG);
+            inverseRotation *= Raymath.MatrixRotate(Raymath.Vector3RotateByAxisAngle(EarthHologram.GLOBE_NORTH, Vector3.UnitX, 90 * Raylib.DEG2RAD), globeYaw / Raylib.RAD2DEG);
             
             // Apply inverse-rotation
             float x = inverseRotation.M11 * position.X + inverseRotation.M12 * position.Z + inverseRotation.M13 * position.Y;

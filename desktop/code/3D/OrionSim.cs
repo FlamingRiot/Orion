@@ -24,20 +24,20 @@ namespace Orion_Desktop
     /// <summary>Represents the Orion robot simulation.</summary>
     internal static class OrionSim
     {
+        // Constants
         internal const float INCLINE_YAW = 40f; // Represents the terminal-screen's orientation (vertically)
+        internal static readonly Vector3 TERMINAL_ORIGIN = new Vector3(-10.1f, 1.7f, -0.16f);
+        internal static readonly Vector3 ARROW_SOURCE = EarthHologram.GlobeCenter + Vector3.UnitY * 2; // Defines the origin of the 3D pointing-arrow
 
-        internal static readonly Vector3 ArrowSource = EarthHologram.GlobeCenter + Vector3.UnitY * 2; // Defines the origin of the 3D pointing-arrow
-
-        internal static float ViewerLatitude;
-        internal static float ViewerLongitude;
+        // Simulation attributes, such as view-positin and pointing-arrow information
+        internal static float ViewerLatitude, ViewerLongitude;
         internal static Vector3 ViewerPosition; // Current simulation viewpoint
         internal static Vector3 ArrowTarget; // Defines the orientation of the arrow, relative to the horizontal plane
         internal static AstralTarget Target;
 
-        internal static Vector3 OriginPosition = new Vector3(-10.1f, 1.7f, -0.16f); // Original position (never to be changed)
+        // Orion terminal attributes
         internal static Vector3 TerminalPosition; // Current position
-        internal static Vector3 PositionToBe; // Used for interpolation
-        internal static float IYaw, IPitch, IYawToBe, IPitchToBe; // Used for interpolation
+        internal static float Yaw, Pitch; // Rotation angles of the terminal
 
         // Orion Robot Angles
         internal static float RobotYaw, RobotPitch;
@@ -56,50 +56,50 @@ namespace Orion_Desktop
             ViewerLatitude = lat;
             UpdateViewPoint();
 
+            // Set world attributes
             Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
             Transform *= Raymath.MatrixRotateZ(INCLINE_YAW / RAD2DEG);
-            IYaw = INCLINE_YAW;
-            IYawToBe = INCLINE_YAW;
+            Yaw = INCLINE_YAW;
+            TerminalPosition = TERMINAL_ORIGIN;
+
+            // Set interpolators
+            Interpolators.TerminalYaw = INCLINE_YAW;
+            Interpolators.TerminalCenter = TERMINAL_ORIGIN;
+
             // Load screen render texture
             TerminalScreen = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
             TerminalScreenMat = LoadMaterialDefault();
             TerminalScreenMat.Shader = Shaders.ScreenShader;
 
-            TerminalPosition = OriginPosition;
-            PositionToBe = OriginPosition;
-
+            // Load default image preview
             string? targetName = Enum.GetName(Target);
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
 
-            // Define sim-to-screen ration
+            // Define sim-to-screen ratio
             float x = GetScreenWidth() / 17;
             float y = GetScreenHeight() / 17;
             ScreenRelatedRender = new Rectangle(x, y, GetScreenWidth() - x * 2, GetScreenHeight() - y * 2);
 
+            // Compute arrow direction for stand-by position
             ComputeArrowDirection();
         }
 
         /// <summary>Updates the viewer's position.</summary>
         internal static void UpdateViewPoint()
         {
-            ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.IYaw) * EarthHologram.HOLOGRAM_RADIUS;
-            EarthHologram.ComputeViewPointOffsetAngle();
+            ViewerPosition = CelestialMaths.ComputeECEFTilted(ViewerLatitude, ViewerLongitude, EarthHologram.Yaw) * EarthHologram.HOLOGRAM_RADIUS;
             ComputeArrowDirection();
         }
 
         /// <summary>Draws the terminal screen along with the 3D pointing arrow.</summary>
         internal static void Draw()
         {
-            TerminalPosition = Raymath.Vector3Lerp(TerminalPosition, PositionToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
-            IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
-            IPitch = Raymath.Lerp(IPitch, IPitchToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            TerminalPosition = Raymath.Vector3Lerp(TerminalPosition, Interpolators.TerminalCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            Yaw = Raymath.Lerp(Yaw, Interpolators.TerminalYaw, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            Pitch = Raymath.Lerp(Pitch, Interpolators.TerminalPitch, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
             
             DrawMesh(Resources.Meshes["screen"], TerminalScreenMat, Transform); // Draw screen with shader
-
-            // Draw Pointing-Arrow
-            DrawSphere(ArrowSource, 0.03f, Color.White);
-            DrawLine3D(ArrowSource, ArrowTarget + ArrowSource, new Color(0, 177, 252));
 
             DrawModel(Resources.Arrow, Vector3.Zero, 1, Color.White);
         }
@@ -133,7 +133,7 @@ namespace Orion_Desktop
             if (Target == AstralTarget.ISS) 
             {
                 // This right here is one of the most mind-fucking thing i've ever done in programming - but hey, it works
-                Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(EarthHologram.GlobeNorth, ViewerPosition));
+                Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(EarthHologram.GLOBE_NORTH, ViewerPosition));
                 Vector3 north = Raymath.Vector3CrossProduct(ViewerPosition, west);
 
                 // Calculate raw direction
@@ -165,7 +165,7 @@ namespace Orion_Desktop
             // Adapt arrow
             Matrix4x4 rotation = Raymath.MatrixRotateY(RobotPitch * DEG2RAD);
             rotation *= Raymath.MatrixRotateX(-RobotYaw * DEG2RAD);
-            Matrix4x4 position = Raymath.MatrixTranslate(ArrowSource.X, ArrowSource.Y, ArrowSource.Z);
+            Matrix4x4 position = Raymath.MatrixTranslate(ARROW_SOURCE.X, ARROW_SOURCE.Y, ARROW_SOURCE.Z);
             Matrix4x4 scale = Raymath.MatrixScale(3f, 3f, 3f);
             Resources.SetArrowTransform(position * scale * rotation);
         }
@@ -225,8 +225,8 @@ namespace Orion_Desktop
         private static void UpdateTransform()
         {
             Transform = Raymath.MatrixTranslate(TerminalPosition.X, TerminalPosition.Y, TerminalPosition.Z);
-            Transform *= Raymath.MatrixRotateY(IPitch / RAD2DEG);
-            Transform *= Raymath.MatrixRotateZ(-IYaw / RAD2DEG);
+            Transform *= Raymath.MatrixRotateY(Pitch / RAD2DEG);
+            Transform *= Raymath.MatrixRotateZ(-Yaw / RAD2DEG);
         }
     }
 }

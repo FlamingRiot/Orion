@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
@@ -13,17 +12,16 @@ namespace Orion_Desktop
     internal static class EarthHologram
     {
         // Constants
-        internal const float HOLOGRAM_RADIUS = 0.8f;
-        internal const float EARTH_TILT = 23.44f;
-        internal const float EARTH_RADIUS = 6378; // kilometers
+        internal const float HOLOGRAM_RADIUS = 0.8f; // Defined globe radius
+        internal const float EARTH_TILT = 23.44f; // Incline angle of the earth
+        internal const float EARTH_RADIUS = 6378; // In kilometers
+        internal static readonly Vector3 GLOBE_ORIGIN = new Vector3(-3.5f, 2, 0.2f); // Position in world-space
+        internal static readonly Vector3 GLOBE_NORTH = Raymath.Vector3RotateByAxisAngle(Vector3.UnitY, Vector3.UnitZ, EARTH_TILT * DEG2RAD); // Used for rotation and calculations
 
         // Earth globe attributes
         internal static Matrix4x4 GlobeTransform; // Earth globe rotation matrix
-        internal static Vector3 GlobeOrigin; // unmodified center, ever
-        internal static Vector3 GlobeCenterToBe; // Used for interface interpolation
         internal static Vector3 GlobeCenter; // current center
-        internal static Vector3 GlobeNorth; // Used for rotation and calculations
-        internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
+        internal static float Yaw, Pitch; // Rotation angles of the globe
 
         // Mini-Satellite attributes 
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
@@ -32,44 +30,41 @@ namespace Orion_Desktop
         // Planet attributes
         internal static PlanetCacheEntry CurrentPlanet = new PlanetCacheEntry();
 
-        // Variables used for precise calculations on the 3D pointing-arrow.
+        // Relative altitude used for precise calculations on the 3D pointing-arrow.
         internal static float RelativeSatelliteAltitude;
-        internal static float VerticalAngle;
 
         // Defines whether the user is in zoom-mode or not
-        internal static bool IsFocused;
-
-        // Backup position and target used for interface zoom & interpolations
-        internal static Vector3 BackupCameraPosition, BackupCameraTarget;
+        internal static bool IsFocused = false;
 
         // Used for internal calculations on the interface
         private static double _holdTime;
         private static Vector2 _mouseOrigin;
 
-        /// <summary>Inits the earth hologram.</summary>
+        /// <summary>Initializes the earth hologram.</summary>
         public static void Init()
         {
-            GlobeCenter = new Vector3(-3.5f, 2, 0.2f);
-            GlobeOrigin = GlobeCenter;
-            GlobeCenterToBe = GlobeCenter;
-            IPitch = 0;
-            // Create standby position
+            // Set world attributes
+            GlobeCenter = GLOBE_ORIGIN;
+            Pitch = 0;
+
+            // Set interpolators
+            Interpolators.EarthCenter = GlobeCenter;
+            
+            // Create standby position for the station (until some data is retrieved from the API)
             SatellitePoints.Add((GlobeCenter + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
-            // Start by sending information request to the API
-            OnlineRequests.StartConnexion();
-            UpdateSatellite();
+            
             // Create globe correction matrix
             UpdateTransform();
-            IsFocused = false;
-            // Calculate globe north (never changes)
-            GlobeNorth = Raymath.Vector3RotateByAxisAngle(Vector3.UnitY, Vector3.UnitZ, EARTH_TILT * DEG2RAD);
+            
+            // Start by sending information request to the API
+            OnlineRequests.StartConnexion();
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
         internal static async void UpdateSatellite()
         {
             await OnlineRequests.UpdateCurrentSatellite();
-            Satellite.RelativePosition = CelestialMaths.ComputeECEFTilted(Satellite.Latitude, Satellite.Longitude, IYaw);
+            Satellite.RelativePosition = CelestialMaths.ComputeECEFTilted(Satellite.Latitude, Satellite.Longitude, Yaw);
         }
 
         /// <summary>Updates a planet object by retrieving data from API.</summary>
@@ -89,10 +84,10 @@ namespace Orion_Desktop
         internal static void Draw()
         {
             // Update globe lerp
-            GlobeCenter = Raymath.Vector3Lerp(GlobeCenter, GlobeCenterToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            GlobeCenter = Raymath.Vector3Lerp(GlobeCenter, Interpolators.EarthCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
             Shaders.Lights[0].Position = GlobeCenter;
             Shaders.UpdateLight(Shaders.PBRLightingShader, Shaders.Lights[0]);
-            IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            Yaw = Raymath.Lerp(Yaw, Interpolators.EarthYaw, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
 
             // Update satellite
@@ -108,10 +103,10 @@ namespace Orion_Desktop
             DrawSphere(OrionSim.ViewerPosition + GlobeCenter, 0.01f, Color.Red);
 #if DEBUG
             // North-West offseting calculations visualization
-            Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(GlobeNorth, OrionSim.ViewerPosition));
+            Vector3 west = Vector3.Normalize(Raymath.Vector3CrossProduct(GLOBE_NORTH, OrionSim.ViewerPosition));
             Vector3 localNorth = Raymath.Vector3CrossProduct(OrionSim.ViewerPosition, west);
 
-            DrawLine3D(GlobeCenter, GlobeCenter + GlobeNorth * 3, Color.Red);
+            DrawLine3D(GlobeCenter, GlobeCenter + GLOBE_NORTH * 3, Color.Red);
             DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter +  localNorth, Color.Red);  
             DrawLine3D(OrionSim.ViewerPosition + GlobeCenter, OrionSim.ViewerPosition + GlobeCenter - west, Color.Red);
 #endif
@@ -138,15 +133,15 @@ namespace Orion_Desktop
             }
             else 
             { 
-                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, BackupCameraPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
-                Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, BackupCameraTarget, GetFrameTime() * Conceptor3D.LERP_SPEED);
+                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, Interpolators.CameraPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
+                Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, Interpolators.CameraTarget, GetFrameTime() * Conceptor3D.LERP_SPEED);
             }
 
             if (IsMouseButtonDown(MouseButton.Left) && !IsFocused) // Drag
             {
                 Vector2 mouse = GetMouseDelta() * 0.2f;
-                IYaw += mouse.X;
-                IYawToBe = IYaw;
+                Yaw += mouse.X;
+                Interpolators.EarthYaw = Yaw;
                 // Start hold time
                 if (_holdTime == 0)
                 {
@@ -162,17 +157,14 @@ namespace Orion_Desktop
                     RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), GlobeCenter, HOLOGRAM_RADIUS);
                     if (collision.Hit)
                     {
-                        (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, IYaw);
+                        (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, Yaw);
                         OrionSim.UpdateViewPoint();
                         // Update UI components
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();
                         // Update state
                         IsFocused = true;
-                        BackupCameraPosition = Conceptor3D.View.PreviousPosition;
-
-                        // Compute vertical-axis angle
-                        ComputeViewPointOffsetAngle();
+                        Interpolators.CameraPosition = Conceptor3D.View.PreviousPosition;
 
                         TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, 3);
                     }
@@ -181,21 +173,15 @@ namespace Orion_Desktop
             }
         }
 
-        /// <summary>Computes the vertical-axis angle according to the observer's point.</summary>
-        internal static void ComputeViewPointOffsetAngle()
-        {
-            VerticalAngle = MathF.Acos(Raymath.Vector3DotProduct(Vector3.UnitY, OrionSim.ViewerPosition) / OrionSim.ViewerPosition.Length()) * RAD2DEG;
-        }
-
         /// <summary>Updates the earth hologram matrix</summary>
         private static void UpdateTransform()
         {
             Matrix4x4 rm;
-            if (!Conceptor2D.InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, IYaw) / RAD2DEG);
+            if (!Conceptor2D.InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, Yaw) / RAD2DEG);
             else
             {
                 //rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
-                rm = Raymath.MatrixRotate(GlobeNorth, IYaw / RAD2DEG);
+                rm = Raymath.MatrixRotate(GLOBE_NORTH, Yaw / RAD2DEG);
 
                 // Compute X/Z axis weights
                 Vector3 cam = new Vector3(Conceptor3D.View.Camera.Position.X, 0, Conceptor3D.View.Camera.Position.Z) -
@@ -204,7 +190,7 @@ namespace Orion_Desktop
                 float xWeight = Raymath.Vector3DotProduct(Vector3.UnitZ, Vector3.Normalize(cam));
                 float zWeight = Raymath.Vector3DotProduct(Vector3.UnitX, Vector3.Normalize(cam));
                 // Create weighted matrix
-                rm *= Raymath.MatrixRotateXYZ(new Vector3(IPitch * xWeight + 90, EARTH_TILT, IPitch * zWeight) * DEG2RAD);
+                rm *= Raymath.MatrixRotateXYZ(new Vector3(Pitch * xWeight + 90, EARTH_TILT, Pitch * zWeight) * DEG2RAD);
             }
             Matrix4x4 sm = Raymath.MatrixScale(1, 1, 1);
             Matrix4x4 pm = Raymath.MatrixTranslate(GlobeCenter.X, GlobeCenter.Y, GlobeCenter.Z);
@@ -219,7 +205,6 @@ namespace Orion_Desktop
     /*-----------------------------------------------------------------
      Map-Tiling classes, functions and variables. 
      ------------------------------------------------------------------*/
-
     /// <summary>Represents the 2D map-tiling managing class.</summary>
     internal static class TilingManager
     {
@@ -281,6 +266,7 @@ namespace Orion_Desktop
             Row = row;
             Column = column;
             _target = new Rectangle(TILE_SIZE * column, TILE_SIZE * row, TILE_SIZE, TILE_SIZE);
+            Texture = new Texture2D();
         }
 
         /// <summary>Draws a single map-tile according to its relative position.</summary>

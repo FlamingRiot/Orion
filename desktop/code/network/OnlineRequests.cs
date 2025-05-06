@@ -38,6 +38,7 @@ namespace Orion_Desktop
                 timer = new Stopwatch();
                 timer.Start();
             }
+
             // Create caching directory if not already exists
             if (!Directory.Exists(CACHE_DIRECTORY)) Directory.CreateDirectory(CACHE_DIRECTORY);
             
@@ -61,6 +62,9 @@ namespace Orion_Desktop
                     PlanetCacheEntries.Add(new PlanetCacheEntry(JObject.Parse(jsons[i]), false));
                 }
             }
+
+            // Start by sending first request to the API
+            EarthHologram.UpdateSatellite();
 
             // Send debug
             Console.ForegroundColor = ConsoleColor.Green;
@@ -90,7 +94,7 @@ namespace Orion_Desktop
                     JObject json = JObject.Parse(body);
 
                     EarthHologram.Satellite.UpdateSatellite(json);
-                    EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEFTilted(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude, EarthHologram.IYaw) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
+                    EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEFTilted(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude, EarthHologram.Yaw) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
                     EarthHologram.ComputeRelativeAltitude(); // Compute what the distance from the earth-globe should be (used for accuracy in calculations)
 
                     OrionSim.ComputeArrowDirection(); // Computes the direction used for the 3D pointing-arrow

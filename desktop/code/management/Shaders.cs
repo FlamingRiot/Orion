@@ -302,7 +302,7 @@ namespace Orion_Desktop
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)
             {
                 float l1 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - Conceptor3D.View.Camera.Position).Length();
-                float l2 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - EarthHologram.BackupCameraPosition).Length();
+                float l2 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - Interpolators.CameraPosition).Length();
                 float interp = 1.0f - l1 / l2;
                 SetShaderValue(FixShader, CloseUpIntensityLoc1, interp, ShaderUniformDataType.Float);
                 SetShaderValue(PostProShader, CloseUpIntensityLoc2, interp, ShaderUniformDataType.Float);

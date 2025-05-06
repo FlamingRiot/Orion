@@ -42,7 +42,7 @@ namespace Orion_Desktop
             OrionSim.Init(0, 0); // Start Orion robot simulation
             Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
 
-            objects = RLoading.LoadScene();
+            objects = UnirayLoader.LoadScene();
 
             // Load skybox and apply hdr texture
             SkyboxMat = Shaders.LoadSkybox("assets/textures/space.png");
@@ -173,7 +173,7 @@ namespace Orion_Desktop
         /// <summary>Updates the circular constraint for the current 3D view.</summary>
         internal void UpdateCircularConstraint()
         {
-            float distance = (Camera.Position - EarthHologram.GlobeOrigin).Length();
+            float distance = (Camera.Position - EarthHologram.GLOBE_ORIGIN).Length();
             if (distance >= Conceptor3D.HUB_RADIUS)
             {
                 Camera.Position = PreviousPosition;

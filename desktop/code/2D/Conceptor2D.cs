@@ -3,7 +3,7 @@ using Raylib_cs;
 using RayGUI_cs;
 using static RayGUI_cs.RayGUI;
 using System.Numerics;
-using System.Security.AccessControl;
+using System.Transactions;
 
 namespace Orion_Desktop
 {
@@ -114,7 +114,7 @@ namespace Orion_Desktop
             // Planet preview
             if (OrionSim.Target != AstralTarget.ISS)
             {
-                Vector3 target = OrionSim.ArrowSource + EarthHologram.CurrentPlanet.NormalizedPosition * 300;
+                Vector3 target = OrionSim.ARROW_SOURCE + EarthHologram.CurrentPlanet.NormalizedPosition * 300;
                 float dot = Raymath.Vector3DotProduct(target, GetCameraForward(ref Conceptor3D.View.Camera));
 
                 if (dot > 0) // Check if behind camera or not
@@ -178,9 +178,12 @@ namespace Orion_Desktop
                             // Define 3D post based current camera pos
                             Ray dir = GetScreenToWorldRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
                             Vector3 pos = dir.Position + dir.Direction * 2.5f;
-                            EarthHologram.GlobeCenterToBe = pos;
-                            EarthHologram.BackupCameraPosition = Conceptor3D.View.Camera.Position;
-                            EarthHologram.BackupCameraTarget = Conceptor3D.View.Camera.Target;
+                            
+                            // Set interpolators
+                            Interpolators.EarthCenter = pos;
+                            Interpolators.CameraPosition = Conceptor3D.View.Camera.Position;
+                            Interpolators.CameraTarget = Conceptor3D.View.Camera.Target;
+                            
                             EnableCursor();
                             break;
                         case Interface.Terminal:
@@ -190,11 +193,12 @@ namespace Orion_Desktop
                             InterfaceActive = true;
                             Ray center = GetScreenToWorldRay(Size / 2, Conceptor3D.View.Camera);
                             pos = center.Position + center.Direction;
-                            OrionSim.PositionToBe = pos;
 
-                            // Define orientation angles
-                            OrionSim.IYawToBe = (Conceptor3D.View.Pitch * RAD2DEG) + 90;
-                            OrionSim.IPitchToBe = (Conceptor3D.View.Yaw * RAD2DEG) + 90;
+                            // Set interpolators
+                            Interpolators.TerminalCenter = pos;
+                            Interpolators.TerminalYaw = Conceptor3D.View.Pitch * RAD2DEG + 90;
+                            Interpolators.TerminalPitch = Conceptor3D.View.Yaw * RAD2DEG + 90;
+                            
                             EnableCursor();
                             DisableCursor();
                             break;
@@ -213,14 +217,15 @@ namespace Orion_Desktop
                     {
                         if (!EarthHologram.IsFocused)
                         {
-                            if (Raymath.Vector3Length(Conceptor3D.View.Camera.Position - EarthHologram.BackupCameraPosition) < 0.1f)
+                            if (Raymath.Vector3Length(Conceptor3D.View.Camera.Position - Interpolators.CameraPosition) < 0.1f)
                             {
                                 InterfaceActive = false;
                                 if (OpenedInterface == Interface.Earth)
                                 {
-                                    EarthHologram.GlobeCenterToBe = EarthHologram.GlobeOrigin;
-                                    EarthHologram.IPitchToBe = 0;
-                                    EarthHologram.IYawToBe = 0;
+                                    // Reset interpolators
+                                    Interpolators.EarthCenter = EarthHologram.GLOBE_ORIGIN;
+                                    Interpolators.EarthPitch = 0;
+                                    Interpolators.EarthYaw = 0;
                                 }
                                 OpenedInterface = Interface.None;
                                 DisableCursor();
@@ -235,9 +240,12 @@ namespace Orion_Desktop
                             DeactivateGui(TerminalGui);
 
                             InterfaceActive = false;
-                            OrionSim.PositionToBe = OrionSim.OriginPosition;
-                            OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
-                            OrionSim.IPitchToBe = 0;
+
+                            // Set interpolators
+                            Interpolators.TerminalCenter = OrionSim.TERMINAL_ORIGIN;
+                            Interpolators.TerminalYaw = OrionSim.INCLINE_YAW;
+                            Interpolators.TerminalPitch = 0;
+                            
                             DisableCursor();
                             OpenedInterface = Interface.None;
                         }

@@ -31,7 +31,11 @@ namespace Orion_Desktop
         /// <summary>Sends movement information to the robot's motors.</summary>
         private static void SubmitWebSocketInstruction()
         {
-            WebsocketRequests.SendMotorInstruction(StepMotorID.M2, 360);
+            float pitch, roll;
+            (pitch, roll) = CelestialMaths.ConvertRobotAnglesToMotors(OrionSim.RobotPitch, OrionSim.RobotYaw);
+
+            WebsocketRequests.SendMotorInstruction(StepMotorID.M3, pitch); // Invert direction (gravity issue on motors wheels)
+            WebsocketRequests.SendMotorInstruction(StepMotorID.M2, roll);
         }
 
         /// <summary>Increments the current astral target index.</summary>

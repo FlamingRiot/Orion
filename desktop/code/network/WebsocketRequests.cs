@@ -103,10 +103,10 @@ namespace Orion_Desktop
         /// <param name="id">Motor ID (clamped if not valid.)</param>
         /// <param name="steps">Number of steps to move.</param>
         /// <returns>Await statement.</returns>
-        internal static async Task SendMotorInstruction(StepMotorID id, int angle)
+        internal static async Task SendMotorInstruction(StepMotorID id, float angle)
         {
             // Define steps
-            int steps = (int)(MOTOR_STEPS / 360f * angle)+1;
+            int steps = (int)(MOTOR_STEPS / 360f * angle);
             if (id == StepMotorID.M3) steps *= -1;
 
             for (int i = 0; i < 15; i++) // The loop guarantees the success of the POST request (for some reason it only works every random times)

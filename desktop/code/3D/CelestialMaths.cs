@@ -147,6 +147,26 @@ namespace Orion_Desktop
             return new Vector3(x, y, z);
         }
 
+        /// <summary>Converts angles to be usable by the motors.</summary>
+        /// <param name="pitch">Pitch angle.</param>
+        /// <param name="yaw">Yaw angle.</param>
+        /// <returns>Modified angles.</returns>
+        internal static (float, float) ConvertRobotAnglesToMotors(float pitch, float yaw)
+        {
+            // Convert to radians
+            float aziRad = pitch * Raylib.DEG2RAD;
+            float altRad = yaw * Raylib.DEG2RAD;
+
+            // Direction vector
+            Vector3 dir = new Vector3(
+                MathF.Cos(altRad) * MathF.Sin(aziRad),
+                MathF.Sin(altRad),
+                MathF.Cos(altRad) * MathF.Cos(aziRad)
+            );
+
+            return (-MathF.Asin(dir.Y) * Raylib.RAD2DEG, MathF.Atan2(dir.X, dir.Z) * Raylib.RAD2DEG);
+        }
+
         /// <summary>Clamps an angle (radians) to rotate around negative radian to 0.</summary>
         /// <param name="radians">Angle in radians.</param>
         /// <returns>Clamped angle</returns>

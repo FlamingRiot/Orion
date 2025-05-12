@@ -113,6 +113,8 @@ namespace Orion_Desktop
 #if DEBUG
                 DrawFPS(10, 10);
                 DrawText(WebsocketRequests.WEBSOCKET_READY.ToString(), 10, 40, 20, Color.Green);
+                DrawText(OrionSim.RobotYaw.ToString(), 10, 80, 20, Color.Green);
+                DrawText(OrionSim.RobotPitch.ToString(), 10, 120, 20, Color.Green);
 #endif
                 // Close drawing context
                 EndDrawing();

@@ -268,6 +268,7 @@ namespace Orion_Desktop
             rightButton.Event = SwitchTargetRight;
             TerminalGui.Add("rightButton", rightButton);
             Button submitButton = new Button(800, 730, 550, 50, "Submit");
+            submitButton.Event = SubmitWebSocketInstruction;
             TerminalGui.Add("submitButton", submitButton);
             Textbox nameTxb = new Textbox(855, 800, 440, 50, $"{OrionSim.Target}");
             nameTxb.OnEntry = OrionSim.VerifiyTargetEntry;

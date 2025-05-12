@@ -51,7 +51,7 @@ namespace Orion_Desktop
 
             // Load render texture
             LoadRender();
-
+            
             //SetTargetFPS(60);
             SetExitKey(KeyboardKey.Null);
             DisableCursor();
@@ -59,6 +59,7 @@ namespace Orion_Desktop
             {
                 // Update WebSocket 
                 WebsocketRequests.UpdateWebSocket();
+
 
                 // Ambient sound
                 AudioCenter.UpdateMusic("ambient");
@@ -111,6 +112,7 @@ namespace Orion_Desktop
                 Conceptor2D.Draw();
 #if DEBUG
                 DrawFPS(10, 10);
+                DrawText(WebsocketRequests.WEBSOCKET_READY.ToString(), 10, 40, 20, Color.Green);
 #endif
                 // Close drawing context
                 EndDrawing();

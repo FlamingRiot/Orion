@@ -40,6 +40,9 @@ namespace Orion_Desktop
 
             // Init connexion to the WebSocket
             WebsocketRequests.InitializeConnexion();
+#if DEBUG
+            WebsocketRequests.SHOW_RESPONSE_POOL = true;
+#endif
 
             // Open different services (Call-order matters here)
             AudioCenter.Init();
@@ -54,6 +57,9 @@ namespace Orion_Desktop
             DisableCursor();
             while (!WindowShouldClose())
             {
+                // Update WebSocket 
+                WebsocketRequests.UpdateWebSocket();
+
                 // Ambient sound
                 AudioCenter.UpdateMusic("ambient");
 

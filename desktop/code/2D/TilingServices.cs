@@ -1,7 +1,6 @@
 ﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Orion_Desktop

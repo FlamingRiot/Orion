@@ -1,4 +1,6 @@
-﻿using Raylib_cs;
+﻿#pragma warning disable CS4014
+
+using Raylib_cs;
 using static Raylib_cs.Raylib;
 
 namespace Orion_Desktop
@@ -36,6 +38,9 @@ namespace Orion_Desktop
             Width = GetScreenWidth();
             Height = GetScreenHeight();
 
+            // Init connexion to the WebSocket
+            WebsocketRequests.InitializeConnexion();
+
             // Open different services (Call-order matters here)
             AudioCenter.Init();
             Conceptor3D.Init();
@@ -44,9 +49,6 @@ namespace Orion_Desktop
             // Load render texture
             LoadRender();
 
-            //EarthHologram.UpdatePlanet();
-
-            // Program loop
             //SetTargetFPS(60);
             SetExitKey(KeyboardKey.Null);
             DisableCursor();

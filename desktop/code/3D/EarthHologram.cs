@@ -61,7 +61,7 @@ namespace Orion_Desktop
             // Start by sending information request to the API
             OnlineRequests.StartConnexion();
 
-            OnlineRequests.DownloadTileset(4);
+            //OnlineRequests.DownloadTileset(4);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>

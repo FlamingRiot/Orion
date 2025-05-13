@@ -1,8 +1,5 @@
-﻿#pragma warning disable CS4014
-
-using Raylib_cs;
+﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
-using System.Numerics;
 
 namespace Orion_Desktop
 {
@@ -11,14 +8,12 @@ namespace Orion_Desktop
     {
         // Constants
         public const string APP_NAME = "Orion";
-        public const string APP_VERSION = "beta-0.2.0";
+        public const string APP_VERSION = "beta-0.0.0";
 
-        // Different render 
         internal static RenderTexture2D Render;
         internal static RenderTexture2D HologramRender;
         internal static Rectangle SourceRender;
         internal static Rectangle DestinationRender;
-        internal static RenderTexture2D FinalRender;
 
         public static int Width;
         public static int Height;
@@ -36,17 +31,10 @@ namespace Orion_Desktop
 
             SetWindowIcon(LoadImage("assets/logo.png"));
 
-            ToggleFullscreen();
+            MaximizeWindow();
 
             Width = GetScreenWidth();
             Height = GetScreenHeight();
-
-            // Init connexion to the WebSocket
-            WebsocketRequests.InitializeConnexion();
-
-#if DEBUG
-            WebsocketRequests.SHOW_RESPONSE_POOL = true;
-#endif
 
             // Open different services (Call-order matters here)
             AudioCenter.Init();
@@ -56,25 +44,23 @@ namespace Orion_Desktop
             // Load render texture
             LoadRender();
 
-#if !DEBUG
-            SetTargetFPS(60);
-#endif
+            //EarthHologram.UpdatePlanet();
+
+            // Program loop
+            //SetTargetFPS(60);
             SetExitKey(KeyboardKey.Null);
             DisableCursor();
             while (!WindowShouldClose())
             {
-                // Update WebSocket 
-                WebsocketRequests.UpdateWebSocket();
-
                 // Ambient sound
                 AudioCenter.UpdateMusic("ambient");
 
                 // Update functions
                 Conceptor3D.Update();
-
+                
                 // Start rendering to texture
                 BeginTextureMode(Render);
-
+                
                 // Define default background color
                 ClearBackground(Color.White);
 
@@ -89,7 +75,7 @@ namespace Orion_Desktop
 
                 ClearBackground(Color.Black);
 
-                // Re-open 3d mode
+                // re open 3d mode
                 BeginMode3D(Conceptor3D.View.Camera);
 
                 // Earth hologram drawing
@@ -108,24 +94,10 @@ namespace Orion_Desktop
                 OrionSim.DrawTerminalScreen();
 
                 // Begin screen rendering
-                BeginTextureMode(FinalRender);
+                BeginDrawing();
 
                 // Draws the holographic elements of the scene and overlaps them with the current render
                 Shaders.OverlapHologramRender();
-
-                // Close final render pass
-                EndTextureMode();
-
-                // Begin Rendering to the screen
-                BeginDrawing();
-
-                // Apply final post-pro
-                BeginShaderMode(Shaders.ChromaticAberrationShader);
-
-                // Draw final render
-                DrawTexturePro(FinalRender.Texture, SourceRender, DestinationRender, Vector2.Zero, 0, Color.White);
-
-                EndShaderMode();
 
                 // Draw 2D information
                 Conceptor2D.Draw();
@@ -145,10 +117,6 @@ namespace Orion_Desktop
         internal static void LoadRender()
         {
             Render = LoadRenderTexture(Width, Height);
-            // Configure render
-            FinalRender = LoadRenderTexture(Width, Height);
-            SetTextureWrap(FinalRender.Texture, TextureWrap.Clamp);
-
             HologramRender = LoadRenderTexture(Width, Height);
             SourceRender = new Rectangle(0, 0, Width, -Height);
             DestinationRender = new Rectangle(0, 0, Width, Height);

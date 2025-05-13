@@ -33,7 +33,7 @@ namespace Orion_Desktop
             float y = MathF.Cos(latRad) * MathF.Sin(longRad);
             float z = MathF.Sin(latRad);
 
-            Matrix4x4 rotation = Raymath.MatrixRotate(Raymath.Vector3RotateByAxisAngle(EarthHologram.GLOBE_NORTH, Vector3.UnitX, 90 * Raylib.DEG2RAD), -globeYaw / Raylib.RAD2DEG);
+            Matrix4x4 rotation = Raymath.MatrixRotateZ(-globeYaw / Raylib.RAD2DEG);
             rotation *= Raymath.MatrixRotateY(-EarthHologram.EARTH_TILT / Raylib.RAD2DEG);
 
             float newX = rotation.M11 * x + rotation.M12 * y + rotation.M13 * z;
@@ -100,7 +100,7 @@ namespace Orion_Desktop
         {
             // Compute inverse-rotation matrices
             Matrix4x4 inverseRotation = Raymath.MatrixRotateY(EarthHologram.EARTH_TILT / Raylib.RAD2DEG);
-            inverseRotation *= Raymath.MatrixRotate(Raymath.Vector3RotateByAxisAngle(EarthHologram.GLOBE_NORTH, Vector3.UnitX, 90 * Raylib.DEG2RAD), globeYaw / Raylib.RAD2DEG);
+            inverseRotation *= Raymath.MatrixRotateZ(globeYaw / Raylib.RAD2DEG);
             
             // Apply inverse-rotation
             float x = inverseRotation.M11 * position.X + inverseRotation.M12 * position.Z + inverseRotation.M13 * position.Y;
@@ -129,37 +129,6 @@ namespace Orion_Desktop
             }
 
             return (latitude, longitude);
-        }
-
-        /// <summary>Computes a 3D vector for an horizontal coordinates, given as an azimuth and an altitude.</summary>
-        /// <param name="azimuth">Azimuth coordinate (degrees).</param>
-        /// <param name="altitude">Altitude coordinate (degrees).</param>
-        /// <returns></returns>
-        internal static Vector3 ComputeHorizontalCoordinates(float azimuth, float altitude)
-        {
-            float aziRad = (90 - azimuth) * Raylib.DEG2RAD; // 90° correction to correspond the chosen system for the app
-            float altRad = altitude * Raylib.DEG2RAD;
-
-            float y = MathF.Sin(altRad);
-            float x = MathF.Cos(altRad) * MathF.Sin(aziRad);
-            float z = MathF.Cos(aziRad) * MathF.Cos(altRad);
-
-            return new Vector3(x, y, z);
-        }
-
-        /// <summary>Converts angles to be usable by the motors.</summary>
-        /// <param name="pitch">Pitch angle.</param>
-        /// <param name="yaw">Yaw angle.</param>
-        /// <returns>Modified angles.</returns>
-        internal static (float, float) ConvertRobotAnglesToMotors(float pitch, float yaw)
-        {
-            //// Convert to radians
-            float aziRad = pitch * Raylib.DEG2RAD;
-
-            float motorX = yaw * MathF.Cos(aziRad);
-            float motorZ = yaw * MathF.Sin(aziRad);
-            
-            return (motorX, motorZ);
         }
 
         /// <summary>Clamps an angle (radians) to rotate around negative radian to 0.</summary>

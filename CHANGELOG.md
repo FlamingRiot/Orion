@@ -1,14 +1,5 @@
 ## Orion Changelog
 
-# [beta-0.1.0]
-- feat: virtual 2D compass in top-screen intended for orientation
-- feat: planets information recovery from AstronomyAPI + displaying in orion terminal
-- feat: planets position calculation based on orientation + 3D displaying
-- feat: implemented targets for the Sun and the Moon
-##
-- fix: inserting viewpoint modifications through terminal didn't update the arrow
-- fix: pointer orientation for ISS didn't work properly -> introduced North-West offseting
-
 # [beta-0.0.0]
 
 - feat: terminal-screen intended for robot-control and viewpoint modification 
@@ -43,7 +34,6 @@
 
 ---
 
-[beta-0.1.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/beta-0.1.0
 [beta-0.0.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/beta-0.0.0
 [alpha-0.2.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/alpha-0.2.0
 [alpha-0.1.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/alpha-0.1.0

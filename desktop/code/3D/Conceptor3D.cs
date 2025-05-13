@@ -36,12 +36,13 @@ namespace Orion_Desktop
 
             // Init center tables
             EarthHologram.Init(); // Connect to earth hologram
+            View.Camera.Target = EarthHologram.GlobeCenter;
 
             Shaders.Init(); // Load program shaders
             OrionSim.Init(0, 0); // Start Orion robot simulation
             Resources.Init(); // Load GPU resources (e.g. meshes, textures, shaders, etc.)
 
-            objects = UnirayLoader.LoadScene();
+            objects = RLoading.LoadScene();
 
             // Load skybox and apply hdr texture
             SkyboxMat = Shaders.LoadSkybox("assets/textures/space.png");
@@ -52,13 +53,32 @@ namespace Orion_Desktop
         {
             BeginMode3D(View.Camera);
 
+#if DEBUG
+            //DrawLine3D(-Vector3.UnitX * 100, Vector3.UnitX * 100, Color.Red); // X                
+            //DrawLine3D(-Vector3.UnitY * 100, Vector3.UnitY * 100, Color.Green); // Y
+            //DrawLine3D(-Vector3.UnitZ * 100, Vector3.UnitZ * 100, Color.Blue); // Z                
+#endif
             // Draw skybox
             Shaders.DrawSkybox(SkyboxMat);
 
             // Draw scene
             objects.ForEach(x => x.Draw());
 
+#if DEBUG
+            //// Collision detection debug draw calls
+            //DrawSphere(View.PreviousPosition - Vector3.UnitY * 0.5f, 0.2f, Color.Red);
+            //DrawCircle3D(EarthHologram.CENTER, HUB_RADIUS, Vector3.UnitX, 90, Color.Red);
+            //DrawLine3D(EarthHologram.CENTER, View.PreviousPosition - Vector3.UnitY * 0.5f, Color.Red);
+            //DrawLine3D(View.Tangent * -10, View.Tangent * 10, Color.Red);
+            //DrawLine3D(View.PreviousPosition - Vector3.UnitY * 2f, new Vector3(View.Camera.Target.X, 2, View.Camera.Target.Z), Color.Red);
+#endif
             EndMode3D();
+
+#if DEBUG
+            //// Debug text
+            //DrawText(EarthHologram.IYaw.ToString(), 20, 40, 20, Color.Red);
+            //DrawText((View.Yaw * RAD2DEG).ToString(), 20, 80, 20, Color.Red);
+#endif
         }
 
         /// <summary>Updates the 3D conceptor.</summary>
@@ -172,7 +192,7 @@ namespace Orion_Desktop
         /// <summary>Updates the circular constraint for the current 3D view.</summary>
         internal void UpdateCircularConstraint()
         {
-            float distance = (Camera.Position - EarthHologram.GLOBE_ORIGIN).Length();
+            float distance = (Camera.Position - EarthHologram.GlobeOrigin).Length();
             if (distance >= Conceptor3D.HUB_RADIUS)
             {
                 Camera.Position = PreviousPosition;

@@ -37,7 +37,7 @@ void main()
     hologramColor += scanline;
 
      //Add slight distortion for hologram effect
-    vec2 distortion = vec2(sin(fragTexCoord.y + time) * 0.0005, 0.0); \
+    vec2 distortion = vec2(sin(fragTexCoord.y + time) * 0.001, 0.0); \
     hologramColor *= texture(texture0, uv + distortion).rgb; \
     
     pixelColor = vec4(hologramColor, texelColor.a);

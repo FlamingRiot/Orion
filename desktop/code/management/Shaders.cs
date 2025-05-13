@@ -179,6 +179,7 @@ namespace Orion_Desktop
         private static int EarthPreviewLoc;
         private static int TimeViewpointLoc;
         private static int CloseUpIntensityLoc3;
+        private static int TimeLocChromatic;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -217,6 +218,7 @@ namespace Orion_Desktop
             // Chromatic aberration shader
             ChromaticAberrationShader = LoadShader(null, "assets/shaders/chromatic.fs");
             CompassRenderLoc = GetShaderLocation(ChromaticAberrationShader, "cRender");
+            TimeLocChromatic = GetShaderLocation(ChromaticAberrationShader, "time");
             Vector2 size = new Vector2(GetScreenWidth(), GetScreenHeight());
             SetShaderValue(ChromaticAberrationShader, GetShaderLocation(ChromaticAberrationShader, "resolution"), size, ShaderUniformDataType.Vec2);
 
@@ -310,9 +312,10 @@ namespace Orion_Desktop
         {
             // Update hologram-shaders time uniform
             double time = GetTime();
-            SetShaderValue(FixShader, TimeLocGlobe, time, ShaderUniformDataType.Float);
+            SetShaderValue(FixShader, TimeLocGlobe, (float)time, ShaderUniformDataType.Float);
+            SetShaderValue(ChromaticAberrationShader, TimeLocChromatic, (float)GetFrameTime(), ShaderUniformDataType.Float);
 
-            SetShaderValue(ViewpointShader, TimeViewpointLoc, (float)time, ShaderUniformDataType.Float);
+            SetShaderValue(ViewpointShader, TimeViewpointLoc, (float)(time % 5), ShaderUniformDataType.Float);
 
             // Define interpolation value in normalized scope
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)

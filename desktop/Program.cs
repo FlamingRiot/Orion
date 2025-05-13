@@ -36,8 +36,6 @@ namespace Orion_Desktop
 
             SetWindowIcon(LoadImage("assets/logo.png"));
 
-            //MaximizeWindow();
-
             ToggleFullscreen();
 
             Width = GetScreenWidth();
@@ -57,15 +55,16 @@ namespace Orion_Desktop
 
             // Load render texture
             LoadRender();
-            
-            //SetTargetFPS(60);
+
+#if !DEBUG
+            SetTargetFPS(60);
+#endif
             SetExitKey(KeyboardKey.Null);
             DisableCursor();
             while (!WindowShouldClose())
             {
                 // Update WebSocket 
                 WebsocketRequests.UpdateWebSocket();
-
 
                 // Ambient sound
                 AudioCenter.UpdateMusic("ambient");
@@ -130,9 +129,7 @@ namespace Orion_Desktop
 
                 // Draw 2D information
                 Conceptor2D.Draw();
-#if DEBUG
-                //DrawFPS(10, 10);
-#endif
+
                 // Close drawing context
                 EndDrawing();
             }
@@ -148,7 +145,10 @@ namespace Orion_Desktop
         internal static void LoadRender()
         {
             Render = LoadRenderTexture(Width, Height);
+            // Configure render
             FinalRender = LoadRenderTexture(Width, Height);
+            SetTextureWrap(FinalRender.Texture, TextureWrap.Clamp);
+
             HologramRender = LoadRenderTexture(Width, Height);
             SourceRender = new Rectangle(0, 0, Width, -Height);
             DestinationRender = new Rectangle(0, 0, Width, Height);

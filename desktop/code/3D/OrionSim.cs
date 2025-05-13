@@ -77,8 +77,8 @@ namespace Orion_Desktop
             Resources.TargetPreview = LoadTexture($"assets/textures/previews/{targetName}.png");
 
             // Define sim-to-screen ratio
-            float x = GetScreenWidth() / 17;
-            float y = GetScreenHeight() / 17;
+            float x = GetScreenWidth() / 25;
+            float y = GetScreenHeight() / 28;
             ScreenRelatedRender = new Rectangle(x, y, GetScreenWidth() - x * 2, GetScreenHeight() - y * 2);
 
             // Compute arrow direction for stand-by position

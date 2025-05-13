@@ -56,7 +56,7 @@
 
 ---
 
-[beta-0.2.0] https://git.s2.rpn.ch/ComtesseE1/orion/-/releases/beta-0.2.0
+[beta-0.2.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/releases/beta-0.2.0
 [beta-0.1.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/beta-0.1.0
 [beta-0.0.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/releases/beta-0.0.0
 [alpha-0.2.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/alpha-0.2.0

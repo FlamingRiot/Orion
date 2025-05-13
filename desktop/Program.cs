@@ -38,6 +38,8 @@ namespace Orion_Desktop
 
             ToggleFullscreen();
 
+            // MaximizeWindow();
+
             Width = GetScreenWidth();
             Height = GetScreenHeight();
 

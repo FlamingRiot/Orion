@@ -18,7 +18,8 @@ void main()
     // Stronger aberration near the deges by raising to power 3
     vec2 aberrated = aberrationAmount * pow(distFromCenter, vec2(3.0, 3.0));
 
-    vec2 uv = clamp(fragTexCoord, vec2(0.0, 0.2), vec2(1.0, 0.8));
+    //vec2 uv = clamp(fragTexCoord, vec2(0.0, 0.2), vec2(1.0, 0.8));
+    vec2 uv = fragTexCoord;
 
     pixelColor = vec4(texture(texture0, uv - aberrated).r, texture(texture0, uv).g, texture(texture0, uv + aberrated).b, 1.0);
 

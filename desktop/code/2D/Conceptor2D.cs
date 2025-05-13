@@ -43,6 +43,7 @@ namespace Orion_Desktop
 
         // Gui menu
         internal static GuiContainer TerminalGui = new GuiContainer();
+        private static Label _lblConnexion = new Label(0, 0, "");
 
         // Compass Render-textures and rectangles
         internal static RenderTexture2D CompassRenderTexture;
@@ -295,6 +296,9 @@ namespace Orion_Desktop
             Label lblCurrentLong = new Label(700, 510, $"Longitude (East)");
             TerminalGui.Add("lblCurrentLong", lblCurrentLong);
 
+            _lblConnexion = new Label(700, 590, "");
+            TerminalGui.Add("lblConnexion", _lblConnexion);
+
             Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, $"{OrionSim.ViewerLatitude}");
             txbCurrentLat.OnEntry = UpdateLatitude;
             TerminalGui.Add("txbCurrentLat", txbCurrentLat);
@@ -319,7 +323,11 @@ namespace Orion_Desktop
                 ((Label)TerminalGui["lblLat"]).Text = $"Altitude : {EarthHologram.CurrentPlanet.Altitude}";
                 ((Label)TerminalGui["lblLong"]).Text = $"Azimuth : {EarthHologram.CurrentPlanet.Azimuth}";
                 ((Label)TerminalGui["lblDistance"]).Text = $"Distance from Earth : {EarthHologram.CurrentPlanet.Distance} AU";
+                ((Label)TerminalGui["lblConnexion"]).Text = "Connecting.";
             }
+
+            if (WebsocketRequests.WEBSOCKET_READY) ((Label)TerminalGui["lblConnexion"]).Text = "Connected !";
+            else if (WebsocketRequests.CLIENT_ID == null) ((Label)TerminalGui["lblConnexion"]).Text = WebsocketRequests.MAX_CLIENTS_REACHED_MESSAGE;
         }
     }
 }

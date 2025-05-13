@@ -22,15 +22,16 @@ namespace Orion_Desktop
 
         internal const string WEBSOCKET_ADDRESS = "ws://130.130.130.1:81";
         internal const string WATCHDOG_MESSAGE = "ping";
+        internal const string MAX_CLIENTS_REACHED_MESSAGE = "Maximum number of clients reached !";
         internal const string WEBSOCKET_CONFIG_SUCCESSFULL_MESSAGE = "{\"Command\":\"event\",\"Data\":{\"event\":\"ContentActivated\",\"eventArgs\":{\"contentId\":\"PageContent\",\"visuId\":\"firstvisu\"},\"source\":{\"type\":\"session.Event\"}},\"Resource\":\"publisher\"}";
         internal const int WATCHDOG_TIMER = 10000;
 
         // Public attributes
         internal static bool SHOW_RESPONSE_POOL = false; // Not showing by default
         internal static bool WEBSOCKET_READY = false;
+        public static string? CLIENT_ID = "";
 
         // Private attributes
-        private static string? CLIENT_ID = "";
         private static byte[] WATCHDOG_BYTES = { };
         private static readonly byte[] RESPONSE_BUFFER = new byte[1024];
 
@@ -58,7 +59,11 @@ namespace Orion_Desktop
             string clientInfo = await client.GetStringAsync(clientUrl);
             JObject json = JObject.Parse(clientInfo);
             CLIENT_ID = (string?)json["ClientId"];
-            if (CLIENT_ID == null) SendWSLog("Unable to register client, already exists", "ERROR");
+            if (CLIENT_ID == null)
+            {
+                SendWSLog("Unable to register client, already exists", "ERROR");
+                ((RayGUI_cs.Label)Conceptor2D.TerminalGui["lblConnexion"]).Text = MAX_CLIENTS_REACHED_MESSAGE;
+            }
             else
             {
                 SendWSLog($"Client {CLIENT_ID} registered successfully", "INFO");
@@ -107,7 +112,6 @@ namespace Orion_Desktop
         {
             // Define steps
             int steps = (int)(MOTOR_STEPS / 360f * angle);
-            if (id == StepMotorID.M3) steps *= -1;
 
             for (int i = 0; i < 15; i++) // The loop guarantees the success of the POST request (for some reason it only works every random times)
             {
@@ -150,13 +154,20 @@ namespace Orion_Desktop
             if (_timeLastCheck < time)
             {
                 _timeLastCheck = time;
-                // Send "ping" every 5 seconds
-                if (time % (WATCHDOG_TIMER / 5000) == 0)
+                // Send "ping" every second
+                if (time % 1 == 0)
                 {
+                    // Update connecting label
+                    if (!WEBSOCKET_READY && CLIENT_ID != null) ((RayGUI_cs.Label)Conceptor2D.TerminalGui["lblConnexion"]).Text = "Connecting" + new string('.', time % 4);
+                    // Send watchdog
                     await WebSocketClient.SendAsync(new ArraySegment<byte>(WATCHDOG_BYTES), WebSocketMessageType.Text, true, CancellationToken.None);
                     // Manage ready-state
                     string response = await ReceiveResponse();
-                    if (response == WEBSOCKET_CONFIG_SUCCESSFULL_MESSAGE) WEBSOCKET_READY = true;
+                    if (response == WEBSOCKET_CONFIG_SUCCESSFULL_MESSAGE)
+                    {
+                        WEBSOCKET_READY = true;
+                        ((RayGUI_cs.Label)Conceptor2D.TerminalGui["lblConnexion"]).Text = "Connected !";
+                    }
                     if (SHOW_RESPONSE_POOL)
                     {
                         SendWSLog(WATCHDOG_MESSAGE, ConsoleColor.Green, "POOL");

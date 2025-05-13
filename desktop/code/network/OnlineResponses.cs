@@ -18,7 +18,8 @@ namespace Orion_Desktop
     {
         daylight,
         nighttime,
-        eclipsed
+        eclipsed,
+        visible
     }
 
     /// <summary>Defines the different units of satellite velocity measurement.</summary>

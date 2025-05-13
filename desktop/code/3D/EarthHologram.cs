@@ -60,8 +60,6 @@ namespace Orion_Desktop
             
             // Start by sending information request to the API
             OnlineRequests.StartConnexion();
-
-            //OnlineRequests.DownloadTileset(4);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
@@ -123,9 +121,22 @@ namespace Orion_Desktop
 
             if (IsFocused) 
             {
-                Vector3 targetPosition = OrionSim.ViewerPosition * 1.15f + GlobeCenter;
+                Vector3 targetPosition = OrionSim.ViewerPosition * 1.25f + GlobeCenter;
                 Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, targetPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
                 Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + GlobeCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
+
+                if (IsMouseButtonPressed(MouseButton.Left))
+                {
+                    RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), GlobeCenter, HOLOGRAM_RADIUS);
+                    if (collision.Hit) 
+                    {
+                        (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, Yaw);
+                        OrionSim.UpdateViewPoint();
+                        // Update UI components
+                        ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
+                        ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();
+                    }
+                }
             }
             else 
             { 

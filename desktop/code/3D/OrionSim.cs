@@ -183,7 +183,9 @@ namespace Orion_Desktop
             rotationMat *= Raymath.MatrixRotateX(yaw * DEG2RAD);
             Vector3 position = EarthHologram.GlobeCenter + ViewerPosition;
             Matrix4x4 positionMat = Raymath.MatrixTranslate(position.X, position.Y, position.Z);
-            EarthHologram.ViewpointTransform = positionMat * rotationMat;
+            float scale = Raymath.Lerp(1, 0.1f, Interpolators.FocusInterp);
+            Matrix4x4 scaleMat = Raymath.MatrixScale(scale, scale, scale);
+            EarthHologram.ViewpointTransform = positionMat * scaleMat * rotationMat;
         }
 
         /// <summary>Moves the targeted astral object to the right or left.</summary>

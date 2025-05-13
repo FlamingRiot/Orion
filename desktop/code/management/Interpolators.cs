@@ -18,6 +18,9 @@ namespace Orion_Desktop
         // Orion terminal interpolators
         internal static Vector3 TerminalCenter;
         internal static float TerminalPitch;
-        internal static float TerminalYaw;  
+        internal static float TerminalYaw;
+
+        // Shader interpolator
+        internal static float FocusInterp;
     }
 }

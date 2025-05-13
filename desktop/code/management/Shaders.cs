@@ -212,7 +212,6 @@ namespace Orion_Desktop
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
             BackRenderLoc = GetShaderLocation(PostProShader, "bRender");
-            //CompassRenderLoc = GetShaderLocation(PostProShader, "cRender");
             CloseUpIntensityLoc2 = GetShaderLocation(PostProShader, "closeUpIntensity");
 
             // Chromatic aberration shader
@@ -313,9 +312,9 @@ namespace Orion_Desktop
             // Update hologram-shaders time uniform
             double time = GetTime();
             SetShaderValue(FixShader, TimeLocGlobe, (float)time, ShaderUniformDataType.Float);
-            SetShaderValue(ChromaticAberrationShader, TimeLocChromatic, (float)GetFrameTime(), ShaderUniformDataType.Float);
+            SetShaderValue(ChromaticAberrationShader, TimeLocChromatic, (float)(time % 10.0f), ShaderUniformDataType.Float);
 
-            SetShaderValue(ViewpointShader, TimeViewpointLoc, (float)(time % 5), ShaderUniformDataType.Float);
+            SetShaderValue(ViewpointShader, TimeViewpointLoc, (float)time, ShaderUniformDataType.Float);
 
             // Define interpolation value in normalized scope
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)

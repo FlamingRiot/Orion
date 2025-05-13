@@ -1,5 +1,4 @@
 ﻿using Raylib_cs;
-using System.Numerics;
 using Uniray;
 using static Raylib_cs.Raylib;
 
@@ -8,10 +7,10 @@ namespace Orion_Desktop
     /// <summary>Represents the GPU-loaded resources dictionary of the program.</summary>
     internal static class Resources
     {
+        // Internal resources
         internal static Dictionary<string, Material> Materials = new Dictionary<string, Material>();
         internal static Dictionary<string, Mesh> Meshes = new Dictionary<string, Mesh>();
         internal static Dictionary<ShapeType, Mesh> ShapeMeshes = new Dictionary<ShapeType, Mesh>();
-        internal static Model Arrow;
 
         internal static Texture2D TargetPreview;
 
@@ -64,17 +63,13 @@ namespace Orion_Desktop
         /// <summary>Loads the application's materials and configures them.</summary>
         private static void LoadMaterials()
         {
-            Texture2D earthTex = LoadTexture("assets/textures/earth_preview.png");
+            Texture2D earthTex = LoadTexture("assets/textures/earth.png");
 
             // Earth mat (texture-hologram)
             Material earthMat = LoadMaterialDefault();
             SetMaterialTexture(ref earthMat, MaterialMapIndex.Diffuse, earthTex);
             earthMat.Shader = Shaders.FixShader;
             Materials.Add("earth", earthMat);
-            // Viewpoint material
-            Material def = LoadMaterialDefault();
-            def.Shader = Shaders.ViewpointShader;
-            Materials.Add("viewpoint", def);
 
             // Load PBRs
             PBRMaterials.Add("rim", new PBRMaterial("assets/pbr/rim"));
@@ -102,8 +97,6 @@ namespace Orion_Desktop
                 { ShapeType.HemiSphere, GenMeshHemiSphere(0.5f, 15, 15) },
                 { ShapeType.Knot, GenMeshKnot(0.5f, 1, 20, 20) }
             };
-
-            Meshes.Add("viewpoint", GenMeshPlane(0.2f, 0.2f, 100, 100));
         }
 
         /// <summary>Loads the application's custom 3D models from .m3d files.</summary>
@@ -112,17 +105,6 @@ namespace Orion_Desktop
             Model iss = LoadModel("assets/iss.m3d");
             SetMaterialShader(ref iss, 0, ref Shaders.FixShader);
             Models.Add("iss", iss);
-
-            Arrow = LoadModel("assets/arrow.m3d");
-            Texture2D mat = LoadTexture("assets/textures/arrow_Image_0.png");
-            SetMaterialTexture(ref Arrow, 0, MaterialMapIndex.Diffuse, ref mat);
-        }
-
-        /// <summary>Sets the transform matrix for the arrow model.</summary>
-        /// <param name="transform">Transform to set.</param>
-        internal static void SetArrowTransform(Matrix4x4 transform)
-        {
-            Arrow.Transform = transform;
         }
     }
 }

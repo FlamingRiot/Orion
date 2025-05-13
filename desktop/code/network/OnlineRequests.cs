@@ -5,7 +5,6 @@
 
 using System.Diagnostics;
 using System.Numerics;
-using System.Text;
 using Newtonsoft.Json.Linq;
 
 namespace Orion_Desktop
@@ -13,79 +12,29 @@ namespace Orion_Desktop
     /// <summary>The static class used for sendind HTTP requests.</summary>
     internal static class OnlineRequests
     {
-        // Constants
-        internal const int REQUEST_INTERVAL = 1;
-        internal const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
-        internal const string CACHE_DIRECTORY = "cache/";
-        internal const string PLANET_LOC_TIME = "12:00:00";
+        public const int REQUEST_INTERVAL = 2;
+        public const int MAX_SIMULTANEOUS_TILE_DOWNLOADS = 4;
 
-        // Attributes
-        internal static List<PlanetCacheEntry> PlanetCacheEntries = new List<PlanetCacheEntry>();
-
-        // Private attributes
         private static Stopwatch? timer;
         private static int _timeLastCheck = -1;
 
-        // AstronomyAPI credentials
-        private const string ASTRONOMY_API_ID = "c15d51ed-bd48-4af8-94a8-5eccb4953332";
-        private const string ASTRONOMY_API_SECRET = "a6df73d2e471d7761be374b76640fc22fa" +
-            "6b86ce14215166a9a3a6456e318f51ccf2a6f6b242799f504d76af0a8ff62f39338770a5a7" +
-            "e15233a0fac4d30e4385ce39a8b140cd73363ba9e2ab90c71a66492e9e8a4b78807ab2c6be" +
-            "f12a4a74198e04d9904b6c965a22a2667f3f1cccb1";
-
-        // OpenstreetMap credentials
-        private const string OPENSTREETMAP_API_ID = "dXnJUwdYY9Q8KeAV80P2";
-
-        /// <summary>Starts connexion timer (used for API max-request and caching files).</summary>
+        /// <summary>Starts connexion timer (used for API max-request).</summary>
         internal static void StartConnexion()
         {
-            // Start max-request timer
             if (timer is null)
             {
                 timer = new Stopwatch();
                 timer.Start();
             }
-
-            // Create caching directory if not already exists
-            if (!Directory.Exists(CACHE_DIRECTORY)) Directory.CreateDirectory(CACHE_DIRECTORY);
-            
-            // Create planet caching file if not already exists
-            if (!File.Exists(PlanetCacheEntry.PLANET_CACHE_FILE))
-            {
-                FileStream stream = File.Create(PlanetCacheEntry.PLANET_CACHE_FILE);
-                // Close stream
-                stream.Close();
-            }
-
-            // Retrieve cached data for planets
-            StreamReader cacheStream = new StreamReader(PlanetCacheEntry.PLANET_CACHE_FILE);
-            string cache = cacheStream.ReadToEnd();
-            cacheStream.Close();
-            if (cache != "")
-            {
-                string[] jsons = cache.Split(PlanetCacheEntry.SEPARATOR);
-                for (int i = 0; i < jsons.Length; i++)
-                {
-                    PlanetCacheEntries.Add(new PlanetCacheEntry(JObject.Parse(jsons[i]), false));
-                }
-            }
-
-            // Start by sending first request to the API
-            EarthHologram.UpdateSatellite();
-
-            // Send debug
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"ORION: {PlanetCacheEntries.Count} planet info cached");
-            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         /*-----------------------------------------------------------------
         Satellite and planets data-retrieving functions
         ------------------------------------------------------------------*/
 
-        /// <summary>Retrieves satellite informations from the API and computes them.</summary>
+        /// <summary>Retrieves satellite informations from the API.</summary>
         /// <returns>Async Task</returns>
-        private static async Task GetCurrentSatellite()
+        internal static async Task GetCurrentSatellite()
         {
             using (HttpClient client = new HttpClient()) 
             {
@@ -100,8 +49,25 @@ namespace Orion_Desktop
                     string body = await response.Content.ReadAsStringAsync();
                     JObject json = JObject.Parse(body);
 
+                    // JSON Template from API
+                    //{
+                    //    "name": "iss",
+                    //    "id": 25544,
+                    //    "latitude": 50.11496269845,
+                    //    "longitude": 118.07900427317,
+                    //    "altitude": 408.05526028199,
+                    //    "velocity": 27635.971970874,
+                    //    "visibility": "daylight",
+                    //    "footprint": 4446.1877699772,
+                    //    "timestamp": 1364069476,
+                    //    "daynum": 2456375.3411574,
+                    //    "solar_lat": 1.3327003598631,
+                    //    "solar_lon": 238.78610691196,
+                    //    "units": "kilometers"
+                    //}
+
                     EarthHologram.Satellite.UpdateSatellite(json);
-                    EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEFTilted(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude, EarthHologram.Yaw) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
+                    EarthHologram.SatellitePoints.Add(CelestialMaths.ComputeECEFTilted(EarthHologram.Satellite.Latitude, EarthHologram.Satellite.Longitude, EarthHologram.IYaw) * (EarthHologram.HOLOGRAM_RADIUS + 0.1f)); // Compute XYZ coord.
                     EarthHologram.ComputeRelativeAltitude(); // Compute what the distance from the earth-globe should be (used for accuracy in calculations)
 
                     OrionSim.ComputeArrowDirection(); // Computes the direction used for the 3D pointing-arrow
@@ -115,7 +81,7 @@ namespace Orion_Desktop
             }
         }
 
-        /// <summary>Updates the current satellite based on API and computes its data.</summary>
+        /// <summary>Updates the current satellite based on API.</summary>
         /// <returns>dunno.</returns>
         internal async static Task UpdateCurrentSatellite()
         {
@@ -127,72 +93,34 @@ namespace Orion_Desktop
             }
         }
 
-        /// <summary>Updates data for a given planet.</summary>
-        /// <param name="target">Given target planet.</param>
-        /// <returns>Async task.</returns>
-        internal async static Task UpdateCurrentPlanet(AstralTarget target)
+        internal async static Task<Vector3> GetCurrentPlanet(AstralTarget target)
         {
-            // Check if not already cached (and up to date), prevents from sending too much API request
-            bool exists = false;
-            // Get current date (for data renewal)
-            DateTime now = DateTime.Now;
-            string date = $"{now.Month.ToString().PadLeft(2, '0')}/{now.Day.ToString().PadLeft(2, '0')}/{now.Year}";
+            //string url = $"https://ssd.jpl.nasa.gov/api/horizons.api?" +
+            //    $"format=text&COMMAND='499'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&" +
+            //    $"EPHEM_TYPE='OBSERVER'&CENTER='500@399'&START_TIME='2006-01-01'&" +
+            //    $"STOP_TIME='2006-01-20'&STEP_SIZE='1%20d'&QUANTITIES='1,9,20,23,24,29'";
+            //string url = $"https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND='499'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='coord@399'&SITE_COORD='6.1,46.2,0.375'&START_TIME='2025-03-18'&STOP_TIME='2025-03-19'&STEP_SIZE='1h'&QUANTITIES='4'";
+            string url = $"https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND='499'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='coord@399'&SITE_COORD='6.1,46.2,0.375'&START_TIME='2025-03-18'&STOP_TIME='2025-03-19'&STEP_SIZE='1h'&QUANTITIES='1,4,20,31'";
 
-            // Check for existence
-            PlanetCacheEntries.ForEach(entry =>
+            // Try fetching, abort otherwise and debug error
+            using (HttpClient client = new HttpClient())
             {
-                if (entry.Name == target) 
-                {
-                    // Check for date
-                    if (entry.Date == date)
-                    {
-                        exists = true; 
-                    }
-                }
-            });
-
-            if (target != AstralTarget.ISS && !exists) // Ignore for ISS and if not already exists in cache
-            {
-                string response = "";
-                string id = Enum.GetName(target);
-                // Send API request for given astral
                 try
                 {
-                    HttpClient client = new HttpClient();
-                    string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ASTRONOMY_API_ID}:{ASTRONOMY_API_SECRET}"));
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    response.EnsureSuccessStatusCode(); // Abort if no response
 
-                    /* 
-                     * Data modes:
-                     * Relative:
-                     * ID
-                     * Latitude
-                     * Longitude
-                     * Date
-                     * 
-                     * Fixed:
-                     * Altitude
-                     */
-                    string url = $"https://api.astronomyapi.com/api/v2/bodies/positions/{id}?latitude={OrionSim.ViewerLatitude}&longitude={OrionSim.ViewerLongitude}" +
-                        $"&elevation=400&from_date={now.Year}-{now.Month.ToString().PadLeft(2, '0')}-{now.Day.ToString().PadLeft(2, '0')}&to_date={now.Year}-{now.Month.ToString().PadLeft(2, '0')}-" +
-                        $"{now.Day.ToString().PadLeft(2, '0')}&time={PLANET_LOC_TIME}";
-                   
-                    HttpResponseMessage msg = await client.GetAsync(url);
-                    msg.EnsureSuccessStatusCode(); // Abort if no response, thus offline
-                    response = await msg.Content.ReadAsStringAsync();
-
-                    // Parse data
-                    JObject json = JObject.Parse(response);
-                    PlanetCacheEntry entry = new PlanetCacheEntry(json, true); // This will retrieve the correct data
-                    PlanetCacheEntries.Add(entry);
-
-                    OrionSim.ComputeArrowDirection();
+                    // Read response
+                    string body = await response.Content.ReadAsStringAsync();
+                    JObject json = JObject.Parse(body);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
+
+            return Vector3.Zero;
         }
 
         /*-----------------------------------------------------------------
@@ -200,6 +128,8 @@ namespace Orion_Desktop
         ------------------------------------------------------------------*/
 
         /// <summary>Retrieves data from a Map-tiling endpoint, for a selected tile config.</summary>
+        /// <param name="row">Tile row.</param>
+        /// <param name="column">Tile column.</param>
         /// <param name="zoom">Zoom level.</param>
         /// <returns>Whatever <see cref="Task"/> is.</returns>
         internal static async Task DownloadTileset(int zoom)
@@ -211,7 +141,7 @@ namespace Orion_Desktop
             int _widthMax = 0, _heightMax = 0;
 
             // Create directory if not already exists
-            string dirPath = $"{CACHE_DIRECTORY}{TilingManager.MAP_CONFIG}_{zoom}/";
+            string dirPath = $"{TilingManager.CACHE_DIRECTORY}{TilingManager.MAP_CONFIG}_{zoom}/";
             if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
 
             // Update loading
@@ -221,10 +151,10 @@ namespace Orion_Desktop
                 {
                     try
                     {
-                        string imgName = $"{TilingManager.MAP_CONFIG}_{_downloadHeightCount}_{_downloadWithCount}_{zoom}.png";
+                        string imgName = $"{TilingManager.MAP_CONFIG}_{zoom}_{_downloadHeightCount}_{_downloadWithCount}.png";
                         if (!File.Exists($"{dirPath}{imgName}"))
                         {
-                            string url = $"https://api.maptiler.com/maps/{TilingManager.MAP_CONFIG}/{MapTile.TILE_SIZE}/{zoom}/{_downloadHeightCount}/{_downloadWithCount}.jpg?key={OPENSTREETMAP_API_ID}";
+                            string url = $"https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{TilingManager.MAP_CONFIG}/default/2013-07-09/250m/{zoom}/{_downloadHeightCount}/{_downloadWithCount}.jpg";
                             HttpResponseMessage response = await client.GetAsync(url);
                             response.EnsureSuccessStatusCode();
                             byte[] data = await response.Content.ReadAsByteArrayAsync(); // Read stream

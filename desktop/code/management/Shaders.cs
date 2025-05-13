@@ -47,8 +47,8 @@ namespace Orion_Desktop
 
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"ORION: {mapFolder.Split('/').Last()} PBR Material loaded successfully");
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine($"ORION: PBR Material loaded successfully");
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 
@@ -158,11 +158,7 @@ namespace Orion_Desktop
         internal static Shader PBRLightingShader;
         internal static Shader SkyboxShader;
         internal static Shader ScreenShader;
-        internal static Shader ViewpointShader;
-        internal static Shader ChromaticAberrationShader;
         private static Shader CubemapShader;
-
-        private static Texture2D test;
 
         public static PBRLight[] Lights = new PBRLight[4];
 
@@ -170,16 +166,12 @@ namespace Orion_Desktop
         private static int EmissiveColorLoc;
         private static int TextureTilingLoc;
         private static int BackRenderLoc;
-        private static int CompassRenderLoc;
         private static int TimeLocGlobe;
         private static int TimeLocScreen;
         private static int ViewPosLoc;
         private static int CloseUpIntensityLoc1;
         private static int CloseUpIntensityLoc2;
         private static int EarthPreviewLoc;
-        private static int TimeViewpointLoc;
-        private static int CloseUpIntensityLoc3;
-        private static int TimeLocChromatic;
 
         private static readonly Mesh SKYBOX_MESH = GenMeshCube(1, 1, 1);
 
@@ -196,15 +188,9 @@ namespace Orion_Desktop
             TimeLocGlobe = GetShaderLocation(FixShader, "time");
             ViewPosLoc = GetShaderLocation(FixShader, "viewPos");
             CloseUpIntensityLoc1 = GetShaderLocation(FixShader, "closeUpIntensity");
-            
-            // Setup preview texture (Activate texture slot for the shader)
             EarthPreviewLoc = GetShaderLocation(FixShader, "preview");
-            test = LoadTexture("assets/textures/earth.png");
-            Rlgl.ActiveTextureSlot(10);
-            Rlgl.EnableTexture(test.Id);
-            Rlgl.ActiveTextureSlot(0);
-
-            SetShaderValue(FixShader, EarthPreviewLoc, 10, ShaderUniformDataType.Int);
+            Texture2D tex = LoadTexture("assets/textures/earth_preview.png");
+            SetShaderValueTexture(FixShader, EarthPreviewLoc, tex);
 
             ScreenShader = LoadShader("assets/shaders/default.vs", "assets/shaders/screen.fs");
             TimeLocScreen = GetShaderLocation(ScreenShader, "time");
@@ -212,14 +198,7 @@ namespace Orion_Desktop
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
             BackRenderLoc = GetShaderLocation(PostProShader, "bRender");
-            CloseUpIntensityLoc2 = GetShaderLocation(PostProShader, "closeUpIntensity");
-
-            // Chromatic aberration shader
-            ChromaticAberrationShader = LoadShader(null, "assets/shaders/chromatic.fs");
-            CompassRenderLoc = GetShaderLocation(ChromaticAberrationShader, "cRender");
-            TimeLocChromatic = GetShaderLocation(ChromaticAberrationShader, "time");
-            Vector2 size = new Vector2(GetScreenWidth(), GetScreenHeight());
-            SetShaderValue(ChromaticAberrationShader, GetShaderLocation(ChromaticAberrationShader, "resolution"), size, ShaderUniformDataType.Vec2);
+            CloseUpIntensityLoc2 = GetShaderLocation(FixShader, "closeUpIntensity");
 
             // PBR lighting shader
             PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
@@ -269,10 +248,6 @@ namespace Orion_Desktop
             CubemapShader = LoadShader("assets/shaders/cubemap.vs", "assets/shaders/cubemap.fs");
             SetShaderValue(CubemapShader, GetShaderLocation(CubemapShader, "equirectangularMap"), 0, ShaderUniformDataType.Int);
 
-            // Viewpoint shader
-            ViewpointShader = LoadShader("assets/shaders/viewpoint.vs", "assets/shaders/viewpoint.fs");
-            TimeViewpointLoc = GetShaderLocation(ViewpointShader, "time");
-            CloseUpIntensityLoc3 = GetShaderLocation(ViewpointShader, "closeUpIntensity");
         }
 
         /// <summary>Updates the environement's PBR lighting.</summary>
@@ -311,20 +286,16 @@ namespace Orion_Desktop
         {
             // Update hologram-shaders time uniform
             double time = GetTime();
-            SetShaderValue(FixShader, TimeLocGlobe, (float)time, ShaderUniformDataType.Float);
-            SetShaderValue(ChromaticAberrationShader, TimeLocChromatic, (float)(time % 10.0f), ShaderUniformDataType.Float);
-
-            SetShaderValue(ViewpointShader, TimeViewpointLoc, (float)time, ShaderUniformDataType.Float);
+            SetShaderValue(FixShader, TimeLocGlobe, time, ShaderUniformDataType.Float);
 
             // Define interpolation value in normalized scope
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)
             {
                 float l1 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - Conceptor3D.View.Camera.Position).Length();
-                float l2 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - Interpolators.CameraPosition).Length();
-                Interpolators.FocusInterp = 1.0f - l1 / l2;
-                SetShaderValue(FixShader, CloseUpIntensityLoc1, Interpolators.FocusInterp, ShaderUniformDataType.Float);
-                SetShaderValue(PostProShader, CloseUpIntensityLoc2, Interpolators.FocusInterp, ShaderUniformDataType.Float);
-                SetShaderValue(ViewpointShader, CloseUpIntensityLoc3, Interpolators.FocusInterp, ShaderUniformDataType.Float);
+                float l2 = ((OrionSim.ViewerPosition * 1.08f) + EarthHologram.GlobeCenter - EarthHologram.BackupCameraPosition).Length();
+                float interp = 1.0f - l1 / l2;
+                SetShaderValue(FixShader, CloseUpIntensityLoc1, interp, ShaderUniformDataType.Float);
+                SetShaderValue(PostProShader, CloseUpIntensityLoc2, interp, ShaderUniformDataType.Float);
             }
 
             SetShaderValue(ScreenShader, TimeLocScreen, time, ShaderUniformDataType.Float);
@@ -334,9 +305,6 @@ namespace Orion_Desktop
 
             // Update background render
             SetShaderValueTexture(PostProShader, BackRenderLoc, Program.Render.Texture);
-            // Update compass render 
-            SetShaderValueTexture(ChromaticAberrationShader, CompassRenderLoc, Conceptor2D.CompassRenderTexture.Texture);
-            // Update Drawcall
             DrawTexturePro(Program.HologramRender.Texture, Program.SourceRender, Program.DestinationRender, Vector2.Zero, 0, Color.White);
 
             // Close post-processing shader

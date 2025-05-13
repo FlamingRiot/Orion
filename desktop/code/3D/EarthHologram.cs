@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
@@ -12,97 +13,92 @@ namespace Orion_Desktop
     internal static class EarthHologram
     {
         // Constants
-        internal const float HOLOGRAM_RADIUS = 0.8f; // Defined globe radius
-        internal const float EARTH_TILT = 23.44f; // Incline angle of the earth
-        internal const float EARTH_RADIUS = 6378; // In kilometers
-        internal static readonly Vector3 GLOBE_ORIGIN = new Vector3(-3.5f, 2, 0.2f); // Position in world-space
-        internal static readonly Vector3 GLOBE_NORTH = Raymath.Vector3RotateByAxisAngle(Vector3.UnitY, Vector3.UnitZ, EARTH_TILT * DEG2RAD); // Used for rotation and calculations
+        internal const float HOLOGRAM_RADIUS = 0.8f;
+        internal const float EARTH_TILT = 23.44f;
+        internal const float EARTH_RADIUS = 6378; // kilometers
 
         // Earth globe attributes
-        internal static Matrix4x4 ViewpointTransform; // Viewpoint ping transform matrix
-        internal static Matrix4x4 GlobeTransform; // Earth globe transform matrix
+        internal static Matrix4x4 GlobeRotationMat; // Earth globe rotation matrix
+        internal static Vector3 GlobeOrigin; // unmodified center, ever
+        internal static Vector3 GlobeCenterToBe; // Used for interface interpolation
         internal static Vector3 GlobeCenter; // current center
-        internal static float Yaw, Pitch; // Rotation angles of the globe
+        internal static float IYaw, IPitch, IYawToBe, IPitchToBe;
 
         // Mini-Satellite attributes 
         internal static List<Vector3> SatellitePoints = new List<Vector3>();
-        internal static SatelliteInfo Satellite = new SatelliteInfo(); // Satellite object
+        internal static Satellite Satellite; // Satellite object
 
-        // Planet attributes
-        internal static PlanetCacheEntry CurrentPlanet = new PlanetCacheEntry();
-
-        // Relative altitude used for precise calculations on the 3D pointing-arrow.
+        // Variables used for precise calculations on the 3D pointing-arrow.
         internal static float RelativeSatelliteAltitude;
+        internal static float VerticalAngle;
 
         // Defines whether the user is in zoom-mode or not
-        internal static bool IsFocused = false;
+        internal static bool IsFocused;
+
+        // Backup position and target used for interface zoom & interpolations
+        internal static Vector3 BackupCameraPosition, BackupCameraTarget;
 
         // Used for internal calculations on the interface
         private static double _holdTime;
         private static Vector2 _mouseOrigin;
 
-        /// <summary>Initializes the earth hologram.</summary>
+        /// <summary>Inits the earth hologram.</summary>
         public static void Init()
         {
-            // Set world attributes
-            GlobeCenter = GLOBE_ORIGIN;
-            Pitch = 0;
-
-            // Set interpolators
-            Interpolators.EarthCenter = GlobeCenter;
-            Interpolators.CameraUp = Vector3.UnitY;
-            
-            // Create standby position for the station (until some data is retrieved from the API)
+            GlobeCenter = new Vector3(-3.5f, 2, 0.2f);
+            GlobeOrigin = GlobeCenter;
+            GlobeCenterToBe = GlobeCenter;
+            IPitch = 0;
+            // Create standby position
             SatellitePoints.Add((GlobeCenter + Vector3.UnitX) * (HOLOGRAM_RADIUS + 0.1f));
-            
-            // Create globe correction matrix
-            UpdateTransform();
-            
+            Satellite = new Satellite();
             // Start by sending information request to the API
             OnlineRequests.StartConnexion();
+            UpdateSatellite();
+            // Create globe correction matrix
+            UpdateTransform();
+            IsFocused = false;
+
+            // Create cache directory
+            Directory.CreateDirectory(TilingManager.CACHE_DIRECTORY);
+
+            Task download = OnlineRequests.DownloadTileset(3);
         }
 
         /// <summary>Updates the ISS object by retrieving data from API.</summary>
         internal static async void UpdateSatellite()
         {
             await OnlineRequests.UpdateCurrentSatellite();
-            Satellite.RelativePosition = CelestialMaths.ComputeECEFTilted(Satellite.Latitude, Satellite.Longitude, Yaw);
+            Satellite.RelativePosition = CelestialMaths.ComputeECEFTilted(Satellite.Latitude, Satellite.Longitude, IYaw);
         }
 
         /// <summary>Updates a planet object by retrieving data from API.</summary>
-        internal static async void UpdatePlanet(AstralTarget target)
+        internal static async void UpdatePlanet()
         {
-            await OnlineRequests.UpdateCurrentPlanet(target);
-            // !! The following lines only get executed when the potential API request is done (immedialty if none is send)
-            // Find current info based on newly selected target
-            OnlineRequests.PlanetCacheEntries.ForEach(entry => 
-            {
-                if (entry.Name == target) CurrentPlanet = entry;
-            });
-            Conceptor2D.UpdateUI(); // Update UI components with new information
+            await OnlineRequests.GetCurrentPlanet(AstralTarget.Mars);
         }
 
         /// <summary>Draws the earth hologam.</summary>
         internal static void Draw()
         {
             // Update globe lerp
-            GlobeCenter = Raymath.Vector3Lerp(GlobeCenter, Interpolators.EarthCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            GlobeCenter = Raymath.Vector3Lerp(GlobeCenter, GlobeCenterToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             Shaders.Lights[0].Position = GlobeCenter;
             Shaders.UpdateLight(Shaders.PBRLightingShader, Shaders.Lights[0]);
-            Yaw = Raymath.Lerp(Yaw, Interpolators.EarthYaw, GetFrameTime() * Conceptor3D.LERP_SPEED);
+            IYaw = Raymath.Lerp(IYaw, IYawToBe, GetFrameTime() * Conceptor3D.LERP_SPEED);
             UpdateTransform();
 
             // Update satellite
             UpdateSatellite();
 
-            // Draw earth hologram
-            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeTransform);
+            // Draw earth hologram box
+            DrawMesh(Resources.Meshes["sphere"], Resources.Materials["earth"], GlobeRotationMat);
 
             // Draw satellite point
             DrawModel(Resources.Models["iss"], Satellite.RelativePosition * (HOLOGRAM_RADIUS + 0.2f) + GlobeCenter, 0.06f, Color.White);
 
             // Draw current position
-            DrawMesh(Resources.Meshes["viewpoint"], Resources.Materials["viewpoint"], ViewpointTransform);
+            DrawSphere(OrionSim.ViewerPosition + GlobeCenter, 0.01f, Color.Red);
         }
 
         /// <summary>Computes the relative altitude of the ISS used for calculations.</summary>
@@ -116,40 +112,29 @@ namespace Orion_Desktop
         /// <summary>Updates the interface of the hologram.</summary>
         internal static void UpdateInterface()
         {
+            TilingManager.DrawMapManager();
             // Update camera lerp
-            Conceptor3D.View.Camera.Up = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Up, Interpolators.CameraUp, GetFrameTime() * Conceptor3D.LERP_SPEED);
-
             if (IsFocused) 
             {
                 Vector3 targetPosition = OrionSim.ViewerPosition * 1.25f + GlobeCenter;
                 Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, targetPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
                 Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, OrionSim.ViewerPosition + GlobeCenter, GetFrameTime() * Conceptor3D.LERP_SPEED);
 
-                if (IsMouseButtonPressed(MouseButton.Left))
-                {
-                    RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), GlobeCenter, HOLOGRAM_RADIUS);
-                    if (collision.Hit) 
-                    {
-                        AudioCenter.PlaySound("button_hover");
-                        (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, Yaw);
-                        OrionSim.UpdateViewPoint();
-                        // Update UI components
-                        ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
-                        ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();
-                    }
-                }
+                /*-----------------------------------------------------------------
+                 Map-Tiling classes, functions and variables. 
+                 ------------------------------------------------------------------*/
             }
             else 
             { 
-                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, Interpolators.CameraPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
-                Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, Interpolators.CameraTarget, GetFrameTime() * Conceptor3D.LERP_SPEED);
+                Conceptor3D.View.Camera.Position = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Position, BackupCameraPosition, GetFrameTime() * Conceptor3D.LERP_SPEED);
+                Conceptor3D.View.Camera.Target = Raymath.Vector3Lerp(Conceptor3D.View.Camera.Target, BackupCameraTarget, GetFrameTime() * Conceptor3D.LERP_SPEED);
             }
 
             if (IsMouseButtonDown(MouseButton.Left) && !IsFocused) // Drag
             {
                 Vector2 mouse = GetMouseDelta() * 0.2f;
-                Yaw += mouse.X;
-                Interpolators.EarthYaw = Yaw;
+                IYaw += mouse.X;
+                IYawToBe = IYaw;
                 // Start hold time
                 if (_holdTime == 0)
                 {
@@ -165,16 +150,19 @@ namespace Orion_Desktop
                     RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), GlobeCenter, HOLOGRAM_RADIUS);
                     if (collision.Hit)
                     {
-                        AudioCenter.PlaySound("button_hover");
-                        (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, Yaw);
+                        (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, IYaw);
                         OrionSim.UpdateViewPoint();
                         // Update UI components
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
                         ((RayGUI_cs.Textbox)Conceptor2D.TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();
                         // Update state
                         IsFocused = true;
-                        Interpolators.CameraPosition = Conceptor3D.View.PreviousPosition;
-                        Interpolators.CameraUp = GLOBE_NORTH;
+                        BackupCameraPosition = Conceptor3D.View.PreviousPosition;
+
+                        // Compute vertical-axis angle
+                        VerticalAngle = MathF.Acos(Raymath.Vector3DotProduct(Vector3.UnitY, OrionSim.ViewerPosition) / (Vector3.UnitY.Length() * OrionSim.ViewerPosition.Length())) * RAD2DEG;
+
+                        TilingManager.ConvertCoordinatesToTiles(OrionSim.ViewerLatitude, OrionSim.ViewerLongitude, 3);
                     }
                 } 
                 _holdTime = 0;
@@ -185,11 +173,10 @@ namespace Orion_Desktop
         private static void UpdateTransform()
         {
             Matrix4x4 rm;
-            if (!Conceptor2D.InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, Yaw) / RAD2DEG);
+            if (!Conceptor2D.InterfaceActive) rm = Raymath.MatrixRotateXYZ(new Vector3(90, EARTH_TILT, IYaw) / RAD2DEG);
             else
             {
-                //rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
-                rm = Raymath.MatrixRotate(GLOBE_NORTH, Yaw / RAD2DEG);
+                rm = Raymath.MatrixRotateY(IYaw / RAD2DEG);
 
                 // Compute X/Z axis weights
                 Vector3 cam = new Vector3(Conceptor3D.View.Camera.Position.X, 0, Conceptor3D.View.Camera.Position.Z) -
@@ -198,15 +185,92 @@ namespace Orion_Desktop
                 float xWeight = Raymath.Vector3DotProduct(Vector3.UnitZ, Vector3.Normalize(cam));
                 float zWeight = Raymath.Vector3DotProduct(Vector3.UnitX, Vector3.Normalize(cam));
                 // Create weighted matrix
-                rm *= Raymath.MatrixRotateXYZ(new Vector3(Pitch * xWeight + 90, EARTH_TILT, Pitch * zWeight) * DEG2RAD);
+                rm *= Raymath.MatrixRotateXYZ(new Vector3(IPitch * xWeight + 90, EARTH_TILT, IPitch * zWeight) / RAD2DEG);
             }
             Matrix4x4 sm = Raymath.MatrixScale(1, 1, 1);
             Matrix4x4 pm = Raymath.MatrixTranslate(GlobeCenter.X, GlobeCenter.Y, GlobeCenter.Z);
             // Multiply matrices
-            GlobeTransform = pm * sm * rm;
+            GlobeRotationMat = pm * sm * rm;
 
             // Update ECEF position of the viewpoint
             OrionSim.UpdateViewPoint(); // Update un-rotated pos
+        }
+    }
+
+    /*-----------------------------------------------------------------
+     Map-Tiling classes, functions and variables. 
+     ------------------------------------------------------------------*/
+
+    /// <summary>Represents the 2D map-tiling managing class.</summary>
+    internal static class TilingManager
+    {
+        // Constants
+        internal const string CACHE_DIRECTORY = "cache/";
+        internal const string MAP_CONFIG = $"MODIS_Terra_CorrectedReflectance_TrueColor";
+
+        // Tile Levels to be updated during background loading
+        internal static Dictionary<int, Vector2> Configs = new Dictionary<int, Vector2>();
+
+        private static List<MapTile> Tiles = new List<MapTile>();
+
+        /// <summary>Draws the Map-tiling (Required context: 2D).</summary>
+        internal static void DrawMapManager()
+        {
+            Tiles.ForEach(t => t.Draw());
+        }
+
+        internal static Vector2 ConvertCoordinatesToTiles(float lat, float lon, int zoomLevel)
+        {
+            // Define maximums
+            int latMax = 180;
+            int lonMax = 360;
+
+            // Adapt
+            lat += latMax / 2;
+            lon += lonMax / 2;
+
+            // Retrieve zoom-level values
+            Vector2 position = new Vector2(0);
+            Configs.TryGetValue(zoomLevel, out position);
+
+            position.X = lat / latMax * position.X;
+            position.Y = lon / lonMax * position.Y;
+
+            Console.WriteLine(position.ToString());
+
+            return position;
+        }
+    }
+
+    /// <summary>Represents a single map-tile used for 2D rendering in <see cref="TilingManager"/>.</summary>
+    internal class MapTile
+    {
+        // Constants
+        internal const int TILE_SIZE = 128;
+
+        // Rectangles used for tile rendering
+        private static Rectangle _source = new Rectangle(0, 0, 512, 512);
+        private Rectangle _target;
+
+        // Attributes
+        public int Row;
+        public int Column;
+        public Texture2D Texture;
+
+        /// <summary>Creates an instance of <see cref="MapTile"/>.</summary>
+        /// <param name="row">Map row.</param>
+        /// <param name="column">Map column.</param>
+        internal MapTile(int row, int column)
+        {
+            Row = row;
+            Column = column;
+            _target = new Rectangle(TILE_SIZE * column, TILE_SIZE * row, TILE_SIZE, TILE_SIZE);
+        }
+
+        /// <summary>Draws a single map-tile according to its relative position.</summary>
+        internal void Draw()
+        {
+            DrawTexturePro(Texture, _source, _target, Vector2.Zero, 0, Color.White);
         }
     }
 }

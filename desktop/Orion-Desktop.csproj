@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="RayGUI-cs" Version="2.0.3.1" />
+    <PackageReference Include="RayGUI-cs" Version="2.0.4.1" />
     <PackageReference Include="Raylib-cs" Version="7.0.1" />
   </ItemGroup>
   

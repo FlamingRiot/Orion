@@ -3,6 +3,7 @@ using Raylib_cs;
 using RayGUI_cs;
 using static RayGUI_cs.RayGUI;
 using System.Numerics;
+using System.Transactions;
 
 namespace Orion_Desktop
 {
@@ -42,6 +43,11 @@ namespace Orion_Desktop
 
         // Gui menu
         internal static GuiContainer TerminalGui = new GuiContainer();
+        private static Label _lblConnexion = new Label(0, 0, "");
+
+        // Compass Render-textures and rectangles
+        internal static RenderTexture2D CompassRenderTexture;
+        private static Rectangle CompassDestinationRectangle;
 
         /// <summary>Opens the 2D conceptor and loads its parameters.</summary>
         internal static void Init()
@@ -55,7 +61,11 @@ namespace Orion_Desktop
             TerminalGui = new GuiContainer(new Color(0, 225, 255), new Color(0, 190, 190));
             LoadGUI(LoadFont("assets/textures/SpaceMono-Bold.ttf"));
             ConstructUI();
-    
+
+            // Load compass render-texure and render-rectangles
+            CompassDestinationRectangle = new Rectangle(0, 0, Width, Height);
+            CompassRenderTexture = LoadRenderTexture((int)CompassDestinationRectangle.Width, (int)CompassDestinationRectangle.Height);
+
             OpenedInterface = Interface.None; // Defines the opened interface
 
             // Load font
@@ -74,20 +84,52 @@ namespace Orion_Desktop
             return new Vector2(newX, newY);
         }
 
+        /// <summary>Draws the compass at the top of the screen. (Context: Drawing or no Drawing).</summary>
+        private static void DrawCompass()
+        {
+            BeginTextureMode(CompassRenderTexture);
+
+            ClearBackground(Color.Black);
+
+            // Measure text
+            string txt = $"45  |  60  |  75  |  E  |  105  |  120  |  135  |  150  |  165  |  S  |  195  |  210  |  225  |  240  |  255  |  W  " +
+                $"|  285  |  300  |  315  |  330  |  345  |  N  |  15  |  30  |  45  |  60  |  75  |  E  |  105  |  120  |";
+            Vector2 txtSize = MeasureTextEx(Font, txt, 30, 1); // The width is equivalent to 360° as a rotation angle
+            float angle = Conceptor3D.View.Yaw * RAD2DEG * -1; // [0° to 360°]
+            float ratio = (txtSize.X + 128) / 360f; // Constant offset of 128 (Thankfully does not rely on display size)
+            float center = Width / 2 - 300; // Constant offset of -300 (Thankfully does not rely on display size)
+            // Draw text
+            DrawTextPro(RayGUI.Font, txt, new Vector2(center - angle * ratio, 20), Vector2.Zero, 0, 30, 1, new Color(199, 235, 255));
+
+            EndTextureMode();
+        }
+
         /// <summary>Displays 2D information to the screen.</summary>
         internal static void Draw()
         {
-            // Update action sounds
-            if (IsMouseButtonPressed(MouseButton.Left))
+            Update();
+
+            // Draw compass at the top of the screen
+            DrawCompass();
+
+            // Planet preview
+            if (OrionSim.Target != AstralTarget.ISS)
             {
-                TerminalGui.ForEach(x =>
+                Vector3 target = OrionSim.ARROW_SOURCE + EarthHologram.CurrentPlanet.NormalizedPosition * 300;
+                float dot = Raymath.Vector3DotProduct(target, GetCameraForward(ref Conceptor3D.View.Camera));
+
+                if (dot > 0) // Check if behind camera or not
                 {
-                    if (Hover(x)) AudioCenter.PlaySound("button_click");
-                });
+                    Vector2 screenPos = GetWorldToScreen(target, Conceptor3D.View.Camera);
+                    string? name = Enum.GetName(typeof(AstralTarget), OrionSim.Target);
+                    float txtLength = (MeasureTextEx(RayGUI.Font, name, 20, 1).X / 2);
+                    DrawTextEx(RayGUI.Font, name, screenPos - Vector2.UnitY * 26 - new Vector2(txtLength, 0), 20, 1, Color.Red);
+                    DrawTextEx(RayGUI.Font, "o", screenPos + Vector2.UnitX * txtLength - Vector2.UnitX * 4 - new Vector2(txtLength, 0) - Vector2.UnitY * 11, 20, 1, Color.Red);
+                }
             }
 
             // Draw E hint
-            if (InteractiveEnabled) 
+            if (InteractiveEnabled)
             {
                 if (!InterfaceActive)
                 {
@@ -110,6 +152,19 @@ namespace Orion_Desktop
                         break;
                 }
             }
+        }
+
+        /// <summary>Updates most of the actions of the 2D conceptor.</summary>
+        private static void Update()
+        {
+            // Update action sounds
+            if (IsMouseButtonPressed(MouseButton.Left))
+            {
+                TerminalGui.ForEach(x =>
+                {
+                    if (Hover(x) && OpenedInterface == Interface.Terminal) AudioCenter.PlaySound("button_click");
+                });
+            }
 
             if (IsKeyPressed(KeyboardKey.E))
             {
@@ -124,9 +179,12 @@ namespace Orion_Desktop
                             // Define 3D post based current camera pos
                             Ray dir = GetScreenToWorldRay(new Vector2(Width / 3f, Height / 2), Conceptor3D.View.Camera);
                             Vector3 pos = dir.Position + dir.Direction * 2.5f;
-                            EarthHologram.GlobeCenterToBe = pos;
-                            EarthHologram.BackupCameraPosition = Conceptor3D.View.Camera.Position;
-                            EarthHologram.BackupCameraTarget = Conceptor3D.View.Camera.Target;
+                            
+                            // Set interpolators
+                            Interpolators.EarthCenter = pos;
+                            Interpolators.CameraPosition = Conceptor3D.View.Camera.Position;
+                            Interpolators.CameraTarget = Conceptor3D.View.Camera.Target;
+                            
                             EnableCursor();
                             break;
                         case Interface.Terminal:
@@ -136,11 +194,12 @@ namespace Orion_Desktop
                             InterfaceActive = true;
                             Ray center = GetScreenToWorldRay(Size / 2, Conceptor3D.View.Camera);
                             pos = center.Position + center.Direction;
-                            OrionSim.PositionToBe = pos;
 
-                            // Define orientation angles
-                            OrionSim.IYawToBe = (Conceptor3D.View.Pitch * RAD2DEG) + 90;
-                            OrionSim.IPitchToBe = (Conceptor3D.View.Yaw * RAD2DEG) + 90;
+                            // Set interpolators
+                            Interpolators.TerminalCenter = pos;
+                            Interpolators.TerminalYaw = Conceptor3D.View.Pitch * RAD2DEG + 90;
+                            Interpolators.TerminalPitch = Conceptor3D.View.Yaw * RAD2DEG + 90;
+                            
                             EnableCursor();
                             DisableCursor();
                             break;
@@ -159,14 +218,15 @@ namespace Orion_Desktop
                     {
                         if (!EarthHologram.IsFocused)
                         {
-                            if (Raymath.Vector3Length(Conceptor3D.View.Camera.Position - EarthHologram.BackupCameraPosition) < 0.1f)
+                            if (Raymath.Vector3Length(Conceptor3D.View.Camera.Position - Interpolators.CameraPosition) < 0.1f)
                             {
                                 InterfaceActive = false;
                                 if (OpenedInterface == Interface.Earth)
                                 {
-                                    EarthHologram.GlobeCenterToBe = EarthHologram.GlobeOrigin;
-                                    EarthHologram.IPitchToBe = 0;
-                                    EarthHologram.IYawToBe = 0;
+                                    // Reset interpolators
+                                    Interpolators.EarthCenter = EarthHologram.GLOBE_ORIGIN;
+                                    Interpolators.EarthPitch = 0;
+                                    Interpolators.EarthYaw = 0;
                                 }
                                 OpenedInterface = Interface.None;
                                 DisableCursor();
@@ -175,15 +235,19 @@ namespace Orion_Desktop
                         if (EarthHologram.IsFocused)
                         {
                             EarthHologram.IsFocused = false;
+                            Interpolators.CameraUp = Vector3.UnitY;
                         }
                         if (OpenedInterface == Interface.Terminal)
                         {
                             DeactivateGui(TerminalGui);
 
                             InterfaceActive = false;
-                            OrionSim.PositionToBe = OrionSim.OriginPosition;
-                            OrionSim.IYawToBe = OrionSim.INCLINE_YAW;
-                            OrionSim.IPitchToBe = 0;
+
+                            // Set interpolators
+                            Interpolators.TerminalCenter = OrionSim.TERMINAL_ORIGIN;
+                            Interpolators.TerminalYaw = OrionSim.INCLINE_YAW;
+                            Interpolators.TerminalPitch = 0;
+                            
                             DisableCursor();
                             OpenedInterface = Interface.None;
                         }
@@ -195,16 +259,17 @@ namespace Orion_Desktop
         /// <summary>Constructs the UI of the Orion Terminal.</summary>
         internal static void ConstructUI()
         {
-            SetDefaultFontSize(64);
+            TerminalGui.SetDefaultFontSize(64);
 
             // Static fields
-            Button leftButton = new Button( 800, 800, 50, 50, "<");
+            Button leftButton = new Button(800, 800, 50, 50, "<");
             leftButton.Event = SwitchTargetLeft;
             TerminalGui.Add("leftButton", leftButton);
             Button rightButton = new Button(1300, 800, 50, 50, ">");
             rightButton.Event = SwitchTargetRight;
             TerminalGui.Add("rightButton", rightButton);
             Button submitButton = new Button(800, 730, 550, 50, "Submit");
+            submitButton.Event = SubmitWebSocketInstruction;
             TerminalGui.Add("submitButton", submitButton);
             Textbox nameTxb = new Textbox(855, 800, 440, 50, $"{OrionSim.Target}");
             nameTxb.OnEntry = OrionSim.VerifiyTargetEntry;
@@ -231,6 +296,9 @@ namespace Orion_Desktop
             Label lblCurrentLong = new Label(700, 510, $"Longitude (East)");
             TerminalGui.Add("lblCurrentLong", lblCurrentLong);
 
+            _lblConnexion = new Label(700, 590, "");
+            TerminalGui.Add("lblConnexion", _lblConnexion);
+
             Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, $"{OrionSim.ViewerLatitude}");
             txbCurrentLat.OnEntry = UpdateLatitude;
             TerminalGui.Add("txbCurrentLat", txbCurrentLat);
@@ -238,15 +306,28 @@ namespace Orion_Desktop
             txbCurrentLon.OnEntry = UpdateLongitude;
             TerminalGui.Add("txbCurrentLon", txbCurrentLon);
 
-            TerminalGui.SetRoundness(0.25f);
+            TerminalGui.SetDefaultRoundness(0.25f);
         }
 
         /// <summary>Updates the UI components based on real-time values from the retrievement point.</summary>
         internal static void UpdateUI()
         {
-            ((Label)TerminalGui["lblLat"]).Text = $"Latitude : {EarthHologram.Satellite.Latitude}";
-            ((Label)TerminalGui["lblLong"]).Text = $"Longitude : {EarthHologram.Satellite.Longitude}";
-            ((Label)TerminalGui["lblDistance"]).Text = $"Distance from Earth : {EarthHologram.Satellite.Altitude} km";
+            if (OrionSim.Target == AstralTarget.ISS)
+            {
+                ((Label)TerminalGui["lblLat"]).Text = $"Latitude : {EarthHologram.Satellite.Latitude}";
+                ((Label)TerminalGui["lblLong"]).Text = $"Longitude : {EarthHologram.Satellite.Longitude}";
+                ((Label)TerminalGui["lblDistance"]).Text = $"Distance from Earth : {EarthHologram.Satellite.Altitude} Km";
+            }
+            else
+            {
+                ((Label)TerminalGui["lblLat"]).Text = $"Altitude : {EarthHologram.CurrentPlanet.Altitude}";
+                ((Label)TerminalGui["lblLong"]).Text = $"Azimuth : {EarthHologram.CurrentPlanet.Azimuth}";
+                ((Label)TerminalGui["lblDistance"]).Text = $"Distance from Earth : {EarthHologram.CurrentPlanet.Distance} AU";
+                ((Label)TerminalGui["lblConnexion"]).Text = "Connecting.";
+            }
+
+            if (WebsocketRequests.WEBSOCKET_READY) ((Label)TerminalGui["lblConnexion"]).Text = "Connected !";
+            else if (WebsocketRequests.CLIENT_ID == null) ((Label)TerminalGui["lblConnexion"]).Text = WebsocketRequests.MAX_CLIENTS_REACHED_MESSAGE;
         }
     }
 }

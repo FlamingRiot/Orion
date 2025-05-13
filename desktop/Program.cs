@@ -56,7 +56,7 @@ namespace Orion_Desktop
             // Load render texture
             LoadRender();
 
-#if DEBUG
+#if !DEBUG
             SetTargetFPS(60);
 #endif
             SetExitKey(KeyboardKey.Null);

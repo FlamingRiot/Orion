@@ -21,9 +21,6 @@ release:
       artifacts: true
   script:
     - echo "Creating GitLab release for tag $TAG"
-  artifacts:
-    paths:
-      - desktop/bin/Release/net9.0/win-x64/Orion-${CI_COMMIT_TAG}.zip
   release:
     tag_name: $CI_COMMIT_TAG
     description: CHANGELOG.md

@@ -159,6 +159,7 @@ namespace Orion_Desktop
         internal static Shader SkyboxShader;
         internal static Shader ScreenShader;
         internal static Shader ViewpointShader;
+        internal static Shader ChromaticAberrationShader;
         private static Shader CubemapShader;
 
         private static Texture2D test;
@@ -210,8 +211,14 @@ namespace Orion_Desktop
             // Post-Processing shader
             PostProShader = LoadShader(null, "assets/shaders/postpro.fs"); // Post-Processing shader
             BackRenderLoc = GetShaderLocation(PostProShader, "bRender");
-            CompassRenderLoc = GetShaderLocation(PostProShader, "cRender");
+            //CompassRenderLoc = GetShaderLocation(PostProShader, "cRender");
             CloseUpIntensityLoc2 = GetShaderLocation(PostProShader, "closeUpIntensity");
+
+            // Chromatic aberration shader
+            ChromaticAberrationShader = LoadShader(null, "assets/shaders/chromatic.fs");
+            CompassRenderLoc = GetShaderLocation(ChromaticAberrationShader, "cRender");
+            Vector2 size = new Vector2(GetScreenWidth(), GetScreenHeight());
+            SetShaderValue(ChromaticAberrationShader, GetShaderLocation(ChromaticAberrationShader, "resolution"), size, ShaderUniformDataType.Vec2);
 
             // PBR lighting shader
             PBRLightingShader = LoadShader("assets/shaders/pbr.vs", "assets/shaders/pbr.fs");
@@ -326,7 +333,7 @@ namespace Orion_Desktop
             // Update background render
             SetShaderValueTexture(PostProShader, BackRenderLoc, Program.Render.Texture);
             // Update compass render 
-            SetShaderValueTexture(PostProShader, CompassRenderLoc, Conceptor2D.CompassRenderTexture.Texture);
+            SetShaderValueTexture(ChromaticAberrationShader, CompassRenderLoc, Conceptor2D.CompassRenderTexture.Texture);
             // Update Drawcall
             DrawTexturePro(Program.HologramRender.Texture, Program.SourceRender, Program.DestinationRender, Vector2.Zero, 0, Color.White);
 

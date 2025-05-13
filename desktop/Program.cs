@@ -2,6 +2,7 @@
 
 using Raylib_cs;
 using static Raylib_cs.Raylib;
+using System.Numerics;
 
 namespace Orion_Desktop
 {
@@ -12,10 +13,12 @@ namespace Orion_Desktop
         public const string APP_NAME = "Orion";
         public const string APP_VERSION = "beta-0.2.0";
 
+        // Different render 
         internal static RenderTexture2D Render;
         internal static RenderTexture2D HologramRender;
         internal static Rectangle SourceRender;
         internal static Rectangle DestinationRender;
+        internal static RenderTexture2D FinalRender;
 
         public static int Width;
         public static int Height;
@@ -33,7 +36,9 @@ namespace Orion_Desktop
 
             SetWindowIcon(LoadImage("assets/logo.png"));
 
-            MaximizeWindow();
+            //MaximizeWindow();
+
+            ToggleFullscreen();
 
             Width = GetScreenWidth();
             Height = GetScreenHeight();
@@ -104,15 +109,29 @@ namespace Orion_Desktop
                 OrionSim.DrawTerminalScreen();
 
                 // Begin screen rendering
-                BeginDrawing();
+                BeginTextureMode(FinalRender);
 
                 // Draws the holographic elements of the scene and overlaps them with the current render
                 Shaders.OverlapHologramRender();
 
+                // Close final render pass
+                EndTextureMode();
+
+                // Begin Rendering to the screen
+                BeginDrawing();
+
+                // Apply final post-pro
+                BeginShaderMode(Shaders.ChromaticAberrationShader);
+
+                // Draw final render
+                DrawTexturePro(FinalRender.Texture, SourceRender, DestinationRender, Vector2.Zero, 0, Color.White);
+
+                EndShaderMode();
+
                 // Draw 2D information
                 Conceptor2D.Draw();
 #if DEBUG
-                DrawFPS(10, 10);
+                //DrawFPS(10, 10);
 #endif
                 // Close drawing context
                 EndDrawing();
@@ -129,6 +148,7 @@ namespace Orion_Desktop
         internal static void LoadRender()
         {
             Render = LoadRenderTexture(Width, Height);
+            FinalRender = LoadRenderTexture(Width, Height);
             HologramRender = LoadRenderTexture(Width, Height);
             SourceRender = new Rectangle(0, 0, Width, -Height);
             DestinationRender = new Rectangle(0, 0, Width, Height);

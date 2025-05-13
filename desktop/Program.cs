@@ -10,7 +10,7 @@ namespace Orion_Desktop
     {
         // Constants
         public const string APP_NAME = "Orion";
-        public const string APP_VERSION = "beta-0.1.0";
+        public const string APP_VERSION = "beta-0.2.0";
 
         internal static RenderTexture2D Render;
         internal static RenderTexture2D HologramRender;
@@ -40,6 +40,7 @@ namespace Orion_Desktop
 
             // Init connexion to the WebSocket
             WebsocketRequests.InitializeConnexion();
+
 #if DEBUG
             WebsocketRequests.SHOW_RESPONSE_POOL = true;
 #endif

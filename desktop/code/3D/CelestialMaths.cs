@@ -153,18 +153,13 @@ namespace Orion_Desktop
         /// <returns>Modified angles.</returns>
         internal static (float, float) ConvertRobotAnglesToMotors(float pitch, float yaw)
         {
-            // Convert to radians
+            //// Convert to radians
             float aziRad = pitch * Raylib.DEG2RAD;
-            float altRad = yaw * Raylib.DEG2RAD;
 
-            // Direction vector
-            Vector3 dir = new Vector3(
-                MathF.Cos(altRad) * MathF.Sin(aziRad),
-                MathF.Sin(altRad),
-                MathF.Cos(altRad) * MathF.Cos(aziRad)
-            );
-
-            return (-MathF.Asin(dir.Y) * Raylib.RAD2DEG, MathF.Atan2(dir.X, dir.Z) * Raylib.RAD2DEG);
+            float motorX = yaw * MathF.Cos(aziRad);
+            float motorZ = yaw * MathF.Sin(aziRad);
+            
+            return (motorX, motorZ);
         }
 
         /// <summary>Clamps an angle (radians) to rotate around negative radian to 0.</summary>

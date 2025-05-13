@@ -130,6 +130,7 @@ namespace Orion_Desktop
                     RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), GlobeCenter, HOLOGRAM_RADIUS);
                     if (collision.Hit) 
                     {
+                        AudioCenter.PlaySound("button_hover");
                         (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, Yaw);
                         OrionSim.UpdateViewPoint();
                         // Update UI components
@@ -164,6 +165,7 @@ namespace Orion_Desktop
                     RayCollision collision = GetRayCollisionSphere(GetScreenToWorldRay(GetMousePosition(), Conceptor3D.View.Camera), GlobeCenter, HOLOGRAM_RADIUS);
                     if (collision.Hit)
                     {
+                        AudioCenter.PlaySound("button_hover");
                         (OrionSim.ViewerLatitude, OrionSim.ViewerLongitude) = CelestialMaths.ComputeECEFTiltedReverse((collision.Point - GlobeCenter) / HOLOGRAM_RADIUS, Yaw);
                         OrionSim.UpdateViewPoint();
                         // Update UI components

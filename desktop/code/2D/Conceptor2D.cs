@@ -162,7 +162,7 @@ namespace Orion_Desktop
             {
                 TerminalGui.ForEach(x =>
                 {
-                    if (Hover(x)) AudioCenter.PlaySound("button_click");
+                    if (Hover(x) && OpenedInterface == Interface.Terminal) AudioCenter.PlaySound("button_click");
                 });
             }
 

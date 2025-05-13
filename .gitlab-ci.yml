@@ -2,28 +2,15 @@ stages:
   - build
   - release
 
-variables:
-  ZIP_START_NAME: "Orion"
-
 build:
   stage: build
   image: mcr.microsoft.com/dotnet/sdk:latest
   rules:
     - if: '$CI_COMMIT_TAG'
   script:
-    - apt-get update && apt-get install -y zip
     - cd desktop/
     - chmod u+x build.sh
     - ./build.sh
-    - cd bin/Release/net9.0/win-x64/
-    - zip -r Orion.zip publish
-    - mv "Orion.zip" "Orion-${CI_COMMIT_TAG}.zip"
-    - ls
-  artifacts:
-    paths:
-      - desktop/bin/Release/net9.0/win-x64/Orion-${CI_COMMIT_TAG}.zip
-    expire_in: 1 hour
-
 release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
@@ -41,7 +28,3 @@ release:
     tag_name: $CI_COMMIT_TAG
     description: CHANGELOG.md
     ref: "$CI_COMMIT_SHA"
-    assets:
-      links:
-      - name: "Télécharger l'exécutable Windows"
-        url: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${CI_JOB_ID}/artifacts"

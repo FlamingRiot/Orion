@@ -8,16 +8,16 @@ build:
   rules:
     - if: '$CI_COMMIT_TAG'
   script:
-    - apt-get update && apt-get install -y zip
     - cd desktop/
     - chmod u+x build.sh
     - ./build.sh
     - cd bin/Release/net9.0/win-x64/publish
-    - zip Orion.zip raylib.dll Orion-Desktop.exe
-    - mv "Orion.zip" "Orion-${CI_COMMIT_TAG}.zip"
+    - mv raylib.dll ../../../../../../raylib.dll
+    - mv Orion-Desktop.exe ../../../../../../Orion-Desktop.exe
   artifacts:
     paths:
-      - desktop/bin/Release/net9.0/win-x64/publish/Orion-${CI_COMMIT_TAG}.zip
+      - raylib.dll
+      - Orion-Desktop.exe
     expire_in: 1 hour
 
 release:
@@ -32,7 +32,8 @@ release:
     - echo "Creating GitLab release for tag $TAG"
   artifacts:
     paths:
-      - desktop/bin/Release/net9.0/win-x64/publish/Orion-${CI_COMMIT_TAG}.zip
+      - raylib.dll
+      - Orion-Desktop.exe
   release:
     tag_name: $CI_COMMIT_TAG
     description: CHANGELOG.md

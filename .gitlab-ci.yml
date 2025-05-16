@@ -13,7 +13,7 @@ build:
     - chmod u+x build.sh
     - ./build.sh
     - cd bin/Release/net9.0/win-x64/publish
-    - zip -r Orion.zip -i raylib.dll -i Orion-Desktop.exe
+    - zip Orion.zip raylib.dll Orion-Desktop.exe
     - mv "Orion.zip" "Orion-${CI_COMMIT_TAG}.zip"
   artifacts:
     paths:

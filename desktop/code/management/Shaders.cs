@@ -310,11 +310,11 @@ namespace Orion_Desktop
         internal static void OverlapHologramRender()
         {
             // Update hologram-shaders time uniform
-            double time = GetTime();
-            SetShaderValue(FixShader, TimeLocGlobe, (float)time, ShaderUniformDataType.Float);
-            SetShaderValue(ChromaticAberrationShader, TimeLocChromatic, (float)(time % 10.0f), ShaderUniformDataType.Float);
+            float time = (float)GetTime();
+            SetShaderValue(FixShader, TimeLocGlobe, time, ShaderUniformDataType.Float);
+            SetShaderValue(ChromaticAberrationShader, TimeLocChromatic, time % 10.0f, ShaderUniformDataType.Float);
 
-            SetShaderValue(ViewpointShader, TimeViewpointLoc, (float)time, ShaderUniformDataType.Float);
+            SetShaderValue(ViewpointShader, TimeViewpointLoc, time, ShaderUniformDataType.Float);
 
             // Define interpolation value in normalized scope
             if (Conceptor2D.OpenedInterface == Conceptor2D.Interface.Earth)

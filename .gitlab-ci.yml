@@ -11,6 +11,15 @@ build:
     - cd desktop/
     - chmod u+x build.sh
     - ./build.sh
+    - cd bin/Release/net9.0/win-x64/publish
+    - mv raylib.dll ../../../../../../raylib.dll
+    - mv Orion-Desktop.exe ../../../../../../Orion-Desktop.exe
+  artifacts:
+    paths:
+      - raylib.dll
+      - Orion-Desktop.exe
+    expire_in: 1 hour
+
 release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
@@ -21,7 +30,15 @@ release:
       artifacts: true
   script:
     - echo "Creating GitLab release for tag $TAG"
+  artifacts:
+    paths:
+      - raylib.dll
+      - Orion-Desktop.exe
   release:
     tag_name: $CI_COMMIT_TAG
     description: CHANGELOG.md
     ref: "$CI_COMMIT_SHA"
+    assets:
+      links:
+      - name: "Télécharger l'exécutable Windows"
+        url: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/${CI_JOB_ID}/artifacts"

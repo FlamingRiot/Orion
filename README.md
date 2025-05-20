@@ -1,5 +1,37 @@
 # Orion
-Ce projet est un projet de TPI et PreTPI. Il prendra fin le 23 mai 2025, et est en développement depuis le 27 Janvier 2025. Pour donner un bref contexte, le but de l'application est de pouvoir dans sa version finale communiquer avec un robot et ainsi le faire pointer en temps réel l'ISS en fonction de l'endroit sélectionné sur Terre (ou par le biais d'une localisation GPS). L'application permet également une visualisation avancée en 3D.
+## Websummary
+### Description
+Dans le cadre de mon TPI, j’ai conçu une application de visualisation avancée en 3D capable
+de communiquer avec un automate programmable développé par la filière *automatique* du
+CPNE-TI. L’objectif de ce dernier est de faire bouger une sphère à l’aide de moteurs pas-à-pas,
+afin que celle-ci indique au moyen d’un repère la direction d’un objet choisi dans le ciel.
+
+Mon travail a été de programmer le logiciel de visualisation et de calculer les données
+nécessaires à envoyer aux moteurs avec la librairie graphique Raylib en C#.
+
+### Objectifs
+
+ - Comprendre et interpréter des données astronomiques et géographiques afin de
+déterminer une orientation réaliste vers la position en question, le tout dans un repère
+tridimensionnel.
+ - Mettre en place des moyens de visualisation innovants dans un environnement 3D à
+l’aide d’une librairie graphique simple et légère.
+ - Appliquer les principes d’intégration continue étudiés durant la formation et créer un
+livrable complet pour les utilisateurs.
+ - Comprendre les principes du protocole Websocket et les mettre en application afin de
+communiquer avec un automate programmable non-documenté.
+
+### Réalisation
+
+Le projet a débuté sur la base de l’application déjà existante réalisée par mes soins durant la
+saison précédente. Les périodes de TPI ont donc été consacrées à l’ajout de fonctionnalités
+cruciales et à l’aboutissement technique du logiciel.
+J’ai finalisé le projet par la liaison de l’application à l’automate programmable afin de mettre à
+profit les simulations virtuelles présentes dans l’application.
+Une attention toute particulière a été portée à l’aspect graphique du logiciel. En faisant usage
+de Shaders GLSL et d’algorithmes poussés, je suis parvenu à donner un visuel professionnel
+et abouti à l’environnement 3D.
+
 ## Téléchargement
 Dans la catégorie **Releases**, cliquez sur la [dernière version](https://git.s2.rpn.ch/ComtesseE1/orion/-/releases/beta-0.0.0) 
 et téléchargez le code source. Une fois installé sur votre machine, extrayez les fichiers dans un nouveau dossier. Vous allez 

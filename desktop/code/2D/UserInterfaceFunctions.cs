@@ -15,8 +15,8 @@ namespace Orion_Desktop
         /// <param name="value">Text value of the textbox.</param>
         private static void UpdateLatitude(string[] args, string value)
         {
-            if (float.TryParse(value, out OrionSim.ViewerLatitude)) OrionSim.UpdateViewPoint();
-            else ((Textbox)TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
+            OrionSim.ViewerLatitude = float.Parse(value);
+            OrionSim.UpdateViewPoint();
         }
 
         /// <summary>Tries to update the longitude of the current viewpoint.</summary>
@@ -24,8 +24,8 @@ namespace Orion_Desktop
         /// <param name="value">Text value of the textbox.</param>
         private static void UpdateLongitude(string[] args, string value) 
         {
-            if (float.TryParse(value, out OrionSim.ViewerLongitude)) OrionSim.UpdateViewPoint();
-            else ((Textbox)TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();
+            OrionSim.ViewerLongitude = float.Parse(value);
+            OrionSim.UpdateViewPoint();
         }
 
         /// <summary>Sends movement information to the robot's motors.</summary>

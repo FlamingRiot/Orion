@@ -301,8 +301,10 @@ namespace Orion_Desktop
 
             Textbox txbCurrentLat = new Textbox(1160, 430, 360, 45, $"{OrionSim.ViewerLatitude}");
             txbCurrentLat.OnEntry = UpdateLatitude;
+            txbCurrentLat.Filter = Textbox.TextFilter.Decimals;
             TerminalGui.Add("txbCurrentLat", txbCurrentLat);
             Textbox txbCurrentLon = new Textbox(1160, 490, 360, 45, $"{OrionSim.ViewerLongitude}");
+            txbCurrentLon.Filter = Textbox.TextFilter.Decimals;
             txbCurrentLon.OnEntry = UpdateLongitude;
             TerminalGui.Add("txbCurrentLon", txbCurrentLon);
 

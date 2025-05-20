@@ -181,5 +181,15 @@ namespace Orion_Desktop
             else if (radians < 0) return 2*MathF.PI;
             else return radians;
         }
+
+        internal static float WrapLongitude(float value)
+        {
+            return ((value + 180f) % 360f + 360f) % 360f - 180f;
+        }
+
+        internal static float WrapLatitude(float value)
+        {
+            return ((value + 90f) % 180f + 180f) % 180f - 90f;
+        }
     }
 }

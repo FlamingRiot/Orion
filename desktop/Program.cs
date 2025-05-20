@@ -36,9 +36,9 @@ namespace Orion_Desktop
 
             SetWindowIcon(LoadImage("assets/logo.png"));
 
-            ToggleFullscreen();
+            //ToggleFullscreen();
 
-            // MaximizeWindow();
+            MaximizeWindow();
 
             Width = GetScreenWidth();
             Height = GetScreenHeight();

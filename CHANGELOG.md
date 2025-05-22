@@ -1,5 +1,11 @@
 ## Orion Changelog
 
+# [beta-0.2.2]
+
+- fix: flickering terminal interface due to a number conversion
+- fix: non-number characters allowed in Latitude/Longitude textboxes
+- fix: unwrapped values in Latitude/Longitude textboxes  
+
 # [beta-0.2.1]
 
 - fix: Post-processing shader not suited for every screen ratio
@@ -60,6 +66,7 @@
 
 ---
 
+[beta-0.2.2]: https://git.s2.rpn.ch/ComtesseE1/orion/-/releases/beta-0.2.2
 [beta-0.2.1]: https://git.s2.rpn.ch/ComtesseE1/orion/-/releases/beta-0.2.1
 [beta-0.2.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/releases/beta-0.2.0
 [beta-0.1.0]: https://git.s2.rpn.ch/ComtesseE1/orion/-/tags/beta-0.1.0

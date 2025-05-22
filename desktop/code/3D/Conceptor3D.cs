@@ -147,15 +147,6 @@ namespace Orion_Desktop
 
         internal Camera3D Camera;
         internal Vector3 PreviousPosition; // used for circular collision detection
-        internal MotionConstraint Constraint;
-        
-        internal Vector3 Tangent;
-        internal Vector3 Segment;
-
-        // Bobbing variables
-        private const float bobbingSpeed = 4.0f;
-        private const float bobbingAmount = 0.0001f;
-        private float time = 0.0f;
 
         /// <summary>Yaw angle of the camera.</summary>
         internal float Yaw { get { return _yaw; } set { _yaw = value; UpdateView(); } }
@@ -176,15 +167,6 @@ namespace Orion_Desktop
             if (distance >= Conceptor3D.HUB_RADIUS)
             {
                 Camera.Position = PreviousPosition;
-                // Calculate circle tangent on collision point (previous position.)
-                Segment = PreviousPosition - EarthHologram.GlobeCenter;
-                Tangent = new Vector3(-Segment.Z, 0, Segment.X);
-                // Calcualte constraint value
-                Constraint.ComputeConstraint(Camera.Target, Tangent);
-            }
-            else
-            {
-                Tangent = Vector3.Zero;
             }
             PreviousPosition = Camera.Position;
         }
@@ -196,30 +178,6 @@ namespace Orion_Desktop
             Camera.Target.Y = MathF.Sin(Pitch);
             Camera.Target.Z = MathF.Cos(Pitch) * MathF.Cos(Yaw);
             Camera.Target += Camera.Position;
-        }
-
-        internal void UpdateBobbing()
-        {
-            time += GetFrameTime() * bobbingSpeed;
-            Camera.Position.Y += MathF.Sin(time) * bobbingAmount;
-        }
-    }
-
-    /// <summary>Represents a motion constraint object.</summary>
-    internal struct MotionConstraint
-    {
-        internal float Value;
-
-        /// <summary>Calculates the direction and intensity of a constraint based on passed values.</summary>
-        /// <param name="direction">Direction of the movement.</param>
-        /// <param name="constraint">Constraint vector (e.g. wall, tangent, ect.)</param>
-        internal void ComputeConstraint(Vector3 direction, Vector3 constraint)
-        {
-            // Normalize vectors
-            direction = Raymath.Vector3Normalize(direction); 
-            constraint = Raymath.Vector3Normalize(constraint);
-            Value = Math.Abs(Raymath.Vector3DotProduct(direction, constraint));
-            //Value = vDot / (direction.Length() * constraint.Length());
         }
     }
 }

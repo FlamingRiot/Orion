@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS4014
 
 using RayGUI_cs;
+using Raylib_cs;
 
 namespace Orion_Desktop
 {
@@ -15,8 +16,14 @@ namespace Orion_Desktop
         /// <param name="value">Text value of the textbox.</param>
         private static void UpdateLatitude(string[] args, string value)
         {
-            if (float.TryParse(value, out OrionSim.ViewerLatitude)) OrionSim.UpdateViewPoint();
-            else ((Textbox)TerminalGui["txbCurrentLat"]).Text = OrionSim.ViewerLatitude.ToString();
+            // Manage null field and wrapping
+            float val;
+            if (value == "") val = 0;
+            else val = CelestialMaths.WrapLatitude(float.Parse(value));
+            OrionSim.ViewerLatitude = val;
+            OrionSim.UpdateViewPoint();
+
+            ((Textbox)TerminalGui["txbCurrentLat"]).Text = val.ToString();
         }
 
         /// <summary>Tries to update the longitude of the current viewpoint.</summary>
@@ -24,8 +31,14 @@ namespace Orion_Desktop
         /// <param name="value">Text value of the textbox.</param>
         private static void UpdateLongitude(string[] args, string value) 
         {
-            if (float.TryParse(value, out OrionSim.ViewerLongitude)) OrionSim.UpdateViewPoint();
-            else ((Textbox)TerminalGui["txbCurrentLon"]).Text = OrionSim.ViewerLongitude.ToString();
+            // Manage null field and wrapping
+            float val;
+            if (value == "") val = 0;
+            else val = CelestialMaths.WrapLongitude(float.Parse(value));
+            OrionSim.ViewerLongitude = val;
+            OrionSim.UpdateViewPoint();
+
+            ((Textbox)TerminalGui["txbCurrentLon"]).Text = val.ToString();
         }
 
         /// <summary>Sends movement information to the robot's motors.</summary>

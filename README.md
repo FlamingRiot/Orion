@@ -1,99 +1,83 @@
 # Orion
 ## Websummary
 ### Description
-Dans le cadre de mon TPI, j’ai conçu une application de visualisation avancée en 3D capable
-de communiquer avec un automate programmable développé par la filière *automatique* du
-CPNE-TI. L’objectif de ce dernier est de faire bouger une sphère à l’aide de moteurs pas-à-pas,
-afin que celle-ci indique au moyen d’un repère la direction d’un objet choisi dans le ciel.
+As part of my TPI, I designed an advanced 3D visualization application capable of
+communicating with a programmable controller developed by the *automatic* sector of
+CPNE-TI. The objective of the latter is to make a rubber sphere move using stepper motors,
+so that it indicates by means of a marker the direction of a chosen object in the sky.
 
-Mon travail a été de programmer le logiciel de visualisation et de calculer les données
-nécessaires à envoyer aux moteurs avec la librairie graphique Raylib en C#.
+My job was to program the visualization software and calculate the data
+necessary for the motors to move, using the Raylib graphics library in C#.
 
-### Objectifs
+### Objectives
 
- - Comprendre et interpréter des données astronomiques et géographiques afin de
-déterminer une orientation réaliste vers la position en question, le tout dans un repère
-tridimensionnel.
- - Mettre en place des moyens de visualisation innovants dans un environnement 3D à
-l’aide d’une librairie graphique simple et légère.
- - Appliquer les principes d’intégration continue étudiés durant la formation et créer un
-livrable complet pour les utilisateurs.
- - Comprendre les principes du protocole Websocket et les mettre en application afin de
-communiquer avec un automate programmable non-documenté.
+- Understand and interpret astronomical and geographic data in order to
+determine a realistic orientation towards the given position, all within a 
+three-dimensional environment.
+ - Implement innovative visualization means in a 3D environment
+using a simple and lightweight graphics library.
+ - Apply the principles of continuous integration studied during training and create a
+complete deliverable for users.
+ - Understand the principles of the Websocket protocol and apply them in order to
+communicate with an undocumented programmable controller.
 
-### Réalisation
+### Realisation
 
-Le projet a débuté sur la base de l’application déjà existante réalisée par mes soins durant la
-saison précédente. Les périodes de TPI ont donc été consacrées à l’ajout de fonctionnalités
-cruciales et à l’aboutissement technique du logiciel.
-J’ai finalisé le projet par la liaison de l’application à l’automate programmable afin de mettre à
-profit les simulations virtuelles présentes dans l’application.
-Une attention toute particulière a été portée à l’aspect graphique du logiciel. En faisant usage
-de Shaders GLSL et d’algorithmes poussés, je suis parvenu à donner un visuel professionnel
-et abouti à l’environnement 3D.
+The project began on the basis of the already existing application created by me during the
+previous season. The TPI periods were therefore devoted to adding crucial functionalities
+and to the technical outcome of the software.
+I finalized the project by linking the application to the programmable controller in order to make good use
+of the virtual simulations present in the application.
+Particular attention was paid to the graphic aspect of the software. By making use of
+GLSL Shaders and advanced algorithms, I managed to give a professional and resulted 
+visual to the 3D environment.
 
-## Mise en place
-### Téléchargement
+## Setup
+### Download
 
-Vous trouvez ci-dessous la marche à suivre permettant de mettre en place le projet dans des conditions minimales, c'est-à-dire sur une machine vierge de tout composant du logiciel. Il vous est également expliqué comment connecter l'automate et le PC au travers d'un routeur. 
+Below you will find the procedure to follow allowing you to set up the project under minimal conditions, that is to say on a machine free of any software component. You are also explained how to connect the PLC and the PC through a router.
 
-Tout d'abord, rendez-vous dans les [Releases](https://git.s2.rpn.ch/ComtesseE1/orion/-/releases) du dépôt Gitlab. Téléchargez l'exécutable de la dernière version publiée tel qu'il est mis à disposition et extrayez le sur votre machine. Toutefois, une fois extrait, le logiciel ne pourra fonctionner dans l'état fourni. Les restrictions Gitlab empêchant la sauvegarde en artéfacts de fichiers trop volumineux, il était impossible de joindre les *assets* de l'application avec la release. C'est pourquoi vous devez également cloner le dépôt principal chez vous afin de récupérer le dossier *assets*, puis le copier dans le répertoire de l'exécutable. Sa localisation dans le dépôt vous est donnée : 
-````
-/desktop/assets
-````
+First of all, go to the [Releases](https://git.s2.rpn.ch/ComtesseE1/orion/-/releases) of the Github repository. Download the executable of the latest released version as it is made available and extract it on your machine. However, once extracted, the software will not be able to function in the supplied state. Gitlab's previous restrictions preventing the saving of files that were too large as artifacts made it impossible to attach the *assets* of the application to the release. This is why you also need to clone the main repository at home in order to get the *assets* folder, then copy it into the executable directory.
 
-Vous devez au final vous retrouver avec l'arborescence suivante :
+From now on, you are able to start the application without any compilation being necessary. However, if you want to do the full installation which includes the PLC, you still need to connect your PC to it so that the software can communicate with it.
 
-````
-.
-|
-|--- Orion-Desktop.exe
-|
-|--- raylib.dll
-|
-|--- assets
-````
+### Connection to the PLC
 
-Dès à présent, vous êtes en mesure de démarrer l'aplication sans qu'aucune compilation ne soit nécessaire. Toutefois, si vous souhaitez effectuer l'installation complète qui comprend l'automate programmable, il reste encore à y connecter votre PC afin que le logiciel puisse communiquer avec. 
+To begin, start the system using the orange switch on the back of the case:
 
-### Connexion à l'automate
+![PLC switch (on)](desktop/assets/README/Switch_Source.jpg)
 
-Pour commencer, démarrez le système à l'aide de l'interrupteur orange placé à l'arrière du boîtier : 
+It then takes a few minutes to start all its components. You
+can take advantage of this time to plug the router into an electrical outlet, then
+route the Ethernet cables as follows:
 
-![Interrupteur de l'automate (allumé)](desktop/assets/README/Switch_Source.jpg)
+![Router configuration](desktop/assets/README/Router_Physical.png)
 
-Il lui faut ensuite quelques minutes pour démarrer tout ses composants. Vous
-pouvez profiter de ce temps pour brancher le routeur à une prise électrique, puis
-placer les câbles Ethernet de la manière suivante :
+You may have noticed several Ethernet cables connected to the controller
+and you may be wondering which one to plug into the router. Use this one:
 
-![Configuration du routeur](desktop/assets/README/Router_Physical.png)
+![Ethernet cable to use on the PLC](desktop/assets/README/Ethernet_Source.jpg)
 
-Vous aurez peut-être remarqué plusieurs câbles Ethernet branchés à l’automate
-et vous vous demandez peut-être lequel brancher au routeur. Utilisez celui-ci :
+Finally, you still have to configure the router so that it
+distributes addresses correctly between the robot and the computer thanks to the
+DHCP protocol. To do this, start by restarting the
+Netgear router by holding down the *reset* button for at least 10 seconds
+at the back. Then go to an Internet browser and enter
+the following address: 192.168.1.1. You will then be offered a certain type of
+automatic configuration; click No. You can then go to
+the address routerlogin.net/start.htm, from which you will configure the
+distribution of IP addresses between different clients.
 
-![Câble Ethernet à utiliser sur l'automate](desktop/assets/README/Ethernet_Source.jpg)
-
-Pour terminer, il vous reste encore à configurer le routeur de sorte à ce qu’il
-distribue les adresses correctement entre le robot et l’ordinateur grâce au
-protocole DHCP. Pour ce faire, commencez par effectuer un redémarrage du
-routeur Netgear en maintenant enfoncé pendant 10 secondes minimum le bouton
-« reset » à l’arrière. Puis, rendez-vous dans un navigateur Internet et saisissez
-l’adresse suivante : 192.168.1.1. Il vous sera alors proposé un certain type de
-configuration automatique ; cliquez sur Non. Vous pouvez ensuite vous rendre à
-l’adresse routerlogin.net/start.htm, depuis laquelle vous allez configurer la
-distribution des adresses IP entre les différents clients.
-
-Rendez-vous dans : **Avancé -> Configuration -> Paramétrage LAN** et entrez les
-données suivantes, de sorte à ce qu’elles correspondent à l’adresse statique de
-l’automate :
+Go to : **Advanced -> Configuration -> LAN Settings** and enter the following data, 
+so that it matches the static address of the PLC :
 
 <p align="center">
     <img src="desktop/assets/README/Router_Config.png">
 </p>
 
-Vous pouvez dès à présent démarrer l’application à l’aide de l’exécutable et la
-connexion devrait s’établir dans les 15 premières secondes. Si toutefois vous
-obtenez un message d’erreur dans la console du terminal de contrôle, il s’agit
-probablement qu’une autre connexion avec le Websocket est déjà ouverte
-quelque part sur votre machine. Dans ce cas, fermez toutes les interfaces Web
-susceptibles d’y être connectées.
+You can now start the application using the executable and
+the connection should be established within the first 15 seconds. However, if you
+get an error message in the terminal console, this 
+probably means another connection with the Websocket is already open
+somewhere on your machine. In this case, close all web interfaces
+likely to be connected to it.
